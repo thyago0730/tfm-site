@@ -274,6 +274,29 @@ function initMarquees() {
   });
 }
 
+/* ---------------- posição do ponteiro ---------------- */
+const pointer = { x: -1, y: -1 };
+const pointerSubs = new Set();
+let pointerQueued = false;
+const flushPointer = () => {
+  pointerQueued = false;
+  pointerSubs.forEach((fn) => fn());
+};
+const queuePointer = () => {
+  if (pointerQueued) return;
+  pointerQueued = true;
+  requestAnimationFrame(flushPointer);
+};
+function onPointerFrame(fn) {
+  pointerSubs.add(fn);
+}
+if (finePointer) {
+  window.addEventListener('pointermove', (e) => { pointer.x = e.clientX; pointer.y = e.clientY; queuePointer(); }, { passive: true });
+  window.addEventListener('scroll', queuePointer, { passive: true });
+  document.documentElement.addEventListener('pointerleave', () => { pointer.x = pointer.y = -1; queuePointer(); });
+  window.addEventListener('blur', () => { pointer.x = pointer.y = -1; queuePointer(); });
+}
+
 /* ---------------- serviços ---------------- */
 function initServices() {
   const list = $('[data-services]');
@@ -301,36 +324,45 @@ function initServices() {
   const img = $('img', preview);
   const xTo = gsap.quickTo(preview, 'x', { duration: 0.6, ease: 'power3' });
   const yTo = gsap.quickTo(preview, 'y', { duration: 0.6, ease: 'power3' });
+  items.forEach((item) => { new Image().src = item.dataset.img; });
+
   let visible = false;
+  let current = null;
+  const show = (item) => {
+    if (item !== current) {
+      current = item;
+      img.src = item.dataset.img;
+    }
+    if (!visible) {
+      visible = true;
+      gsap.set(preview, { x: pointer.x + 170, y: pointer.y });
+      xTo(pointer.x + 170);
+      yTo(pointer.y);
+    }
+    gsap.to(preview, { opacity: 1, scale: 1, duration: 0.5, ease: 'power3.out', overwrite: 'auto' });
+  };
   const hide = () => {
+    current = null;
     if (!visible) return;
     visible = false;
-    gsap.to(preview, { opacity: 0, scale: 0.6, duration: 0.4, ease: 'power3.in' });
+    gsap.to(preview, { opacity: 0, scale: 0.6, duration: 0.35, ease: 'power3.in', overwrite: 'auto' });
   };
-  items.forEach((item) => {
-    const src = item.dataset.img;
-    const pre = new Image();
-    pre.src = src;
-    item.addEventListener('mouseenter', (e) => {
-      img.src = src;
-      if (!visible) {
-        gsap.set(preview, { x: e.clientX + 170, y: e.clientY });
-        xTo(e.clientX + 170);
-        yTo(e.clientY);
-      }
-      visible = true;
-      gsap.to(preview, { opacity: 1, scale: 1, duration: 0.5, ease: 'power3.out' });
-    });
-  });
-  list.addEventListener('mouseleave', hide);
+
+  // decide pela posição real do ponteiro: funciona também quando a página rola sem o mouse se mexer
+  const check = () => {
+    if (pointer.x < 0 || document.hidden) return hide();
+    const r = list.getBoundingClientRect();
+    const inside = pointer.x >= r.left && pointer.x <= r.right && pointer.y >= r.top && pointer.y <= r.bottom;
+    const item = inside ? document.elementFromPoint(pointer.x, pointer.y)?.closest('.svc__item') : null;
+    if (item && list.contains(item)) show(item);
+    else hide();
+  };
+  onPointerFrame(check);
   list.addEventListener('mousemove', (e) => {
     xTo(e.clientX + 170);
     yTo(e.clientY);
     gsap.to(preview, { rotate: gsap.utils.clamp(-8, 8, e.movementX * 0.6), duration: 0.5 });
   });
-  // rolar sem mover o mouse também precisa esconder a prévia
-  ScrollTrigger.create({ trigger: list, start: 'top bottom', end: 'bottom top', onLeave: hide, onLeaveBack: hide });
-  window.addEventListener('scroll', () => visible && !list.matches(':hover') && hide(), { passive: true });
 }
 
 /* ---------------- processo horizontal ---------------- */
@@ -514,15 +546,24 @@ function initPointerFx() {
     }
     dx(e.clientX); dy(e.clientY); rx(e.clientX); ry(e.clientY);
   });
-  document.addEventListener('pointerover', (e) => {
-    const labeled = e.target.closest('[data-cursor]');
-    const hover = e.target.closest('a, button, [data-magnetic], .panel, label, select, summary, input[type="range"], [data-ba-media]');
+  // estado do cursor recalculado pelo elemento sob o ponteiro (também após rolar sem mexer o mouse)
+  let outside = false;
+  onPointerFrame(() => {
+    if (!seen) return;
+    if (pointer.x < 0) {
+      if (!outside) gsap.to(cursor, { opacity: 0, duration: 0.2 });
+      outside = true;
+      return;
+    }
+    if (outside) gsap.to(cursor, { opacity: 1, duration: 0.2 });
+    outside = false;
+    const el = document.elementFromPoint(pointer.x, pointer.y);
+    const labeled = el?.closest('[data-cursor]');
+    const hover = el?.closest('a, button, [data-magnetic], .panel, label, select, summary, input[type="range"], [data-ba-media]');
     cursor.classList.toggle('is-label', !!labeled && !hover);
     cursor.classList.toggle('is-hover', !!hover);
     label.textContent = labeled && !hover ? labeled.dataset.cursor : '';
   });
-  document.addEventListener('pointerleave', () => gsap.to(cursor, { opacity: 0, duration: 0.2 }));
-  document.addEventListener('pointerenter', () => gsap.to(cursor, { opacity: 1, duration: 0.2 }));
 
   $$('[data-magnetic]').forEach((el) => {
     const xTo = gsap.quickTo(el, 'x', { duration: 0.5, ease: 'power3' });
