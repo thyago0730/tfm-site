@@ -25,9 +25,6 @@
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
   <script type="application/ld+json">
   {
@@ -74,6 +71,78 @@
     ]
   }
   </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Vale mais a pena recuperar ou comprar uma peça nova?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Em muitos casos, especialmente em componentes de alto valor ou com prazo de reposição longo, a recuperação custa menos e fica pronta antes da peça nova. Com o revestimento adequado, a peça pode durar mais que a original. O diagnóstico técnico indica a melhor opção, e você pode fazer uma estimativa no simulador."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Qual a diferença entre cromo duro e HVOF?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "O cromo duro é um revestimento eletrolítico com ótimo acabamento e boa resistência ao desgaste. O HVOF aplica materiais como o carbeto de tungstênio em camadas muito densas e duras, e costuma ser usado como alternativa ao cromo duro quando a abrasão é severa. No case do pistão de prensa hidráulica, a troca do cromo duro por carbeto aplicado por HVOF aumentou a vida útil da camada."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Quanto tempo leva uma recuperação?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Depende do tamanho da peça, do processo e da condição em que ela chega. O prazo é informado no orçamento. Emergências contam com atendimento 24h e podem ser priorizadas."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Vocês executam o serviço dentro da minha planta?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Sim. Nossa equipe de serviço de campo executa manutenção e revestimento diretamente nas instalações do cliente, quando o processo permite, evitando a desmontagem e o transporte do equipamento."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Que informações preciso enviar para receber um orçamento?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Fotos da peça e da região desgastada, desenho ou medidas principais, material base (se souber), condição de operação (temperatura, meio, carga), quantidade e prazo desejado. Quanto mais informação, mais precisa a proposta."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Qual espessura de revestimento é possível aplicar?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Varia conforme o processo, o material e a função da peça. A espessura é definida em projeto pela engenharia, considerando o desgaste, as tolerâncias e a usinagem de acabamento."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Os serviços têm garantia?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Sim. Todos os processos são certificados e possuem garantia de qualidade, com controle desde o recebimento até a expedição e metrologia em laboratório certificado."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Quais regiões vocês atendem?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Temos unidades em Alumínio (SP), Rio das Ostras (RJ) e Nova Friburgo (RJ), com nova unidade em breve em Goianinha (RN), e atendemos clientes de diversos estados."
+      }
+    }
+  ]
+}
+  </script>
 </head>
 <body>
   <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
@@ -99,6 +168,7 @@
         <ul>
           <li><a href="#servicos">Serviços</a></li>
           <li><a href="#processo">Processo</a></li>
+          <li><a href="#simulador">Simulador</a></li>
           <li><a href="#setores">Setores</a></li>
           <li><a href="#cases">Cases</a></li>
           <li><a href="#sobre">Sobre</a></li>
@@ -117,11 +187,12 @@
     <nav class="menu__nav container" aria-label="Menu móvel">
       <a href="#servicos"><small>01</small>Serviços</a>
       <a href="#processo"><small>02</small>Processo</a>
-      <a href="#setores"><small>03</small>Setores</a>
-      <a href="#cases"><small>04</small>Cases</a>
-      <a href="#sobre"><small>05</small>Sobre</a>
-      <a href="#unidades"><small>06</small>Unidades</a>
-      <a href="#contato"><small>07</small>Contato</a>
+      <a href="#simulador"><small>03</small>Simulador</a>
+      <a href="#setores"><small>04</small>Setores</a>
+      <a href="#cases"><small>05</small>Cases</a>
+      <a href="#sobre"><small>06</small>Sobre</a>
+      <a href="#unidades"><small>07</small>Unidades</a>
+      <a href="#contato"><small>08</small>Orçamento</a>
     </nav>
     <div class="menu__foot container">
       <a href="tel:+551147152903">(11) 4715-2903</a>
@@ -167,7 +238,7 @@
     <section class="manifesto section--paper" id="posicionamento">
       <div class="container">
         <p class="kicker"><span>01</span> Por que recuperar</p>
-        <p class="manifesto__text" data-words>Substituir uma peça crítica custa caro, demora e para a linha. Recuperá-la com a superfície certa pode fazê-la durar <em>mais do que a original.</em></p>
+        <h2 class="manifesto__text" data-words>Substituir uma peça crítica custa caro, demora e para a linha. Recuperá-la com a superfície certa pode fazê-la durar <em>mais do que a original.</em></h2>
         <div class="manifesto__cols">
           <article data-reveal>
             <h3>Menos parada</h3>
@@ -312,12 +383,98 @@
       </div>
     </section>
 
+    <!-- ANTES & DEPOIS -->
+    <section class="journey" id="antes-depois">
+      <div class="container">
+        <header class="section-head section-head--split">
+          <div>
+            <p class="kicker"><span>04</span> Antes &amp; depois</p>
+            <h2 class="section-title" data-split>Uma peça real, do recebimento à expedição.</h2>
+          </div>
+          <p class="section-lead" data-fade>Fotos de um serviço executado na nossa planta. Navegue pelas etapas e acompanhe a transformação.</p>
+        </header>
+
+        <div class="journey__stage" data-journey>
+          <figure class="journey__frame" data-journey-frame>
+            <img class="is-active" src="/img/jornada-1-recebimento.webp" alt="Peça recebida com desgaste severo na superfície de trabalho" width="386" height="439" loading="lazy" />
+            <img src="/img/jornada-2-usinagem.webp" alt="Peça após a usinagem de remoção da camada danificada" width="290" height="374" loading="lazy" />
+            <img src="/img/jornada-3-metalizacao.webp" alt="Peça com o revestimento aplicado por metalização" width="308" height="375" loading="lazy" />
+            <img src="/img/jornada-4-acabamento.webp" alt="Superfície usinada no acabamento, com brilho espelhado" width="320" height="358" loading="lazy" />
+            <img src="/img/jornada-5-final.webp" alt="Peça finalizada e montada, pronta para voltar à operação" width="319" height="314" loading="lazy" />
+            <figcaption class="journey__badge"><b data-journey-count>01</b> / 05</figcaption>
+          </figure>
+
+          <ol class="journey__steps" aria-label="Etapas da recuperação">
+            <li><button type="button" class="jstep is-active" aria-current="step"><span class="jstep__n">01</span><span class="jstep__t">Recebimento</span><span class="jstep__d">A peça chega com desgaste severo. Inspeção visual e registro dimensional.</span><span class="jstep__bar" aria-hidden="true"><i></i></span></button></li>
+            <li><button type="button" class="jstep"><span class="jstep__n">02</span><span class="jstep__t">Usinagem anterior</span><span class="jstep__d">Remoção da camada danificada e preparo da superfície para ancorar o revestimento.</span><span class="jstep__bar" aria-hidden="true"><i></i></span></button></li>
+            <li><button type="button" class="jstep"><span class="jstep__n">03</span><span class="jstep__t">Metalização</span><span class="jstep__d">Aplicação do revestimento por aspersão térmica até a espessura especificada.</span><span class="jstep__bar" aria-hidden="true"><i></i></span></button></li>
+            <li><button type="button" class="jstep"><span class="jstep__n">04</span><span class="jstep__t">Acabamento</span><span class="jstep__d">Usinagem de acabamento devolve a cota original com superfície espelhada.</span><span class="jstep__bar" aria-hidden="true"><i></i></span></button></li>
+            <li><button type="button" class="jstep"><span class="jstep__n">05</span><span class="jstep__t">Final</span><span class="jstep__d">Peça montada, inspecionada e pronta para voltar à operação.</span><span class="jstep__bar" aria-hidden="true"><i></i></span></button></li>
+          </ol>
+        </div>
+
+        <div class="ba-grid">
+          <article class="ba" data-ba data-reveal>
+            <div class="ba__media" data-ba-media>
+              <img class="ba__img" src="/img/garra-antes.webp" alt="Garra de sucata antes da reforma, com a estrutura desgastada" width="665" height="590" loading="lazy" />
+              <img class="ba__img ba__img--after" src="/img/garra-depois.webp" alt="Garra de sucata depois da reforma, recuperada e pintada" width="673" height="552" loading="lazy" />
+              <span class="ba__handle" aria-hidden="true"><i></i></span>
+              <span class="ba__tag ba__tag--before" aria-hidden="true">Antes</span>
+              <span class="ba__tag ba__tag--after" aria-hidden="true">Depois</span>
+            </div>
+            <div class="ba__body">
+              <div class="ba__toggle" role="group" aria-label="Comparar antes e depois">
+                <button type="button" aria-pressed="true" data-ba-show="0">Antes</button>
+                <button type="button" aria-pressed="false" data-ba-show="1">Depois</button>
+              </div>
+              <h3>Garra de sucata</h3>
+              <p>Reforma completa por soldagem e caldeiraria, usinagem, jateamento e pintura.</p>
+            </div>
+          </article>
+          <article class="ba" data-ba data-reveal>
+            <div class="ba__media" data-ba-media>
+              <img class="ba__img" src="/img/valvula-antes.webp" alt="Válvula rotativa antes da reforma" width="545" height="489" loading="lazy" />
+              <img class="ba__img ba__img--after" src="/img/valvula-depois.webp" alt="Válvula rotativa depois da reforma, pintada e montada com o acionamento" width="528" height="383" loading="lazy" />
+              <span class="ba__handle" aria-hidden="true"><i></i></span>
+              <span class="ba__tag ba__tag--before" aria-hidden="true">Antes</span>
+              <span class="ba__tag ba__tag--after" aria-hidden="true">Depois</span>
+            </div>
+            <div class="ba__body">
+              <div class="ba__toggle" role="group" aria-label="Comparar antes e depois">
+                <button type="button" aria-pressed="true" data-ba-show="0">Antes</button>
+                <button type="button" aria-pressed="false" data-ba-show="1">Depois</button>
+              </div>
+              <h3>Válvula rotativa</h3>
+              <p>Reforma com recuperação, pintura e montagem do conjunto de acionamento.</p>
+            </div>
+          </article>
+          <article class="ba" data-ba data-reveal>
+            <div class="ba__media" data-ba-media>
+              <img class="ba__img" src="/img/carbeto-antes.webp" alt="Superfície desgastada antes do revestimento" width="288" height="450" loading="lazy" />
+              <img class="ba__img ba__img--after" src="/img/carbeto-depois.webp" alt="Peça revestida com carbeto de tungstênio" width="556" height="379" loading="lazy" />
+              <span class="ba__handle" aria-hidden="true"><i></i></span>
+              <span class="ba__tag ba__tag--before" aria-hidden="true">Antes</span>
+              <span class="ba__tag ba__tag--after" aria-hidden="true">Depois</span>
+            </div>
+            <div class="ba__body">
+              <div class="ba__toggle" role="group" aria-label="Comparar antes e depois">
+                <button type="button" aria-pressed="true" data-ba-show="0">Antes</button>
+                <button type="button" aria-pressed="false" data-ba-show="1">Depois</button>
+              </div>
+              <h3>Carbeto de tungstênio</h3>
+              <p>Superfície desgastada recuperada com camada de carbeto de tungstênio de alta dureza.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
     <!-- SELETOR DE REVESTIMENTO -->
     <section class="selector" id="solucoes">
       <div class="container">
         <header class="section-head section-head--split">
           <div>
-            <p class="kicker"><span>04</span> Guia de soluções</p>
+            <p class="kicker"><span>05</span> Guia de soluções</p>
             <h2 class="section-title" data-split>Qual revestimento o seu desgaste pede?</h2>
           </div>
           <p class="section-lead" data-fade>Cada mecanismo de desgaste exige uma resposta diferente. Selecione o problema e veja por onde a engenharia TFM costuma começar.</p>
@@ -337,29 +494,197 @@
               <div class="sel__intro"><h3>Abrasão</h3><p>Partículas duras riscam e arrancam material da superfície. Comum em mineração, siderurgia e no transporte de sólidos.</p></div>
               <div class="sel__col"><h4>Soluções indicadas</h4><ul><li>Carbeto de tungstênio (WC) por HVOF</li><li>Carbetos de W e Cr</li><li>Ligas autofluxantes com fusão por indução</li><li>Cromo duro eletrolítico</li></ul></div>
               <div class="sel__col"><h4>Peças típicas</h4><ul><li>Roscas transportadoras</li><li>Cilindros de laminação</li><li>Bobinas de trefila</li><li>Rolos classificadores e peneiras</li></ul></div>
+              <a class="sel__case" href="#case-bobina" data-case-link>Ver case relacionado: <strong>Bobina de trefila</strong> <span aria-hidden="true">→</span></a>
             </div>
             <div class="sel__panel" role="tabpanel" id="sel-corrosao" aria-labelledby="tab-corrosao" hidden>
               <div class="sel__intro"><h3>Corrosão</h3><p>Ataque químico ou eletroquímico em meios ácidos, alcalinos, salinos ou úmidos — do digestor de celulose à plataforma offshore.</p></div>
               <div class="sel__col"><h4>Soluções indicadas</h4><ul><li>Metalização com aço inox (ex.: INOX 420)</li><li>Revestimentos oxi-cerâmicos</li><li>Níquel e zinco por galvanoplastia</li><li>Pintura industrial anticorrosiva</li></ul></div>
               <div class="sel__col"><h4>Peças típicas</h4><ul><li>Válvulas e carcaças de bombas</li><li>Luvas de desgaste</li><li>Tanques e tubulações</li><li>Componentes navais</li></ul></div>
+              <a class="sel__case" href="#case-cilindro" data-case-link>Ver case relacionado: <strong>Cilindro para laminação de aço</strong> <span aria-hidden="true">→</span></a>
             </div>
             <div class="sel__panel" role="tabpanel" id="sel-atrito" aria-labelledby="tab-atrito" hidden>
               <div class="sel__intro"><h3>Atrito</h3><p>Contato e deslizamento metal-metal geram desgaste adesivo, riscos e engripamento em componentes móveis.</p></div>
               <div class="sel__col"><h4>Soluções indicadas</h4><ul><li>Cromo duro polido ou espelhado</li><li>Carbetos aplicados por HVOF</li><li>Oxi-cerâmicos</li><li>Metal patente em mancais</li></ul></div>
               <div class="sel__col"><h4>Peças típicas</h4><ul><li>Hastes e pistões hidráulicos</li><li>Mancais e casquilhos</li><li>Eixos e virabrequins</li><li>Rolos guia</li></ul></div>
+              <a class="sel__case" href="#case-pistao" data-case-link>Ver case relacionado: <strong>Pistão de prensa hidráulica</strong> <span aria-hidden="true">→</span></a>
             </div>
             <div class="sel__panel" role="tabpanel" id="sel-temperatura" aria-labelledby="tab-temperatura" hidden>
               <div class="sel__intro"><h3>Altas temperaturas</h3><p>Oxidação e perda de propriedades em caldeiras, turbinas, fornos e unidades de craqueamento.</p></div>
               <div class="sel__col"><h4>Soluções indicadas</h4><ul><li>Revestimentos cerâmicos por plasma</li><li>Ligas resistentes à oxidação por aspersão</li><li>Aspersão térmica hipersônica (HVOF)</li></ul></div>
               <div class="sel__col"><h4>Peças típicas</h4><ul><li>Tubos de caldeiras de força</li><li>Eixos de turbinas a gás</li><li>Superaquecedores de caldeira de biomassa</li><li>Gavetas de válvulas de craqueamento</li></ul></div>
+              <a class="sel__case" href="#case-cilindro" data-case-link>Ver case relacionado: <strong>Cilindro para laminação de aço</strong> <span aria-hidden="true">→</span></a>
             </div>
             <div class="sel__panel" role="tabpanel" id="sel-dimensional" aria-labelledby="tab-dimensional" hidden>
               <div class="sel__intro"><h3>Perda dimensional</h3><p>Desgaste acumulado, usinagem incorreta ou avarias tiram a peça de tolerância — e quase sempre ela pode voltar à cota original.</p></div>
               <div class="sel__col"><h4>Soluções indicadas</h4><ul><li>Metalização por arc spray ou HVOF</li><li>Soldagem de revestimento</li><li>Cromo duro com retífica</li><li>Usinagem de precisão</li></ul></div>
               <div class="sel__col"><h4>Peças típicas</h4><ul><li>Colos de rolamento</li><li>Sedes de retentores e gaxetas</li><li>Alojamentos de mancais</li><li>Camisas e eixos</li></ul></div>
+              <a class="sel__case" href="#case-rosca" data-case-link>Ver case relacionado: <strong>Rosca transportadora</strong> <span aria-hidden="true">→</span></a>
             </div>
           </div>
           <p class="sel__note">Indicações orientativas. A especificação final é feita pela engenharia TFM após o diagnóstico da peça. <a href="#contato">Fale com um especialista →</a></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TECNOLOGIAS -->
+    <section class="tech" id="tecnologias">
+      <div class="container">
+        <header class="section-head section-head--split">
+          <div>
+            <p class="kicker"><span>06</span> Tecnologias</p>
+            <h2 class="section-title" data-split>O processo certo para cada material.</h2>
+          </div>
+          <p class="section-lead" data-fade>Dominamos os principais processos de aspersão térmica. Passe o cursor ou toque na matriz para explorar o que cada um aplica.</p>
+        </header>
+
+        <div class="tech__grid">
+          <div class="matrix-wrap" data-reveal>
+            <table class="matrix" data-matrix>
+              <caption class="sr-only">Materiais aplicados por processo de aspersão térmica</caption>
+              <thead><tr><th scope="col" class="matrix__corner"><span>Processo</span><span>Material</span></th>
+                <th scope="col" data-col="0"><span>Ligas de níquel</span></th>
+                <th scope="col" data-col="1"><span>Aço inox</span></th>
+                <th scope="col" data-col="2"><span>Aço carbono</span></th>
+                <th scope="col" data-col="3"><span>Bronze</span></th>
+                <th scope="col" data-col="4"><span>Alumínio</span></th>
+                <th scope="col" data-col="5"><span>Zinco</span></th>
+                <th scope="col" data-col="6"><span>Metal patente</span></th>
+                <th scope="col" data-col="7"><span>Cerâmicas</span></th>
+                <th scope="col" data-col="8"><span>Polímeros</span></th>
+                <th scope="col" data-col="9"><span>Ligas com carbonetos</span></th>
+                <th scope="col" data-col="10"><span>Carbeto de tungstênio</span></th>
+                <th scope="col" data-col="11"><span>Cobalto</span></th>
+              </tr></thead>
+              <tbody>
+                <tr data-proc="chama-frio" data-name="Chama Pó" data-mode="a frio" data-desc="Pó metálico, cerâmico ou polimérico fundido por chama e projetado sobre a peça. Processo versátil e econômico, com o substrato mantido em baixa temperatura.">
+                  <th scope="row"><button type="button">Chama Pó <small>a frio</small></button></th>
+                  <td data-col="0" class="is-on"><span class="dot" aria-hidden="true"></span><span class="sr-only">Sim</span></td><td data-col="1" class="is-on"><span class="dot" aria-hidden="true"></span><span class="sr-only">Sim</span></td><td data-col="2"><span class="sr-only">Não</span></td><td data-col="3" class="is-on"><span class="dot" aria-hidden="true"></span><span class="sr-only">Sim</span></td><td data-col="4" class="is-on"><span class="dot" aria-hidden="true"></span><span class="sr-only">Sim</span></td><td data-col="5" class="is-on"><span class="dot" aria-hidden="true"></span><span class="sr-only">Sim</span></td><td data-col="6" class="is-on"><span class="dot" aria-hidden="true"></span><span class="sr-only">Sim</span></td><td data-col="7" class="is-on"><span class="dot" aria-hidden="true"></span><span class="sr-only">Sim</span></td><td data-col="8" class="is-on"><span class="dot" aria-hidden="true"></span><span class="sr-only">Sim</span></td><td data-col="9"><span class="sr-only">Não</span></td><td data-col="10"><span class="sr-only">Não</span></td><td data-col="11"><span class="sr-only">Não</span></td>
+                </tr>
+                <tr data-proc="chama-quente" data-name="Chama Pó" data-mode="a quente" data-desc="O depósito é refundido sobre a peça (spray &amp; fuse), formando ligação metalúrgica e uma camada densa, resistente a desgaste e corrosão.">
+                  <th scope="row"><button type="button">Chama Pó <small>a quente</small></button></th>
+                  <td data-col="0" class="is-on"><span class="dot" aria-hidden="true"></span><span class="sr-only">Sim</span></td><td data-col="1"><span class="sr-only">Não</span></td><td data-col="2"><span class="sr-only">Não</span></td><td data-col="3"><span class="sr-only">Não</span></td><td data-col="4"><span class="sr-only">Não</span></td><td data-col="5"><span class="sr-only">Não</span></td><td data-col="6"><span class="sr-only">Não</span></td><td data-col="7"><span class="sr-only">Não</span></td><td data-col="8"><span class="sr-only">Não</span></td><td data-col="9" class="is-on"><span class="dot" aria-hidden="true"></span><span class="sr-only">Sim</span></td><td data-col="10"><span class="sr-only">Não</span></td><td data-col="11"><span class="sr-only">Não</span></td>
+                </tr>
+                <tr data-proc="arc" data-name="Arc Spray" data-mode="a frio" data-desc="Dois arames são fundidos por arco elétrico e atomizados por ar comprimido. Alta taxa de deposição, ideal para grandes áreas e recuperação dimensional.">
+                  <th scope="row"><button type="button">Arc Spray <small>a frio</small></button></th>
+                  <td data-col="0" class="is-on"><span class="dot" aria-hidden="true"></span><span class="sr-only">Sim</span></td><td data-col="1" class="is-on"><span class="dot" aria-hidden="true"></span><span class="sr-only">Sim</span></td><td data-col="2" class="is-on"><span class="dot" aria-hidden="true"></span><span class="sr-only">Sim</span></td><td data-col="3" class="is-on"><span class="dot" aria-hidden="true"></span><span class="sr-only">Sim</span></td><td data-col="4" class="is-on"><span class="dot" aria-hidden="true"></span><span class="sr-only">Sim</span></td><td data-col="5" class="is-on"><span class="dot" aria-hidden="true"></span><span class="sr-only">Sim</span></td><td data-col="6" class="is-on"><span class="dot" aria-hidden="true"></span><span class="sr-only">Sim</span></td><td data-col="7"><span class="sr-only">Não</span></td><td data-col="8"><span class="sr-only">Não</span></td><td data-col="9" class="is-on"><span class="dot" aria-hidden="true"></span><span class="sr-only">Sim</span></td><td data-col="10"><span class="sr-only">Não</span></td><td data-col="11"><span class="sr-only">Não</span></td>
+                </tr>
+                <tr data-proc="pta" data-name="PTA" data-mode="a quente" data-desc="Arco de plasma transferido funde o pó sobre a peça, gerando uma camada soldada de baixa diluição e alta resistência ao desgaste.">
+                  <th scope="row"><button type="button">PTA <small>a quente</small></button></th>
+                  <td data-col="0" class="is-on"><span class="dot" aria-hidden="true"></span><span class="sr-only">Sim</span></td><td data-col="1"><span class="sr-only">Não</span></td><td data-col="2"><span class="sr-only">Não</span></td><td data-col="3"><span class="sr-only">Não</span></td><td data-col="4"><span class="sr-only">Não</span></td><td data-col="5"><span class="sr-only">Não</span></td><td data-col="6"><span class="sr-only">Não</span></td><td data-col="7"><span class="sr-only">Não</span></td><td data-col="8"><span class="sr-only">Não</span></td><td data-col="9" class="is-on"><span class="dot" aria-hidden="true"></span><span class="sr-only">Sim</span></td><td data-col="10"><span class="sr-only">Não</span></td><td data-col="11" class="is-on"><span class="dot" aria-hidden="true"></span><span class="sr-only">Sim</span></td>
+                </tr>
+                <tr data-proc="hvof" data-name="HVOF" data-mode="a frio" data-desc="Combustão em alta velocidade projeta as partículas a velocidades supersônicas, formando camadas muito densas e aderentes. Referência para carbeto de tungstênio.">
+                  <th scope="row"><button type="button">HVOF <small>a frio</small></button></th>
+                  <td data-col="0" class="is-on"><span class="dot" aria-hidden="true"></span><span class="sr-only">Sim</span></td><td data-col="1"><span class="sr-only">Não</span></td><td data-col="2"><span class="sr-only">Não</span></td><td data-col="3"><span class="sr-only">Não</span></td><td data-col="4"><span class="sr-only">Não</span></td><td data-col="5"><span class="sr-only">Não</span></td><td data-col="6"><span class="sr-only">Não</span></td><td data-col="7"><span class="sr-only">Não</span></td><td data-col="8"><span class="sr-only">Não</span></td><td data-col="9"><span class="sr-only">Não</span></td><td data-col="10" class="is-on"><span class="dot" aria-hidden="true"></span><span class="sr-only">Sim</span></td><td data-col="11"><span class="sr-only">Não</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <aside class="tech__info" data-tech-info aria-live="polite" data-reveal>
+            <p class="tech__eyebrow">Processo selecionado</p>
+            <h3 data-tech-name>HVOF <small>a frio</small></h3>
+            <p data-tech-desc>Combustão em alta velocidade projeta as partículas a velocidades supersônicas, formando camadas muito densas e aderentes. Referência para carbeto de tungstênio.</p>
+            <dl class="tech__legend">
+              <div><dt>A frio</dt><dd>O substrato permanece em baixa temperatura, sem alterar suas propriedades.</dd></div>
+              <div><dt>A quente</dt><dd>O revestimento é fundido sobre a peça, com ligação metalúrgica.</dd></div>
+            </dl>
+          </aside>
+        </div>
+
+        <div class="tech__materials" data-fade>
+          <h3>Materiais que aplicamos</h3>
+          <ul class="chips chips--lg">
+            <li>Carbeto de tungstênio</li><li>Carbeto de cromo</li><li>Óxido de cromo</li><li>Óxido de alumínio</li><li>Cobre</li><li>Níquel</li><li>Cobalto</li><li>Aço inox</li><li>Molibdênio</li><li>Cromo</li><li>Galvânicos</li><li>Inconel</li><li>Colmonoy</li><li>Stellite</li>
+          </ul>
+          <p class="tech__note">Também executamos cromo duro eletrolítico, galvanoplastia e soldagem especial (TIG, MIG, arco submerso e PTA).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SIMULADOR -->
+    <section class="sim" id="simulador">
+      <div class="container">
+        <header class="section-head section-head--split">
+          <div>
+            <p class="kicker"><span>07</span> Simulador</p>
+            <h2 class="section-title" data-split>Recuperar ou substituir? <em class="molten">Faça a conta.</em></h2>
+          </div>
+          <p class="section-lead" data-fade>Ajuste os valores da sua realidade e veja quanto a recuperação pode representar em custo, parada de produção e impacto ambiental.</p>
+        </header>
+
+        <div class="sim__grid" data-sim>
+          <form class="sim__inputs" data-sim-form novalidate>
+            <div class="sim-field">
+              <label for="sim-novo">Valor de uma peça nova</label>
+              <div class="sim-field__value"><span>R$</span><input id="sim-novo-txt" type="text" inputmode="numeric" data-sim-text="novo" aria-label="Valor da peça nova em reais" /></div>
+              <input id="sim-novo" type="range" min="0" max="1000" step="1" data-sim-range="novo" data-min="5000" data-max="2000000" data-log />
+            </div>
+            <div class="sim-field">
+              <label for="sim-prazo-novo">Prazo de entrega da peça nova</label>
+              <div class="sim-field__value"><input id="sim-prazo-novo-txt" type="text" inputmode="numeric" data-sim-text="prazoNovo" aria-label="Prazo da peça nova em dias" /><span>dias</span></div>
+              <input id="sim-prazo-novo" type="range" min="1" max="240" step="1" data-sim-range="prazoNovo" />
+            </div>
+            <div class="sim-field">
+              <label for="sim-custo-rec">Custo da recuperação <small>(% do valor da peça nova)</small></label>
+              <div class="sim-field__value"><input id="sim-custo-rec-txt" type="text" inputmode="numeric" data-sim-text="custoRec" aria-label="Custo da recuperação em porcentagem" /><span>%</span></div>
+              <input id="sim-custo-rec" type="range" min="5" max="100" step="1" data-sim-range="custoRec" />
+            </div>
+            <div class="sim-field">
+              <label for="sim-prazo-rec">Prazo da recuperação</label>
+              <div class="sim-field__value"><input id="sim-prazo-rec-txt" type="text" inputmode="numeric" data-sim-text="prazoRec" aria-label="Prazo da recuperação em dias" /><span>dias</span></div>
+              <input id="sim-prazo-rec" type="range" min="1" max="120" step="1" data-sim-range="prazoRec" />
+            </div>
+            <div class="sim-field">
+              <label for="sim-dia">Custo por dia de equipamento parado</label>
+              <div class="sim-field__value"><span>R$</span><input id="sim-dia-txt" type="text" inputmode="numeric" data-sim-text="custoDia" aria-label="Custo por dia parado em reais" /></div>
+              <input id="sim-dia" type="range" min="0" max="1000" step="1" data-sim-range="custoDia" data-min="0" data-max="1000000" data-log />
+              <label class="switch"><input type="checkbox" data-sim-check="parado" checked /><span class="switch__ui" aria-hidden="true"></span><span>O equipamento fica parado aguardando a peça</span></label>
+            </div>
+            <div class="sim-field">
+              <label for="sim-peso">Peso aproximado da peça</label>
+              <div class="sim-field__value"><input id="sim-peso-txt" type="text" inputmode="numeric" data-sim-text="peso" aria-label="Peso da peça em quilos" /><span>kg</span></div>
+              <input id="sim-peso" type="range" min="0" max="1000" step="1" data-sim-range="peso" data-min="1" data-max="50000" data-log />
+            </div>
+          </form>
+
+          <div class="sim__results">
+            <p class="sim__label">Economia estimada com a recuperação</p>
+            <p class="sim__total" data-sim-out="total" aria-live="polite">R$ 0</p>
+            <p class="sim__sub"><span data-sim-out="dias">0</span> dias a menos de espera</p>
+
+            <figure class="sim-chart" aria-labelledby="sim-chart-title">
+              <figcaption id="sim-chart-title" class="sim-chart__title">Custo total por cenário</figcaption>
+              <ul class="sim-chart__legend">
+                <li><span class="sw sw--acq" aria-hidden="true"></span>Aquisição ou serviço</li>
+                <li><span class="sw sw--stop" aria-hidden="true"></span>Parada de produção</li>
+              </ul>
+              <div class="sim-chart__rows" data-sim-chart>
+                <div class="sim-row" data-row="novo">
+                  <span class="sim-row__name">Substituir</span>
+                  <div class="sim-row__track"><span class="seg seg--acq" data-seg="novo-acq" tabindex="0"></span><span class="seg seg--stop" data-seg="novo-stop" tabindex="0"></span><em class="sim-row__val" data-sim-out="custoNovo"></em></div>
+                </div>
+                <div class="sim-row" data-row="rec">
+                  <span class="sim-row__name">Recuperar</span>
+                  <div class="sim-row__track"><span class="seg seg--acq" data-seg="rec-acq" tabindex="0"></span><span class="seg seg--stop" data-seg="rec-stop" tabindex="0"></span><em class="sim-row__val" data-sim-out="custoRec"></em></div>
+                </div>
+              </div>
+              <div class="sim-tip" role="tooltip" data-sim-tip hidden></div>
+              <div class="sr-only"><table>
+                <caption>Custo total por cenário</caption>
+                <thead><tr><th>Cenário</th><th>Aquisição ou serviço</th><th>Parada de produção</th><th>Total</th></tr></thead>
+                <tbody data-sim-table></tbody>
+              </table></div>
+            </figure>
+
+            <dl class="sim__kpis">
+              <div><dt>Na aquisição</dt><dd data-sim-out="aquisicao">R$ 0</dd></div>
+              <div><dt>Em parada evitada</dt><dd data-sim-out="parada">R$ 0</dd></div>
+              <div><dt>Aço novo evitado</dt><dd data-sim-out="aco">0 kg</dd></div>
+              <div><dt>CO₂ evitado*</dt><dd data-sim-out="co2">0 t</dd></div>
+            </dl>
+
+            <button class="btn btn--flame" type="button" data-sim-send data-track="simulador_enviar"><span>Levar simulação para o orçamento</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+            <p class="sim__note">Simulação ilustrativa com base nos valores informados. Custo e prazo reais da recuperação são definidos após o diagnóstico da peça. *Estimativa com a média global de cerca de 1,9 t de CO₂ por tonelada de aço produzida (worldsteel).</p>
+          </div>
         </div>
       </div>
     </section>
@@ -368,7 +693,7 @@
     <section class="sectors" id="setores">
       <div class="container">
         <header class="section-head">
-          <p class="kicker"><span>05</span> Setores</p>
+          <p class="kicker"><span>08</span> Setores</p>
           <h2 class="section-title" data-split>Presentes onde a falha não é uma opção.</h2>
         </header>
 
@@ -432,7 +757,7 @@
       <div class="container">
         <header class="section-head section-head--split">
           <div>
-            <p class="kicker"><span>06</span> Cases</p>
+            <p class="kicker"><span>09</span> Cases</p>
             <h2 class="section-title" data-split>Resultados que saem da nossa planta direto para a sua linha.</h2>
           </div>
           <div class="cases__nav">
@@ -442,7 +767,7 @@
         </header>
       </div>
       <div class="cases__rail" data-cases tabindex="0" aria-label="Lista de cases">
-        <article class="case" data-cursor="Arraste">
+        <article class="case" id="case-cilindro" data-cursor="Arraste">
           <figure class="case__img"><img src="/img/case-cilindro-laminacao.webp" alt="Cilindro para laminação de aço revestido, montado em torno" width="585" height="415" loading="lazy" /></figure>
           <div class="case__body">
             <span class="case__tag">Siderurgia</span>
@@ -451,7 +776,7 @@
             <ul class="chips"><li>Revestimento duro</li><li>70 HRC</li></ul>
           </div>
         </article>
-        <article class="case" data-cursor="Arraste">
+        <article class="case" id="case-rosca" data-cursor="Arraste">
           <figure class="case__img"><img src="/img/case-rosca-transportadora.webp" alt="Rosca transportadora recebendo metalização" width="585" height="415" loading="lazy" /></figure>
           <div class="case__body">
             <span class="case__tag">Alimentícia</span>
@@ -460,7 +785,7 @@
             <ul class="chips"><li>Metalização</li><li>INOX 420</li><li>Carbetos W/Cr</li></ul>
           </div>
         </article>
-        <article class="case" data-cursor="Arraste">
+        <article class="case" id="case-pistao" data-cursor="Arraste">
           <figure class="case__img"><img src="/img/case-pistao-prensa.webp" alt="Aplicação de revestimento por aspersão térmica em pistão" width="585" height="415" loading="lazy" /></figure>
           <div class="case__body">
             <span class="case__tag">Papel &amp; Celulose</span>
@@ -469,7 +794,7 @@
             <ul class="chips"><li>HVOF</li><li>Carbeto de W</li></ul>
           </div>
         </article>
-        <article class="case" data-cursor="Arraste">
+        <article class="case" id="case-pinch" data-cursor="Arraste">
           <figure class="case__img"><img src="/img/case-pinch-roll.webp" alt="Eixo com cordões de solda de revestimento" width="585" height="415" loading="lazy" /></figure>
           <div class="case__body">
             <span class="case__tag">Siderurgia</span>
@@ -478,7 +803,7 @@
             <ul class="chips"><li>Reforma completa</li><li>SA3</li><li>ABNT</li></ul>
           </div>
         </article>
-        <article class="case" data-cursor="Arraste">
+        <article class="case" id="case-garra" data-cursor="Arraste">
           <figure class="case__img"><img src="/img/case-garra-sucata.webp" alt="Garra de sucata em reforma na oficina" width="585" height="415" loading="lazy" /></figure>
           <div class="case__body">
             <span class="case__tag">Siderurgia</span>
@@ -487,7 +812,7 @@
             <ul class="chips"><li>Caldeiraria</li><li>Soldagem</li><li>Usinagem</li></ul>
           </div>
         </article>
-        <article class="case" data-cursor="Arraste">
+        <article class="case" id="case-bobina" data-cursor="Arraste">
           <figure class="case__img"><img src="/img/case-bobina-trefila.webp" alt="Bobina de trefila com revestimento usinado" width="585" height="415" loading="lazy" /></figure>
           <div class="case__body">
             <span class="case__tag">Metal Mecânica</span>
@@ -510,7 +835,7 @@
     <section class="about section--paper" id="sobre">
       <div class="container about__grid">
         <div class="about__intro">
-          <p class="kicker"><span>07</span> Sobre a TFM</p>
+          <p class="kicker"><span>10</span> Sobre a TFM</p>
           <h2 class="section-title" data-split>Uma história forjada em qualidade.</h2>
           <blockquote class="quote" data-reveal>
             <p>“Qualidade significa fazer o certo quando ninguém está olhando.”</p>
@@ -525,8 +850,10 @@
           <li class="tl"><span class="tl__year">2009</span><div><h3>Nasce a TFM</h3><p>Desde o primeiro dia com foco em qualidade e atendimento — num balcão pequeno, com uma equipe dedicada de poucos profissionais.</p></div></li>
           <li class="tl"><span class="tl__year">2011</span><div><h3>Ampliação</h3><p>O mercado reconhece a qualidade e a dedicação da TFM, e o parque de máquinas cresce para acompanhar a demanda.</p></div></li>
           <li class="tl"><span class="tl__year">2012</span><div><h3>Planta em Alumínio-SP</h3><p>A expansão leva a TFM a um galpão maior, mantendo os níveis de excelência que a definem.</p></div></li>
-          <li class="tl"><span class="tl__year">2014</span><div><h3>Aspersão térmica</h3><p>Por recomendação de clientes parceiros, o portfólio passa a incluir aspersão térmica.</p></div></li>
-          <li class="tl"><span class="tl__year">2017</span><div><h3>Reestruturação e fusões</h3><p>Profissionais vindos de multinacionais do setor metalúrgico integram o time. A TFM se funde à GTA e abre planta no Rio de Janeiro.</p></div></li>
+          <li class="tl"><span class="tl__year">2014</span><div><h3>Aspersão térmica e HVOF</h3><p>Por recomendação de clientes parceiros, o portfólio passa a incluir aspersão térmica, com ampliação da área de revestimento HVOF.</p></div></li>
+          <li class="tl"><span class="tl__year">2015</span><div><h3>Crescimento de 35%</h3><p>A confiança dos clientes se traduz em um dos maiores saltos de crescimento da história da empresa.</p></div></li>
+          <li class="tl"><span class="tl__year">2017</span><div><h3>Reestruturação e fusões</h3><p>Profissionais vindos de multinacionais do setor metalúrgico integram o time. A TFM se funde à GTA e inicia as atividades no Rio de Janeiro.</p></div></li>
+          <li class="tl"><span class="tl__year">2019</span><div><h3>Ampliação do PTA</h3><p>A área de revestimento por PTA (plasma de arco transferido) é ampliada para atender a novos desenvolvimentos.</p></div></li>
           <li class="tl tl--next"><span class="tl__year">Próximo</span><div><h3>Nordeste</h3><p>Nova unidade em Goianinha, no Rio Grande do Norte — levando a engenharia TFM para mais perto de novos clientes.</p></div></li>
         </ol>
       </div>
@@ -542,14 +869,14 @@
     <section class="edge" id="diferenciais">
       <div class="container">
         <header class="section-head">
-          <p class="kicker"><span>08</span> Diferenciais</p>
+          <p class="kicker"><span>11</span> Diferenciais</p>
           <h2 class="section-title" data-split>Por que as indústrias escolhem a TFM.</h2>
         </header>
         <div class="bento">
           <article class="bento__cell bento__cell--wide" data-reveal data-tilt>
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg>
             <h3>Certificado de garantia</h3>
-            <p>Todos os processos são certificados e possuem garantia de qualidade. Você recebe a peça com rastreabilidade e relatório técnico.</p>
+            <p>Todos os processos são certificados e possuem garantia de qualidade. Controle total do processo, da fabricação à expedição, com inspetores treinados e qualificados.</p>
           </article>
           <article class="bento__cell" data-reveal data-tilt>
             <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
@@ -559,7 +886,7 @@
           <article class="bento__cell" data-reveal data-tilt>
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17L17 3l4 4L7 21z"/><path d="M7 13l2 2M10 10l2 2M13 7l2 2"/></svg>
             <h3>Laboratório certificado</h3>
-            <p>Metrologia certificada para garantir cada cota e tolerância.</p>
+            <p>Metrologia certificada, ambiente climatizado e certificado de aferição em 100% dos instrumentos.</p>
           </article>
           <article class="bento__cell" data-reveal data-tilt>
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 5H6l6 7-6 7h12"/></svg>
@@ -581,14 +908,19 @@
 
     <!-- CLIENTES -->
     <section class="clients" aria-labelledby="clientes-title">
-      <div class="container"><p class="kicker" id="clientes-title"><span>09</span> Quem confia na TFM</p></div>
+      <div class="container"><p class="kicker" id="clientes-title"><span>12</span> Quem confia na TFM</p></div>
       <div class="clients__marquee" data-marquee="slow">
         <div class="marquee__track">
-          <img src="/img/cliente-gerdau.png" alt="Gerdau" width="218" height="110" loading="lazy" />
-          <img src="/img/cliente-csn.png" alt="CSN" width="218" height="110" loading="lazy" />
-          <img src="/img/cliente-voto.png" alt="Votorantim" width="218" height="110" loading="lazy" />
-          <img src="/img/cliente-dsm.png" alt="DSM" width="218" height="110" loading="lazy" />
-          <img src="/img/cliente-nissin.png" alt="Nissin" width="218" height="110" loading="lazy" />
+          <img src="/img/cliente-gerdau.png" alt="Gerdau" width="214" height="106" loading="lazy" />
+          <img src="/img/cliente-csn.png" alt="CSN" width="214" height="106" loading="lazy" />
+          <img src="/img/cliente-voto.png" alt="Votorantim" width="214" height="106" loading="lazy" />
+          <img src="/img/cliente-dsm.png" alt="DSM" width="214" height="106" loading="lazy" />
+          <img src="/img/cliente-nissin.png" alt="Nissin" width="214" height="106" loading="lazy" />
+        </div>
+      </div>
+      <div class="clients__names" data-marquee="reverse" aria-label="Outros clientes atendidos">
+        <div class="marquee__track">
+          <span>ArcelorMittal</span><span>Metso</span><span>Sulzer</span><span>ABB</span><span>Aker Solutions</span><span>Oceaneering</span><span>International Paper</span><span>Guardian Glass</span><span>Bekaert</span><span>AkzoNobel</span><span>CBA</span><span>Comau</span><span>Eucatex</span><span>Sotreq</span><span>Passarelli</span><span>U&amp;M</span>
         </div>
       </div>
     </section>
@@ -598,7 +930,7 @@
       <div class="container">
         <header class="section-head section-head--split">
           <div>
-            <p class="kicker"><span>10</span> Unidades</p>
+            <p class="kicker"><span>13</span> Unidades</p>
             <h2 class="section-title" data-split>Perto da sua operação.</h2>
           </div>
           <p class="section-lead" data-fade>Três unidades em operação no Sudeste e expansão para o Nordeste: logística mais curta, atendimento mais rápido.</p>
@@ -636,12 +968,57 @@
       </div>
     </section>
 
+    <!-- FAQ -->
+    <section class="faq" id="faq">
+      <div class="container faq__grid">
+        <header>
+          <p class="kicker"><span>14</span> Perguntas frequentes</p>
+          <h2 class="section-title" data-split>Dúvidas comuns antes de recuperar uma peça.</h2>
+          <p class="section-lead" data-fade>Não encontrou o que procurava? <a class="link-inline" href="#contato">Fale com a engenharia</a>.</p>
+        </header>
+        <div class="faq__list" data-faq>
+          <details>
+            <summary>Vale mais a pena recuperar ou comprar uma peça nova?</summary>
+            <div><p>Em muitos casos, especialmente em componentes de alto valor ou com prazo de reposição longo, a recuperação custa menos e fica pronta antes da peça nova. Com o revestimento adequado, a peça pode durar mais que a original. O diagnóstico técnico indica a melhor opção, e você pode fazer uma estimativa no <a class="link-inline" href="#simulador">simulador</a>.</p></div>
+          </details>
+          <details>
+            <summary>Qual a diferença entre cromo duro e HVOF?</summary>
+            <div><p>O cromo duro é um revestimento eletrolítico com ótimo acabamento e boa resistência ao desgaste. O HVOF aplica materiais como o carbeto de tungstênio em camadas muito densas e duras, e costuma ser usado como alternativa ao cromo duro quando a abrasão é severa. No case do pistão de prensa hidráulica, a troca do cromo duro por carbeto aplicado por HVOF aumentou a vida útil da camada.</p></div>
+          </details>
+          <details>
+            <summary>Quanto tempo leva uma recuperação?</summary>
+            <div><p>Depende do tamanho da peça, do processo e da condição em que ela chega. O prazo é informado no orçamento. Emergências contam com atendimento 24h e podem ser priorizadas.</p></div>
+          </details>
+          <details>
+            <summary>Vocês executam o serviço dentro da minha planta?</summary>
+            <div><p>Sim. Nossa equipe de serviço de campo executa manutenção e revestimento diretamente nas instalações do cliente, quando o processo permite, evitando a desmontagem e o transporte do equipamento.</p></div>
+          </details>
+          <details>
+            <summary>Que informações preciso enviar para receber um orçamento?</summary>
+            <div><p>Fotos da peça e da região desgastada, desenho ou medidas principais, material base (se souber), condição de operação (temperatura, meio, carga), quantidade e prazo desejado. Quanto mais informação, mais precisa a proposta.</p></div>
+          </details>
+          <details>
+            <summary>Qual espessura de revestimento é possível aplicar?</summary>
+            <div><p>Varia conforme o processo, o material e a função da peça. A espessura é definida em projeto pela engenharia, considerando o desgaste, as tolerâncias e a usinagem de acabamento.</p></div>
+          </details>
+          <details>
+            <summary>Os serviços têm garantia?</summary>
+            <div><p>Sim. Todos os processos são certificados e possuem garantia de qualidade, com controle desde o recebimento até a expedição e metrologia em laboratório certificado.</p></div>
+          </details>
+          <details>
+            <summary>Quais regiões vocês atendem?</summary>
+            <div><p>Temos unidades em Alumínio (SP), Rio das Ostras (RJ) e Nova Friburgo (RJ), com nova unidade em breve em Goianinha (RN), e atendemos clientes de diversos estados.</p></div>
+          </details>
+        </div>
+      </div>
+    </section>
+
     <!-- CONTATO -->
     <section class="contact" id="contato">
       <div class="contact__glow" aria-hidden="true"></div>
       <div class="container contact__grid">
         <div class="contact__intro">
-          <p class="kicker"><span>11</span> Orçamento</p>
+          <p class="kicker"><span>15</span> Orçamento</p>
           <h2 class="contact__title" data-split>Sua peça tem conserto. <em class="molten">Vamos provar.</em></h2>
           <p class="section-lead">Conte o que está acontecendo com o seu equipamento. Retornamos em até 1–2 dias úteis — ou na hora, se for emergência.</p>
           <ul class="contact__list">
@@ -651,54 +1028,103 @@
           </ul>
         </div>
 
-        <form class="form" data-form novalidate>
-          <div class="form__row">
-            <label class="field"><input name="nome" autocomplete="name" required placeholder=" " /><span>Nome*</span></label>
-            <label class="field"><input name="empresa" autocomplete="organization" required placeholder=" " /><span>Empresa*</span></label>
+        <form class="wizard" data-wizard novalidate>
+          <div class="wizard__head">
+            <p class="wizard__count"><span data-wz-current>1</span> de 4 · <b data-wz-title>Necessidade</b></p>
+            <ol class="wizard__progress" aria-hidden="true"><li class="is-active"></li><li></li><li></li><li></li></ol>
           </div>
-          <div class="form__row">
-            <label class="field"><input name="email" type="email" autocomplete="email" required placeholder=" " /><span>E-mail*</span></label>
-            <label class="field"><input name="telefone" type="tel" autocomplete="tel" placeholder=" " /><span>Telefone / WhatsApp</span></label>
+
+          <div class="wizard__viewport">
+            <fieldset class="wz-step is-active" data-step="1">
+              <legend>O que você precisa?</legend>
+              <div class="chips-group" data-required-group="necessidade">
+                <label class="chip"><input type="radio" name="necessidade" value="Recuperar peça desgastada" required /><span>Recuperar peça desgastada</span></label>
+                <label class="chip"><input type="radio" name="necessidade" value="Revestimento de proteção em peça nova" /><span>Revestir peça nova</span></label>
+                <label class="chip"><input type="radio" name="necessidade" value="Reforma completa de equipamento" /><span>Reforma completa</span></label>
+                <label class="chip"><input type="radio" name="necessidade" value="Usinagem ou fabricação" /><span>Usinagem / fabricação</span></label>
+                <label class="chip"><input type="radio" name="necessidade" value="Serviço de campo" /><span>Serviço de campo</span></label>
+                <label class="chip"><input type="radio" name="necessidade" value="Ainda não sei — preciso de diagnóstico" /><span>Preciso de diagnóstico</span></label>
+              </div>
+              <p class="wz-sub">Algum processo de interesse? <small>(opcional)</small></p>
+              <div class="chips-group">
+                <label class="chip"><input type="checkbox" name="processo" value="HVOF" /><span>HVOF</span></label>
+                <label class="chip"><input type="checkbox" name="processo" value="Plasma" /><span>Plasma</span></label>
+                <label class="chip"><input type="checkbox" name="processo" value="Arc Spray" /><span>Arc Spray</span></label>
+                <label class="chip"><input type="checkbox" name="processo" value="PTA" /><span>PTA</span></label>
+                <label class="chip"><input type="checkbox" name="processo" value="Cromo duro" /><span>Cromo duro</span></label>
+                <label class="chip"><input type="checkbox" name="processo" value="Soldagem" /><span>Soldagem</span></label>
+                <label class="chip"><input type="checkbox" name="processo" value="Não sei" /><span>Não sei</span></label>
+              </div>
+            </fieldset>
+
+            <fieldset class="wz-step" data-step="2" hidden>
+              <legend>Conte sobre a peça</legend>
+              <div class="form__row">
+                <label class="field"><input name="peca" placeholder=" " autocomplete="off" /><span>Tipo de peça (ex.: eixo, cilindro)</span></label>
+                <label class="field"><input name="quantidade" inputmode="numeric" placeholder=" " autocomplete="off" /><span>Quantidade</span></label>
+              </div>
+              <div class="form__row">
+                <label class="field"><input name="dimensoes" placeholder=" " autocomplete="off" /><span>Dimensões aproximadas (Ø × comprimento)</span></label>
+                <label class="field"><input name="material" placeholder=" " autocomplete="off" /><span>Material base, se souber</span></label>
+              </div>
+              <label class="field field--area"><textarea name="mensagem" rows="3" required placeholder=" "></textarea><span>Descreva o desgaste ou o problema*</span></label>
+              <p class="wz-sub">Setor</p>
+              <div class="chips-group">
+                <label class="chip"><input type="radio" name="setor" value="Mineração" /><span>Mineração</span></label>
+                <label class="chip"><input type="radio" name="setor" value="Óleo & Gás" /><span>Óleo &amp; Gás</span></label>
+                <label class="chip"><input type="radio" name="setor" value="Siderurgia" /><span>Siderurgia</span></label>
+                <label class="chip"><input type="radio" name="setor" value="Naval" /><span>Naval</span></label>
+                <label class="chip"><input type="radio" name="setor" value="Papel & Celulose" /><span>Papel &amp; Celulose</span></label>
+                <label class="chip"><input type="radio" name="setor" value="Metal Mecânica" /><span>Metal Mecânica</span></label>
+                <label class="chip"><input type="radio" name="setor" value="Têxtil" /><span>Têxtil</span></label>
+                <label class="chip"><input type="radio" name="setor" value="Alimentícia / Bebidas" /><span>Alimentícia / Bebidas</span></label>
+                <label class="chip"><input type="radio" name="setor" value="Energia" /><span>Energia</span></label>
+                <label class="chip"><input type="radio" name="setor" value="Outro" /><span>Outro</span></label>
+              </div>
+            </fieldset>
+
+            <fieldset class="wz-step" data-step="3" hidden>
+              <legend>Qual é o prazo?</legend>
+              <div class="chips-group chips-group--stack" data-required-group="prazo">
+                <label class="chip"><input type="radio" name="prazo" value="Emergência — equipamento parado" required /><span>Emergência: equipamento parado</span></label>
+                <label class="chip"><input type="radio" name="prazo" value="Até 15 dias" /><span>Até 15 dias</span></label>
+                <label class="chip"><input type="radio" name="prazo" value="Parada programada" /><span>Parada programada</span></label>
+                <label class="chip"><input type="radio" name="prazo" value="Apenas orçamento para planejamento" /><span>Só orçamento / planejamento</span></label>
+              </div>
+              <p class="wz-sub">Unidade de preferência</p>
+              <div class="chips-group">
+                <label class="chip"><input type="radio" name="unidade" value="Alumínio-SP" /><span>Alumínio · SP</span></label>
+                <label class="chip"><input type="radio" name="unidade" value="Rio das Ostras-RJ" /><span>Rio das Ostras · RJ</span></label>
+                <label class="chip"><input type="radio" name="unidade" value="Nova Friburgo-RJ" /><span>Nova Friburgo · RJ</span></label>
+                <label class="chip"><input type="radio" name="unidade" value="Indiferente" /><span>Indiferente</span></label>
+              </div>
+              <div class="wz-attach" data-wz-sim hidden>
+                <p><strong>Simulação anexada</strong> <span data-wz-sim-text></span></p>
+                <button type="button" class="wz-attach__remove" data-wz-sim-remove>Remover</button>
+              </div>
+              <p class="wz-hint">Depois do envio, você pode mandar fotos e desenhos da peça direto no WhatsApp.</p>
+            </fieldset>
+
+            <fieldset class="wz-step" data-step="4" hidden>
+              <legend>Para quem enviamos a proposta?</legend>
+              <div class="form__row">
+                <label class="field"><input name="nome" autocomplete="name" required placeholder=" " /><span>Nome*</span></label>
+                <label class="field"><input name="empresa" autocomplete="organization" required placeholder=" " /><span>Empresa*</span></label>
+              </div>
+              <div class="form__row">
+                <label class="field"><input name="email" type="email" autocomplete="email" required placeholder=" " /><span>E-mail*</span></label>
+                <label class="field"><input name="telefone" type="tel" autocomplete="tel" placeholder=" " /><span>Telefone / WhatsApp</span></label>
+              </div>
+              <div class="wz-summary" data-wz-summary></div>
+              <label class="check"><input type="checkbox" name="lgpd" required /><span>Concordo com o uso dos meus dados para retorno deste contato, conforme a <a href="/privacidade.html">Política de Privacidade</a>.</span></label>
+            </fieldset>
           </div>
-          <div class="form__row">
-            <label class="field field--select">
-              <select name="servico" required>
-                <option value="" selected disabled></option>
-                <option>Metalização / Aspersão Térmica</option>
-                <option>Cromagem Dura</option>
-                <option>Soldagem e Revestimentos Especiais</option>
-                <option>Usinagem de Precisão</option>
-                <option>Galvanoplastia</option>
-                <option>Caldeiraria</option>
-                <option>Jateamento e Pintura Industrial</option>
-                <option>Manutenção de Equipamentos</option>
-                <option>Serviço de Campo</option>
-                <option>Ainda não sei — preciso de diagnóstico</option>
-              </select>
-              <span>Serviço*</span>
-            </label>
-            <label class="field field--select">
-              <select name="setor">
-                <option value="" selected disabled></option>
-                <option>Mineração</option>
-                <option>Óleo &amp; Gás / Petroquímica</option>
-                <option>Siderurgia</option>
-                <option>Naval</option>
-                <option>Papel &amp; Celulose</option>
-                <option>Metal Mecânica</option>
-                <option>Têxtil</option>
-                <option>Alimentícia / Bebidas</option>
-                <option>Energia</option>
-                <option>Outro</option>
-              </select>
-              <span>Setor</span>
-            </label>
-          </div>
-          <label class="field field--area"><textarea name="mensagem" rows="4" required placeholder=" "></textarea><span>Descreva a peça e o problema*</span></label>
-          <label class="check"><input type="checkbox" name="lgpd" required /><span>Concordo com o uso dos meus dados para retorno deste contato, conforme a LGPD.</span></label>
-          <div class="form__actions">
-            <button class="btn btn--flame" type="submit" data-magnetic><span>Enviar pelo WhatsApp</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
-            <button class="btn btn--ghost" type="button" data-form-email><span>Enviar por e-mail</span></button>
+
+          <div class="wizard__actions">
+            <button class="btn btn--ghost" type="button" data-wz-back hidden><span>Voltar</span></button>
+            <button class="btn btn--flame" type="button" data-wz-next><span>Continuar</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+            <button class="btn btn--flame" type="submit" data-wz-submit hidden data-track="orcamento_whatsapp"><span>Enviar pelo WhatsApp</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+            <button class="btn btn--ghost" type="button" data-wz-email hidden data-track="orcamento_email"><span>Enviar por e-mail</span></button>
           </div>
           <p class="form__status" role="status" aria-live="polite" data-form-status></p>
         </form>
@@ -719,17 +1145,17 @@
           <p>Especializada em revestimentos superficiais (metalização), usinagem e manutenção industrial, com foco na recuperação de elementos de máquinas e beneficiamento de peças.</p>
         </div>
         <nav aria-label="Rodapé">
-          <h4>Navegação</h4>
+          <h3>Navegação</h3>
           <a href="#servicos">Serviços</a><a href="#processo">Processo</a><a href="#setores">Setores</a><a href="#cases">Cases</a><a href="#sobre">Sobre</a><a href="#unidades">Unidades</a>
         </nav>
         <div>
-          <h4>Contato</h4>
+          <h3>Contato</h3>
           <a href="tel:+551147152903">(11) 4715-2903</a>
           <a href="tel:+551147152422">(11) 4715-2422</a>
           <a href="mailto:contato@tfmrevestimentos.com.br">contato@tfmrevestimentos.com.br</a>
         </div>
         <div>
-          <h4>Redes</h4>
+          <h3>Redes</h3>
           <a href="https://www.linkedin.com/company/grupo-tfm-revestimentos/" target="_blank" rel="noopener">LinkedIn · Grupo TFM</a>
           <a href="https://www.linkedin.com/company/tfm-usinagem-e-manutencao-industrial/" target="_blank" rel="noopener">LinkedIn · TFM Usinagem</a>
           <a href="https://www.instagram.com/tfmrevestimentos/" target="_blank" rel="noopener">Instagram</a>
@@ -737,15 +1163,16 @@
       </div>
       <div class="footer__word" aria-hidden="true">TFM</div>
       <div class="footer__bottom">
-        <p>© <span data-year>2026</span> Grupo TFM Revestimentos. Todos os direitos reservados.</p>
+        <p>© <span data-year>2026</span> Grupo TFM Revestimentos. Todos os direitos reservados. · <a href="/privacidade.html">Privacidade</a> · <a href="#" data-consent-open>Preferências de cookies</a></p>
         <a href="#topo" class="link-arrow link-arrow--up">Voltar ao topo</a>
       </div>
     </div>
-  </footer>
-
   <a class="wa-float" href="https://wa.me/5511950427669?text=Ol%C3%A1%2C%20TFM!" target="_blank" rel="noopener" aria-label="Conversar no WhatsApp">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5a9.5 9.5 0 0 0-8.2 14.3L2.5 21.5l4.8-1.3A9.5 9.5 0 1 0 12 2.5z"/><path d="M8.6 7.6c.3-.4.6-.4.9-.4h.5c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.4 0 .6l-.5.7c-.1.2-.2.3 0 .6.6 1 1.4 1.8 2.4 2.4.3.2.4.1.6 0l.7-.8c.2-.2.4-.2.6-.1l1.9.9c.3.1.4.3.4.5 0 .6-.2 1.3-.7 1.7-.6.5-1.4.8-2.3.6-2.5-.6-4.6-2.4-5.9-4.5-.6-1-.9-2-.8-2.9 0-.6.3-1.2.8-1.7z" class="fill"/></svg>
   </a>
+  </footer>
+
+
 
   <script type="module" src="/src/main.js"></script>
 </body>

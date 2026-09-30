@@ -22,11 +22,9 @@ DirectoryIndex index.html
   RewriteRule ^site/wp-content/uploads/2021/02/app_institucional.*\.pdf$ /docs/tfm-institucional.pdf [L,R=301]
   RewriteRule ^(site/?|blog/?|feed/?|author/.*)$ / [L,R=301]
 
-  # Qualquer outra URL inexistente volta para a home
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule ^ / [L,R=301]
 </IfModule>
+
+ErrorDocument 404 /404.html
 
 <IfModule mod_deflate.c>
   AddOutputFilterByType DEFLATE text/html text/css application/javascript image/svg+xml application/json text/xml

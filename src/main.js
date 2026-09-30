@@ -4,6 +4,11 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
 import Lenis from 'lenis';
 import { initSpray } from './spray.js';
+import { initJourney, initBeforeAfter } from './journey.js';
+import { initMatrix } from './matrix.js';
+import { initSimulator } from './simulator.js';
+import { initWizard } from './wizard.js';
+import { initConsent, logAnalytics } from './analytics.js';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
@@ -32,8 +37,10 @@ function scrollToTarget(target) {
   const el = typeof target === 'string' ? $(target) : target;
   if (!el) return;
   const offset = el.id === 'topo' ? 0 : -header + 1;
-  if (lenis) lenis.scrollTo(el, { offset, duration: 1.4 });
-  else window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY + offset, behavior: reduced ? 'auto' : 'smooth' });
+  // posição calculada a partir do scroll real (evita divergência com o estado interno do Lenis)
+  const top = Math.max(0, el.getBoundingClientRect().top + window.scrollY + offset);
+  if (lenis) lenis.scrollTo(top, { duration: 1.4 });
+  else window.scrollTo({ top, behavior: reduced ? 'auto' : 'smooth' });
 }
 
 document.addEventListener('click', (e) => {
@@ -60,16 +67,18 @@ if (lenis) lenis.on('scroll', ({ scroll }) => onScroll(scroll));
 else window.addEventListener('scroll', () => onScroll(window.scrollY), { passive: true });
 
 // link ativo no menu
-$$('.nav a').forEach((link) => {
-  const section = $(link.getAttribute('href'));
-  if (!section) return;
-  ScrollTrigger.create({
-    trigger: section,
-    start: 'top 50%',
-    end: 'bottom 50%',
-    onToggle: (self) => link.classList.toggle('is-active', self.isActive),
+function initNav() {
+  $$('.nav a').forEach((link) => {
+    const section = $(link.getAttribute('href'));
+    if (!section) return;
+    ScrollTrigger.create({
+      trigger: section,
+      start: 'top 50%',
+      end: 'bottom 50%',
+      onToggle: (self) => link.classList.toggle('is-active', self.isActive),
+    });
   });
-});
+}
 
 /* ---------------- menu móvel ---------------- */
 const burger = $('[data-burger]');
@@ -147,28 +156,36 @@ function heroIntro() {
 /* ---------------- textos ---------------- */
 function initSplits() {
   if (reduced) return;
+  // cada título só é dividido em linhas quando se aproxima da tela (menos trabalho na carga)
   $$('[data-split]:not([data-split="hero"])').forEach((el) => {
-    SplitText.create(el, {
-      type: 'lines',
-      mask: 'lines',
-      autoSplit: true,
-      onSplit: (self) =>
-        gsap.from(self.lines, {
-          yPercent: 115,
-          duration: 1.2,
-          ease: 'expo.out',
-          stagger: 0.08,
-          scrollTrigger: { trigger: el, start: 'top 88%', once: true },
-        }),
+    ScrollTrigger.create({
+      trigger: el,
+      start: 'top bottom+=400',
+      once: true,
+      onEnter: () => {
+        SplitText.create(el, {
+          type: 'lines',
+          mask: 'lines',
+          autoSplit: true,
+          onSplit: (self) =>
+            gsap.from(self.lines, {
+              yPercent: 115,
+              duration: 1.2,
+              ease: 'expo.out',
+              stagger: 0.08,
+              scrollTrigger: { trigger: el, start: 'top 88%', once: true },
+            }),
+        });
+      },
     });
   });
 
-  // manifesto: palavras acendem com o scroll
+  // manifesto: palavras passam do cinza para a cor final com o scroll
   const manifesto = $('[data-words]');
   if (manifesto) {
     const split = SplitText.create(manifesto, { type: 'words', wordsClass: 'w' });
     gsap.to(split.words, {
-      opacity: 1,
+      color: (i, el) => (el.closest('em') ? '#b03603' : '#0e0e10'),
       stagger: 0.1,
       ease: 'none',
       scrollTrigger: { trigger: manifesto, start: 'top 80%', end: 'bottom 45%', scrub: true },
@@ -240,8 +257,10 @@ function initMarquees() {
     [...track.children].forEach((n) => track.appendChild(n.cloneNode(true)));
     [...track.children].slice(track.children.length / 2).forEach((n) => n.setAttribute('aria-hidden', 'true'));
     if (reduced) return;
-    const speed = wrap.dataset.marquee === 'slow' ? 60 : 40;
-    const tween = gsap.to(track, { xPercent: -50, duration: speed, ease: 'none', repeat: -1 });
+    const speed = wrap.dataset.marquee === 'slow' || wrap.dataset.marquee === 'reverse' ? 60 : 40;
+    const tween = wrap.dataset.marquee === 'reverse'
+      ? gsap.fromTo(track, { xPercent: -50 }, { xPercent: 0, duration: speed, ease: 'none', repeat: -1 })
+      : gsap.to(track, { xPercent: -50, duration: speed, ease: 'none', repeat: -1 });
     ScrollTrigger.create({
       trigger: wrap,
       start: 'top bottom',
@@ -463,11 +482,11 @@ function initTimeline() {
   });
   $$('.tl', tl).forEach((item) => {
     gsap.from(item, {
-      opacity: 0.15,
-      x: 30,
+      opacity: 0,
+      y: 24,
       duration: 1,
       ease: 'power3.out',
-      scrollTrigger: { trigger: item, start: 'top 80%', toggleActions: 'play none none reverse' },
+      scrollTrigger: { trigger: item, start: 'top 85%', once: true },
     });
   });
 }
@@ -497,7 +516,7 @@ function initPointerFx() {
   });
   document.addEventListener('pointerover', (e) => {
     const labeled = e.target.closest('[data-cursor]');
-    const hover = e.target.closest('a, button, [data-magnetic], .panel, label, select');
+    const hover = e.target.closest('a, button, [data-magnetic], .panel, label, select, summary, input[type="range"], [data-ba-media]');
     cursor.classList.toggle('is-label', !!labeled && !hover);
     cursor.classList.toggle('is-hover', !!hover);
     label.textContent = labeled && !hover ? labeled.dataset.cursor : '';
@@ -533,77 +552,136 @@ function initPointerFx() {
   });
 }
 
-/* ---------------- formulário ---------------- */
-function initForm() {
-  const form = $('[data-form]');
-  if (!form) return;
-  const status = $('[data-form-status]');
-
-  $$('select', form).forEach((s) => s.addEventListener('change', () => s.closest('.field').classList.toggle('has-value', !!s.value)));
-  form.addEventListener('input', (e) => e.target.closest('.field, .check')?.classList.remove('is-invalid'));
-
-  const validate = () => {
-    let ok = true;
-    $$('[required]', form).forEach((el) => {
-      const valid = el.type === 'checkbox' ? el.checked : el.checkValidity() && el.value.trim() !== '';
-      el.closest('.field, .check').classList.toggle('is-invalid', !valid);
-      if (!valid && ok) {
-        ok = false;
-        el.focus({ preventScroll: true });
-      }
-    });
-    status.className = 'form__status' + (ok ? '' : ' is-error');
-    status.textContent = ok ? '' : 'Preencha os campos obrigatórios destacados.';
-    return ok;
-  };
-
-  const message = () => {
-    const d = new FormData(form);
-    const lines = [
-      'Olá, TFM! Gostaria de solicitar um orçamento.',
-      '',
-      `Nome: ${d.get('nome')}`,
-      `Empresa: ${d.get('empresa')}`,
-      `E-mail: ${d.get('email')}`,
-      d.get('telefone') ? `Telefone: ${d.get('telefone')}` : null,
-      `Serviço: ${d.get('servico')}`,
-      d.get('setor') ? `Setor: ${d.get('setor')}` : null,
-      '',
-      `${d.get('mensagem')}`,
-    ];
-    return lines.filter((l) => l !== null).join('\n');
-  };
-
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    if (!validate()) return;
-    window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(message())}`, '_blank', 'noopener');
-    status.className = 'form__status is-ok';
-    status.textContent = 'Abrimos o WhatsApp com a sua mensagem pronta. É só enviar!';
-  });
-
-  $('[data-form-email]').addEventListener('click', () => {
-    if (!validate()) return;
-    const subject = `Orçamento via site — ${new FormData(form).get('empresa')}`;
-    location.href = `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message())}`;
-    status.className = 'form__status is-ok';
-    status.textContent = 'Abrimos o seu aplicativo de e-mail com a mensagem pronta.';
+/* ---------------- medição (Google Tag Manager / GA4) ---------------- */
+window.dataLayer = window.dataLayer || [];
+function track(event, params = {}) {
+  window.dataLayer.push({ event, ...params });
+  logAnalytics(event, params);
+  // evento recomendado do GA4 para leads (marque como evento-chave no Analytics)
+  if (event === 'orcamento_enviado') logAnalytics('generate_lead', { method: params.canal });
+}
+function initTracking() {
+  document.addEventListener('click', (e) => {
+    const el = e.target.closest('a, button');
+    if (!el) return;
+    const section = el.closest('section, header, footer')?.id || el.closest('footer, header')?.tagName.toLowerCase() || 'pagina';
+    const href = el.getAttribute('href') || '';
+    let label = el.dataset.track;
+    if (!label) {
+      if (href.includes('wa.me')) label = 'whatsapp';
+      else if (href.startsWith('tel:')) label = 'telefone';
+      else if (href.startsWith('mailto:')) label = 'email';
+      else if (href === '#contato') label = 'cta_orcamento';
+      else if (href.endsWith('.pdf')) label = 'download_pdf';
+    }
+    if (label) track('cta_click', { cta: label, secao: section });
   });
 }
 
+/* ---------------- toast, cópia, progresso ---------------- */
+let toastTimer;
+function toast(message) {
+  let el = $('.toast');
+  if (!el) {
+    el = document.createElement('div');
+    el.className = 'toast';
+    el.setAttribute('role', 'status');
+    document.body.appendChild(el);
+  }
+  el.textContent = message;
+  el.classList.add('is-on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('is-on'), 2600);
+}
+
+function initCopy() {
+  $$('.contact__list li').forEach((li) => {
+    const link = $('a', li);
+    if (!link || link.href.includes('wa.me')) return;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'copy-btn';
+    btn.textContent = 'Copiar';
+    btn.setAttribute('aria-label', `Copiar ${link.textContent}`);
+    btn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(link.textContent.trim());
+        toast(`${link.textContent.trim()} copiado`);
+      } catch {
+        toast('Não foi possível copiar');
+      }
+    });
+    link.after(btn);
+  });
+}
+
+function initProgress() {
+  const bar = document.createElement('div');
+  bar.className = 'progress';
+  bar.setAttribute('aria-hidden', 'true');
+  bar.innerHTML = '<span></span>';
+  document.body.appendChild(bar);
+  gsap.to($('span', bar), { scaleX: 1, ease: 'none', scrollTrigger: { start: 0, end: 'max', scrub: 0.3 } });
+}
+
+/* ---------------- guia → case relacionado ---------------- */
+function initCaseLinks() {
+  const rail = $('[data-cases]');
+  document.addEventListener('click', (e) => {
+    const link = e.target.closest('[data-case-link]');
+    if (!link || !rail) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const card = $(link.getAttribute('href'));
+    scrollToTarget('#cases');
+    setTimeout(() => {
+      const pad = parseFloat(getComputedStyle(rail).paddingLeft) || 0;
+      rail.scrollTo({ left: card.offsetLeft - pad, behavior: reduced ? 'auto' : 'smooth' });
+      card.classList.remove('is-highlight');
+      void card.offsetWidth;
+      card.classList.add('is-highlight');
+    }, lenis ? 1300 : 500);
+  }, true);
+}
+
 /* ---------------- boot ---------------- */
+const idle = (fn) => ('requestIdleCallback' in window ? requestIdleCallback(fn, { timeout: 1200 }) : setTimeout(fn, 150));
+
 function boot() {
+  // a seção com pin é criada primeiro para que os demais gatilhos considerem o espaço que ela ocupa
+  initProcess();
+  initNav();
   initCounters();
   initMarquees();
-  initServices();
-  initSelector();
-  initPanels();
-  initCases();
   initPointerFx();
-  initForm();
+  initTracking();
+  initConsent();
+  initProgress();
+
+  // seções abaixo da dobra: inicializadas quando o navegador fica ocioso
+  idle(() => {
+    initServices();
+    initSelector();
+    initPanels();
+    initCases();
+    initCopy();
+    initCaseLinks();
+    const journey = $('[data-journey]');
+    if (journey) initJourney(journey, { reduced });
+    $$('[data-ba]').forEach((card) => initBeforeAfter(card, { reduced }));
+    initMatrix($('#tecnologias'));
+    const wizard = initWizard($('[data-wizard]'), { reduced, whatsapp: WHATSAPP, email: EMAIL, track, toast });
+    initSimulator($('[data-sim]'), {
+      reduced,
+      onSend: (sim) => {
+        wizard.attachSimulation(sim);
+        track('simulacao_enviada', { economia: Math.round(sim.total) });
+        scrollToTarget('#contato');
+      },
+    });
+  });
   initSplits();
   initReveals();
-  initProcess();
   initTimeline();
 
   initSpray($('[data-spray]'), { reduced, getBounds: heroBounds });
@@ -612,6 +690,6 @@ function boot() {
 }
 
 const fontsReady = document.fonts ? document.fonts.ready : Promise.resolve();
-const minDelay = new Promise((r) => setTimeout(r, reduced ? 0 : 700));
+const minDelay = new Promise((r) => setTimeout(r, reduced ? 0 : 400));
 const timeout = new Promise((r) => setTimeout(r, 2500));
 Promise.race([Promise.all([fontsReady, minDelay]), timeout]).then(boot);

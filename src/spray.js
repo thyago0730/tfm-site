@@ -31,6 +31,8 @@ export function initSpray(canvas, opts = {}) {
   const sparks = [];
   let chrome, worn, coating, glow;
   let running = false, raf = 0, last = 0, inView = true, ready = false;
+  // qualidade adaptativa: aparelhos lentos recebem menos partículas e resolução menor
+  let quality = 1, dprCap = 1.75, frameCost = 8, degradeAt = 0;
 
   // ---------- texturas ----------
   function strip(stops, noise, scratches) {
@@ -91,7 +93,7 @@ export function initSpray(canvas, opts = {}) {
     const rect = canvas.getBoundingClientRect();
     W = rect.width; H = rect.height;
     if (!W || !H) return;
-    DPR = Math.min(window.devicePixelRatio || 1, 1.75);
+    DPR = Math.min(window.devicePixelRatio || 1, W < 900 ? Math.min(dprCap, 1.5) : dprCap);
     canvas.width = Math.round(W * DPR);
     canvas.height = Math.round(H * DPR);
     mobile = W < 900;
@@ -213,7 +215,7 @@ export function initSpray(canvas, opts = {}) {
     // emissão
     const wantEmit = phase === 'spray' ? 1 : 0;
     emit += (wantEmit - emit) * (1 - Math.exp(-10 * dt));
-    const rate = (mobile ? 380 : 720) * emit;
+    const rate = (mobile ? 380 : 720) * emit * quality;
     emitAcc += rate * dt;
     const spread = 0.15;
     while (emitAcc >= 1) {
@@ -649,8 +651,21 @@ export function initSpray(canvas, opts = {}) {
     const dt = Math.min(0.033, (now - last) / 1000 || 0.016);
     last = now;
     if (!ready) return;
+    const t0 = performance.now();
     update(dt);
     draw();
+    frameCost = frameCost * 0.95 + (performance.now() - t0) * 0.05;
+    if (frameCost > 12 && quality > 0.4 && now > degradeAt) degrade(now);
+  }
+
+  function degrade(now) {
+    degradeAt = now + 3000;
+    quality = quality === 1 ? 0.6 : 0.35;
+    dprCap = quality === 0.6 ? 1.25 : 1;
+    DPR = Math.min(window.devicePixelRatio || 1, dprCap);
+    canvas.width = Math.round(W * DPR);
+    canvas.height = Math.round(H * DPR);
+    frameCost = 8;
   }
 
   function start() {
@@ -676,12 +691,15 @@ export function initSpray(canvas, opts = {}) {
 
   // ---------- eventos ----------
   const hero = canvas.parentElement;
-  hero.addEventListener('pointermove', (e) => {
-    if (e.pointerType !== 'mouse') return;
+  // mouse guia a pistola; no toque, arrastar na horizontal também guia (a rolagem vertical continua livre)
+  const steer = (e) => {
     const rect = canvas.getBoundingClientRect();
+    if (e.pointerType !== 'mouse' && (e.clientY - rect.top > cy + r + 40)) return;
     pointerX = e.clientX - rect.left;
     pointerT = time;
-  });
+  };
+  hero.addEventListener('pointermove', steer);
+  hero.addEventListener('pointerdown', (e) => e.pointerType !== 'mouse' && steer(e));
   hero.addEventListener('pointerleave', () => { pointerT = -99; });
 
   let resizeTimer;
