@@ -12,15 +12,21 @@ jobs:
   build_and_preview:
     if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
     runs-on: ubuntu-latest
+    env:
+      HAS_FIREBASE_SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_TFM_SITEWEB != '' }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
       - run: npm ci
       - run: npm run build
+      - name: Aviso — segredo do Firebase ausente
+        if: env.HAS_FIREBASE_SA != 'true'
+        run: echo "::notice::Deploy ignorado. Crie o segredo FIREBASE_SERVICE_ACCOUNT_TFM_SITEWEB (ver README) para publicar no Firebase Hosting."
       - uses: FirebaseExtended/action-hosting-deploy@v0
+        if: env.HAS_FIREBASE_SA == 'true'
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_TFM_SITEWEB }}
