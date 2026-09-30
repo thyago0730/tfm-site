@@ -24,7 +24,7 @@ function niceRound(key, v) {
   return Math.round(v / 5000) * 5000;
 }
 
-export function initSimulator(root, { reduced, onSend }) {
+export function initSimulator(root, { reduced, onSend, onWhatsApp }) {
   const state = { ...DEFAULTS };
   const ranges = new Map([...root.querySelectorAll('[data-sim-range]')].map((r) => [r.dataset.simRange, r]));
   const texts = new Map([...root.querySelectorAll('[data-sim-text]')].map((t) => [t.dataset.simText, t]));
@@ -167,7 +167,7 @@ export function initSimulator(root, { reduced, onSend }) {
     el.addEventListener('blur', () => { tip.hidden = true; });
   });
 
-  root.querySelector('[data-sim-send]').addEventListener('click', () => {
+  const summary = () => {
     const r = last || calc();
     const total = r.custoNovo - r.custoRecTotal;
     const text = [
@@ -177,8 +177,10 @@ export function initSimulator(root, { reduced, onSend }) {
       `peso ${num.format(state.peso)} kg`,
       `economia estimada ${brl.format(total)}`,
     ].join(' · ');
-    onSend?.({ text, state: { ...state }, total });
-  });
+    return { text, state: { ...state }, total };
+  };
+  root.querySelector('[data-sim-send]').addEventListener('click', () => onSend?.(summary()));
+  root.querySelector('[data-sim-wa]')?.addEventListener('click', () => onWhatsApp?.(summary()));
 
   [...ranges.keys()].forEach((k) => syncField(k));
   compute();
