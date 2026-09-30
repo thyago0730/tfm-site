@@ -164,6 +164,7 @@ function initWidget({ track, reduced }) {
       setTimeout(tryShow, 6000);
     };
     window.addEventListener('scroll', arm, { passive: true });
+    arm(); // a página pode já abrir rolada (recarga) ou o visitante pode ter rolado antes do script
   }
   teaser.querySelector('[data-wa-teaser-close]').addEventListener('click', hideTeaser);
   teaser.querySelector('[data-wa-teaser-open]').addEventListener('click', () => setOpen(true));
