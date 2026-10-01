@@ -1365,7 +1365,7 @@ export function initSpray(canvas, opts = {}) {
     const label = phase === 'spray' && PROCESSES[proc].torch === 'pta' ? 'DEPOSIÇÃO PTA'
       : phase === 'grind' && phaseT < G_IN ? 'TROCA DE FERRAMENTA'
       : phase === 'wear' ? (phaseT < 2.0 ? 'TRINCA DETECTADA' : phaseT < C_IN + C_DUR + 0.4 ? 'USINAGEM · REBAIXO' : 'TROCA DE FERRAMENTA') : LABELS[phase];
-    const pct = Math.round((phase === 'wear' ? 0 : progress) * 100);
+    const pct = Math.round((phase === 'wear' ? clamp((cutX - zoneA) / Math.max(1, zoneB - zoneA), 0, 1) : progress) * 100);
     ctx.save();
     if (mobile) {
       ctx.font = '500 10px "JetBrains Mono", ui-monospace, monospace';
@@ -1405,7 +1405,7 @@ export function initSpray(canvas, opts = {}) {
     const [pName, pMat] = PROCESSES[proc].name.split(' · ');
     row(py + 42, 'PROCESSO', pName, dim, bright);
     row(py + 60, 'MATERIAL', pMat, dim, bright);
-    row(py + 78, 'RECUPERAÇÃO', `${pct}%`, dim, bright);
+    row(py + 78, phase === 'wear' ? 'USINAGEM' : 'RECUPERAÇÃO', `${pct}%`, dim, bright);
     ctx.fillStyle = 'rgba(255,255,255,0.1)';
     const gi = clamp(Math.floor(gun.x / COL), 0, cols - 1);
     row(py + 96, 'SUBSTRATO', `${Math.round(25 + heat[gi] * (TORCHES[PROCESSES[proc].torch].hot ? 420 : 125))} °C`, dim, heat[gi] > 0.6 ? '#ffb070' : bright);
