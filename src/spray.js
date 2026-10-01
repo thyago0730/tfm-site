@@ -43,6 +43,8 @@ const PROCESSES = [
   { name: 'HVOF · WC-CrC-Ni', torch: 'hvof' },
   { name: 'PTA · STELLITE 6', torch: 'pta' },
 ];
+const OVER = 0.35; // sobremetal: a camada passa do diâmetro nominal para ser retificada
+const G_IN = 1.9; // tempo da troca pistola → rebolo antes de retificar
 const LABELS = { wear: 'DIAGNÓSTICO', spray: 'ASPERSÃO', grind: 'RETÍFICA', done: 'RECUPERADO ✓' };
 
 const rand = (a, b) => a + Math.random() * (b - a);
@@ -57,10 +59,12 @@ export function initSpray(canvas, opts = {}) {
   let W = 0, H = 0, DPR = 1, mobile = false, gutter = 16;
   let railY = 0, railA = 0, railB = 0, shaftA = 0, journal = 0;
   let cy = 0, r = 0, depth = 0, sprayLen = 0, bodyW = 0, bodyH = 0, nozzleLen = 0, bodyTop = 0, tipY = 0;
-  let cols = 0, wear, target, coat, heat, polish;
+  let cols = 0, wear, target, coat, heat, polish, over;
   let zoneA = 0, zoneB = 0, zoneI0 = 0, zoneI1 = 0, zoneMM = 0.8, proc = 0;
   let phase = 'wear', phaseT = 0, sweepX = 0, progress = 0, layerMM = 0;
-  let time = 0, emit = 0, emitAcc = 0, swap = 0, wheelA = 0;
+  let time = 0, emit = 0, emitAcc = 0, wheelA = 0;
+  // troca de ferramenta: recuo (0 = trabalhando, 1 = recuada) e posição no trilho
+  const tool = { gx: 0, gx0: 0, gLift: 0, wx: -999, wx0: -999, wLift: 1 };
   const grit = Array.from({ length: 70 }, () => [Math.random() * Math.PI * 2, Math.random(), Math.random()]);
   let pointerX = null, pointerT = -99, pointerUsed = reduced;
   const gun = { x: 0, vx: 0, dir: 1 };
@@ -206,6 +210,7 @@ export function initSpray(canvas, opts = {}) {
     coat = new Float32Array(cols);
     heat = new Float32Array(cols);
     polish = new Float32Array(cols);
+    over = new Float32Array(cols);
     parts.length = 0;
     sparks.length = 0;
     gun.x = railA + (railB - railA) * 0.6;
@@ -221,11 +226,12 @@ export function initSpray(canvas, opts = {}) {
     zoneB = zoneA + wz;
     zoneI0 = Math.floor(zoneA / COL);
     zoneI1 = Math.min(cols - 1, Math.ceil(zoneB / COL));
-    for (let i = 0; i < cols; i++) { wear[i] = 0; target[i] = 0; coat[i] = 0; polish[i] = 0; }
+    for (let i = 0; i < cols; i++) { wear[i] = 0; target[i] = 0; coat[i] = 0; polish[i] = 0; over[i] = 0; }
     for (let i = zoneI0; i <= zoneI1; i++) {
       const u = (i - zoneI0) / Math.max(1, zoneI1 - zoneI0);
       const edge = Math.min(1, Math.sin(Math.PI * u) * 1.6);
       target[i] = Math.pow(Math.max(0, edge), 0.7) * rand(0.9, 1);
+      over[i] = OVER * Math.pow(Math.sin(Math.PI * u), 0.35);
     }
     zoneMM = Math.round(rand(0.5, 1.2) * 100) / 100;
     if (!locked) proc = (proc + 1) % PROCESSES.length;
@@ -251,32 +257,30 @@ export function initSpray(canvas, opts = {}) {
     if (phase === 'wear') {
       const k = easeInOut(clamp(phaseT / 1.2, 0, 1));
       for (let i = zoneI0; i <= zoneI1; i++) wear[i] = target[i] * k;
-      if (phaseT > 1.5) { phase = 'spray'; phaseT = 0; }
+      if (phaseT > 1.9) { phase = 'spray'; phaseT = 0; }
     } else if (phase === 'spray') {
       let sw = 0, sc = 0;
-      for (let i = zoneI0; i <= zoneI1; i++) { sw += wear[i]; sc += coat[i]; }
+      for (let i = zoneI0; i <= zoneI1; i++) { sw += wear[i] + over[i]; sc += coat[i]; }
       progress = sw ? sc / sw : 1;
       if (progress > 0.985) {
-        for (let i = zoneI0; i <= zoneI1; i++) coat[i] = wear[i];
+        for (let i = zoneI0; i <= zoneI1; i++) coat[i] = wear[i] + over[i];
         progress = 1; phase = 'grind'; phaseT = 0; sweepX = zoneA - 10;
       }
     } else if (phase === 'grind') {
       // a pistola sai de cena e o rebolo desce antes de varrer a zona
-      const k = easeInOut(clamp((phaseT - 0.6) / 1.8, 0, 1));
+      const k = easeInOut(clamp((phaseT - G_IN) / 1.8, 0, 1));
       sweepX = zoneA - 10 + (zoneB - zoneA + 20) * k;
-      if (phaseT > 0.6) {
+      if (phaseT > G_IN) {
         for (let i = zoneI0; i <= zoneI1; i++) {
-          if (i * COL < sweepX) polish[i] = Math.min(1, polish[i] + dt * 5);
+          if (i * COL < sweepX) { polish[i] = Math.min(1, polish[i] + dt * 5); coat[i] = wear[i]; }
         }
         if (Math.random() < 0.9) spawnSpark(sweepX, cy - r + rand(0, 6), true);
       }
-      if (phaseT > 2.5) { phase = 'done'; phaseT = 0; }
+      if (phaseT > G_IN + 1.9) { phase = 'done'; phaseT = 0; }
     } else if (phase === 'done' && phaseT > 1.8) {
       newZone();
     }
 
-    const wantSwap = phase === 'grind' || phase === 'done' ? 1 : 0;
-    swap += (wantSwap - swap) * (1 - Math.exp(-6 * dt));
     wheelA += dt * 28;
 
     // pistola
@@ -297,6 +301,7 @@ export function initSpray(canvas, opts = {}) {
     const nx = steering || phase !== 'spray' ? gun.x + (tx - gun.x) * (1 - Math.exp(-7 * dt)) : tx;
     gun.vx = (nx - gun.x) / Math.max(dt, 1e-4);
     gun.x = nx;
+    toolChange();
 
     // emissão
     const wantEmit = phase === 'spray' ? 1 : 0;
@@ -380,7 +385,7 @@ export function initSpray(canvas, opts = {}) {
       for (let d = -n; d <= n; d++) {
         const j = i + d;
         if (j < 0 || j >= cols) continue;
-        const room = wear[j] - coat[j];
+        const room = wear[j] + over[j] - coat[j];
         if (room > 0) coat[j] += Math.min(room, 0.0053 * COAT_K[d + n]);
       }
     }
@@ -550,7 +555,7 @@ export function initSpray(canvas, opts = {}) {
     zoneCtx.clearRect(0, 0, zw, zh);
     zoneCtx.drawImage(chrome, 0, 0, 1, 256, 0, 0, zw, zh);
     layer(worn, (i) => Math.min(1, wear[i] * 6) * (1 - polish[i]));
-    layer(PROCESSES[proc].torch === 'pta' ? bead : coating, (i) => (wear[i] > 0.01 ? coat[i] / wear[i] : 0) * (1 - polish[i]));
+    layer(PROCESSES[proc].torch === 'pta' ? bead : coating, (i) => (wear[i] > 0.01 ? Math.min(1, coat[i] / wear[i]) : coat[i] > 0.01 ? 1 : 0) * (1 - polish[i]));
     ctx.save();
     ctx.clip(shaftPath);
     ctx.drawImage(zoneCv, zA, cy - r);
@@ -752,7 +757,7 @@ export function initSpray(canvas, opts = {}) {
     });
 
     // retífica
-    if (phase === 'grind') {
+    if (phase === 'grind' && phaseT > G_IN) {
       const g = ctx.createLinearGradient(sweepX - 30, 0, sweepX + 6, 0);
       g.addColorStop(0, 'rgba(255,255,255,0)');
       g.addColorStop(1, 'rgba(255,255,255,0.55)');
@@ -766,12 +771,36 @@ export function initSpray(canvas, opts = {}) {
     ctx.globalCompositeOperation = 'source-over';
   }
 
+  // sequência real: recua, corre para fora do trilho; a outra entra recuada e avança
+  function toolChange() {
+    const seg = (a, b) => easeInOut(clamp((phaseT - a) / (b - a), 0, 1));
+    const offR = W + 120, offL = -120, wStart = zoneA - 10;
+    if (phase === 'grind') {
+      tool.gLift = seg(0, 0.45);
+      gun.x = tool.gx = tool.gx0 + (offR - tool.gx0) * seg(0.45, 1.05);
+      tool.wx = phaseT < G_IN ? offL + (wStart - offL) * seg(0.75, 1.4) : sweepX;
+      tool.wLift = 1 - seg(1.4, G_IN);
+    } else if (phase === 'done') {
+      tool.gLift = 1; tool.wLift = 0; tool.wx = sweepX; gun.x = tool.gx;
+    } else if (phase === 'wear') {
+      tool.wLift = Math.max(tool.wLift, seg(0, 0.4));
+      tool.wx = tool.wx0 < -100 ? -999 : tool.wx0 + (offR - tool.wx0) * seg(0.4, 1.0);
+      gun.x = tool.gx = offL + (zoneA - offL) * seg(0.7, 1.35);
+      tool.gLift = 1 - seg(1.35, 1.85);
+    } else {
+      tool.gx0 = tool.gx = gun.x; tool.gLift = 0;
+      tool.wx0 = tool.wx; tool.wLift = 1;
+    }
+    if (phase !== 'wear') tool.wx0 = tool.wx;
+    if (phase !== 'grind') tool.gx0 = tool.gx;
+  }
+
   function drawWheel() {
-    if (swap < 0.01) return;
+    if (tool.wx < -100 || tool.wx > W + 100) return;
     const wr = r * (mobile ? 0.95 : 1.05);
-    const x = sweepX;
-    const e = easeInOut(swap);
-    const y = cy - r - wr - (1 - e) * (cy + wr * 2);
+    const x = tool.wx;
+    const work = cy - r - wr, park = railY + 26 + wr;
+    const y = work - Math.max(0, work - park) * tool.wLift;
     // braço até o carro no trilho
     ctx.fillStyle = '#26282c';
     roundRect(x - 26, railY - 7, 52, 14, 3);
@@ -820,11 +849,8 @@ export function initSpray(canvas, opts = {}) {
   }
 
   function drawGun() {
-    if (swap > 0.99) return;
-    ctx.save();
-    ctx.translate(0, -easeInOut(swap) * (tipY + 40));
+    if (gun.x < -100 || gun.x > W + 100) return;
     drawGunBody();
-    ctx.restore();
   }
 
   function drawGunBody() {
@@ -840,13 +866,16 @@ export function initSpray(canvas, opts = {}) {
     ctx.arc(x + 14, railY, 2, 0, Math.PI * 2);
     ctx.fill();
 
-    // haste
+    // haste (encolhe quando a tocha recua)
+    const L = Math.max(0, bodyTop - railY - 14) * tool.gLift;
+    ctx.save();
+    ctx.translate(0, -L);
     const rg = ctx.createLinearGradient(x - 3, 0, x + 3, 0);
     rg.addColorStop(0, '#1c1d20');
     rg.addColorStop(0.5, '#70757c');
     rg.addColorStop(1, '#1c1d20');
     ctx.fillStyle = rg;
-    ctx.fillRect(x - 3, railY + 7, 6, Math.max(0, bodyTop - railY - 7));
+    ctx.fillRect(x - 3, railY + 7 + L, 6, Math.max(0, bodyTop - railY - 7 - L));
 
     // corpo
     const bg = ctx.createLinearGradient(x - bodyW / 2, 0, x + bodyW / 2, 0);
@@ -879,6 +908,7 @@ export function initSpray(canvas, opts = {}) {
       ctx.globalAlpha = 1;
       ctx.globalCompositeOperation = 'source-over';
     }
+    ctx.restore();
   }
 
   function metal(x0, x1, dark = '#17181b', light = '#8b9097') {
@@ -984,7 +1014,8 @@ export function initSpray(canvas, opts = {}) {
   }
 
   function drawHud() {
-    const label = phase === 'spray' && PROCESSES[proc].torch === 'pta' ? 'DEPOSIÇÃO PTA' : LABELS[phase];
+    const label = phase === 'spray' && PROCESSES[proc].torch === 'pta' ? 'DEPOSIÇÃO PTA'
+      : phase === 'grind' && phaseT < G_IN ? 'TROCA DE FERRAMENTA' : LABELS[phase];
     const pct = Math.round((phase === 'wear' ? 0 : progress) * 100);
     const mm = layerMM.toFixed(2).replace('.', ',');
     ctx.save();
