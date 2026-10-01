@@ -1705,3 +1705,6 @@ input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px 
   .grupo__benefits { grid-template-columns: 1fr 1fr; }
 }
 @media (prefers-reduced-motion: reduce) { .br-route, .br-pulse { animation: none; } }
+.grupo__units { margin-top: clamp(40px, 6vw, 72px); scroll-margin-top: calc(var(--header-h) + 20px); }
+.grupo__h { font-size: clamp(1.4rem, 2.4vw, 1.9rem); margin-bottom: 20px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
+.grupo__h small { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
