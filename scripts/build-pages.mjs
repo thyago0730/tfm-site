@@ -9,7 +9,7 @@ const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, 
 const byslug = Object.fromEntries(processos.map((p) => [p.slug, p]));
 const li = (arr) => arr.map((x) => `<li>${esc(x)}</li>`).join('');
 
-function layout({ path, title, desc, h1, kicker, lead, body, crumbs, schema, extraSchema }) {
+function layout({ path, title, desc, h1, kicker, lead, body, crumbs, schema, extraSchema, waMsg }) {
   const ld = [
     { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: crumbs.map(([n, u], i) => ({ '@type': 'ListItem', position: i + 1, name: n, item: SITE + u })) },
     schema,
@@ -47,14 +47,14 @@ function layout({ path, title, desc, h1, kicker, lead, body, crumbs, schema, ext
     <h1 class="section-title">${esc(h1)}</h1>
     <p class="lp-lead">${esc(lead)}</p>
     <div class="lp-ctas">
-      <a class="btn btn--flame" href="${WA(`Olá, TFM! Vim pela página "${h1}" e quero enviar fotos de uma peça para avaliação.`)}" target="_blank" rel="noopener" data-wa-origin="lp_${path.split('/').pop().replace('.html', '')}"><span>Enviar foto da peça no WhatsApp</span></a>
+      <a class="btn btn--flame" href="${WA(waMsg || 'Olá, tudo bem? Queria mandar umas fotos de uma peça para vocês avaliarem.')}" target="_blank" rel="noopener" data-wa-origin="lp_${path.split('/').pop().replace('.html', '')}"><span>Enviar foto da peça no WhatsApp</span></a>
       <a class="btn btn--ghost" href="/#contato"><span>Solicitar orçamento</span></a>
     </div>
     ${body}
     <section class="lp-band">
       <h2>Tem uma peça para avaliar?</h2>
       <p>Envie fotos e medidas. A engenharia TFM responde com o diagnóstico e a solução recomendada. Unidades em Alumínio (SP), Rio das Ostras (RJ) e Nova Friburgo (RJ). Atendimento 24h.</p>
-      <a class="btn btn--flame" href="${WA('Olá, TFM! Quero enviar fotos de uma peça para avaliação.')}" target="_blank" rel="noopener"><span>Falar com a engenharia</span></a>
+      <a class="btn btn--flame" href="${WA(waMsg || 'Olá, tudo bem? Queria falar com a engenharia de vocês sobre uma peça.')}" target="_blank" rel="noopener"><span>Falar com a engenharia</span></a>
     </section>
   </main>
   <footer class="page-footer">
@@ -87,7 +87,7 @@ for (const p of processos) {
     ${p.faq ? `<section class="lp-related lp-faq"><h2>Perguntas frequentes</h2>${p.faq.map((f) => `<details><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`).join('')}</section>` : ''}
     <section class="lp-related"><h2>Setores que usam ${esc(p.nome)}</h2><div class="lp-links">${usados.map((s) => `<a href="/setores/${s.slug}.html">${esc(s.nome)} →</a>`).join('')}</div></section>`;
   writeFileSync(`.${path}`, layout({
-    path, kicker: 'Processo', h1: p.titulo, lead: p.resumo, body,
+    path, kicker: 'Processo', waMsg: `Olá, tudo bem? Vi no site sobre ${p.nome === 'Cromo duro' ? 'o cromo duro' : p.nome} e queria saber se serve para uma peça minha. Posso mandar umas fotos?`, h1: p.titulo, lead: p.resumo, body,
     title: `${p.titulo} | TFM Revestimentos — SP e RJ`,
     desc: `${p.resumo} Recuperação e revestimento de peças industriais com garantia. Unidades em SP e RJ.`,
     crumbs: [['Início', '/'], ['Processos', '/#tecnologias'], [p.nome, path]],
@@ -107,7 +107,7 @@ for (const s of setores) {
     </div>
     <section class="lp-related"><h2>Por que a TFM</h2><ul class="lp-list">${li(['Todos os processos certificados e com garantia', 'Laboratório de metrologia certificado', 'Projetos com metodologia Six Sigma (DFLSS)', 'Atendimento 24h e serviço de campo na sua planta'])}</ul></section>`;
   writeFileSync(`.${path}`, layout({
-    path, kicker: 'Setor', h1: `Revestimentos e recuperação de peças para ${s.nome}`, lead: s.texto, body,
+    path, kicker: 'Setor', waMsg: `Olá, tudo bem? Vi no site que vocês atendem o setor de ${s.nome.toLowerCase().replace('&', 'e')}. Queria mandar fotos de uma peça para vocês avaliarem.`, h1: `Revestimentos e recuperação de peças para ${s.nome}`, lead: s.texto, body,
     title: `Recuperação de peças para ${s.nome} | TFM Revestimentos`,
     desc: `${s.texto} HVOF, laser cladding, PTA, cromo duro e usinagem de precisão.`,
     crumbs: [['Início', '/'], ['Setores', '/#setores'], [s.nome, path]],

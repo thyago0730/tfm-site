@@ -728,7 +728,7 @@ function boot() {
         scrollToTarget('#contato');
       },
       onWhatsApp: (sim) => {
-        window.open(waUrl(`Olá, TFM! Fiz uma simulação no site e gostaria de avaliar a recuperação de uma peça.\n\n${sim.text}`), '_blank', 'noopener');
+        window.open(waUrl(`Olá, tudo bem? Fiz a simulação no site de vocês e queria avaliar a recuperação de uma peça.\n\n${sim.text}`), '_blank', 'noopener');
         track('whatsapp_click', { origem: 'simulador' });
         track('simulacao_enviada', { economia: Math.round(sim.total), canal: 'whatsapp' });
       },

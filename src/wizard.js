@@ -129,26 +129,28 @@ export function initWizard(form, { reduced, whatsapp, email, track, toast }) {
   function message() {
     const v = values();
     const SEP = '\u2028';
+    const det = [
+      v.peca && `Peça: ${v.peca}`,
+      v.quantidade && `Quantidade: ${v.quantidade}`,
+      v.dimensoes && `Dimensões: ${v.dimensoes}`,
+      v.material && `Material: ${v.material}`,
+      v.processos && `Processos que tenho interesse: ${v.processos}`,
+      v.setor && `Setor: ${v.setor}`,
+      `Prazo: ${v.prazo}`,
+      v.unidade && `Unidade mais próxima: ${v.unidade}`,
+    ].filter(Boolean);
     const lines = [
-      'Olá, TFM! Gostaria de solicitar um orçamento.',
+      `Olá, tudo bem? Aqui é ${v.nome}, da ${v.empresa}.`,
+      `Queria um orçamento: ${v.necessidade.charAt(0).toLowerCase() + v.necessidade.slice(1)}.`,
       SEP,
-      `• Necessidade: ${v.necessidade}`,
-      v.processos && `• Processos de interesse: ${v.processos}`,
-      v.peca && `• Peça: ${v.peca}`,
-      v.quantidade && `• Quantidade: ${v.quantidade}`,
-      v.dimensoes && `• Dimensões: ${v.dimensoes}`,
-      v.material && `• Material: ${v.material}`,
-      v.setor && `• Setor: ${v.setor}`,
-      `• Prazo: ${v.prazo}`,
-      v.unidade && `• Unidade de preferência: ${v.unidade}`,
+      v.mensagem,
       SEP,
-      `Descrição: ${v.mensagem}`,
+      'Alguns detalhes:',
+      ...det,
       simulation && SEP,
-      simulation && `Simulação do site: ${simulation.text}`,
+      simulation && `Também fiz a simulação no site: ${simulation.text}`,
       SEP,
-      `${v.nome} — ${v.empresa}`,
-      v.email,
-      v.telefone,
+      `Meu contato: ${[v.email, v.telefone].filter(Boolean).join(' · ')}`,
     ];
     // campos vazios somem; SEP vira linha em branco
     return lines.filter(Boolean).map((l) => (l === SEP ? '' : l)).join('\n');

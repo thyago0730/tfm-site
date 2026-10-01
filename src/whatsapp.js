@@ -6,10 +6,10 @@ export const WA_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true" class="wa-ic
 export const waUrl = (message) => `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(message)}`;
 
 const QUICK = [
-  { key: 'foto', label: 'Enviar foto de uma peça para avaliação', msg: 'Olá, TFM! Quero enviar fotos de uma peça para avaliação.' },
-  { key: 'emergencia', label: 'Emergência: equipamento parado', msg: 'Olá, TFM! Tenho uma emergência: equipamento parado. Preciso de atendimento com urgência.' },
-  { key: 'orcamento', label: 'Orçamento de recuperação ou revestimento', msg: 'Olá, TFM! Gostaria de um orçamento de recuperação/revestimento de peças.' },
-  { key: 'campo', label: 'Serviço de campo na minha planta', msg: 'Olá, TFM! Preciso de um serviço de campo na minha planta.' },
+  { key: 'foto', label: 'Enviar foto de uma peça para avaliação', msg: 'Olá, tudo bem? Queria mandar umas fotos de uma peça para vocês avaliarem.' },
+  { key: 'emergencia', label: 'Emergência: equipamento parado', msg: 'Olá! Estou com um equipamento parado e preciso de ajuda com urgência.' },
+  { key: 'orcamento', label: 'Orçamento de recuperação ou revestimento', msg: 'Olá, tudo bem? Queria um orçamento para recuperar uma peça.' },
+  { key: 'campo', label: 'Serviço de campo na minha planta', msg: 'Olá, tudo bem? Preciso de um serviço de campo aqui na nossa planta.' },
 ];
 
 
@@ -86,7 +86,7 @@ function initWidget({ track, reduced }) {
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const text = input.value.trim();
-    const msg = text ? `Olá, TFM! ${text}` : QUICK[0].msg;
+    const msg = text ? `Olá! ${text}` : QUICK[0].msg;
     window.open(waUrl(msg), '_blank', 'noopener');
     track?.('whatsapp_click', { origem: 'widget_texto' });
     input.value = '';
