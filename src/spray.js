@@ -1166,40 +1166,38 @@ export function initSpray(canvas, opts = {}) {
     ag.addColorStop(0, '#1c1d20'); ag.addColorStop(0.5, '#70757c'); ag.addColorStop(1, '#1c1d20');
     ctx.fillStyle = ag;
     ctx.fillRect(x - 5, top, 10, Math.max(0, y - top));
-    // pedra abrasiva
-    const g = ctx.createRadialGradient(x - wr * 0.3, y - wr * 0.3, wr * 0.1, x, y, wr);
-    g.addColorStop(0, '#b9b4aa'); g.addColorStop(0.7, '#8a857c'); g.addColorStop(1, '#5c5852');
+    // pedra abrasiva vista de frente (de topo para o eixo): cilindro largo girando
+    const ww = wr * 1.15, L = x - ww / 2, Tp = y - wr, Bt = y + wr;
+    const g = ctx.createLinearGradient(0, Tp, 0, Bt);
+    g.addColorStop(0, '#5c5852'); g.addColorStop(0.3, '#c9c4ba'); g.addColorStop(0.55, '#a29d93'); g.addColorStop(1, '#4a4741');
     ctx.fillStyle = g;
-    ctx.beginPath(); ctx.arc(x, y, wr, 0, Math.PI * 2); ctx.fill();
+    roundRect(L, Tp, ww, wr * 2, 6); ctx.fill();
     ctx.save();
-    ctx.beginPath(); ctx.arc(x, y, wr, 0, Math.PI * 2); ctx.clip();
-    for (const [a, d, t] of grit) {
-      const ang = a + wheelA, rr = wr * (0.25 + d * 0.72);
-      ctx.fillStyle = t > 0.5 ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.35)';
-      ctx.fillRect(x + Math.cos(ang) * rr, y + Math.sin(ang) * rr, 1.6, 1.6);
-    }
-    // borrão de rotação
-    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
-    ctx.lineWidth = 2;
-    for (let k = 0; k < 3; k++) {
-      ctx.beginPath(); ctx.arc(x, y, wr * (0.5 + k * 0.17), wheelA + k, wheelA + k + 1.2); ctx.stroke();
+    ctx.beginPath(); ctx.rect(L, Tp, ww, wr * 2); ctx.clip();
+    // grãos passando de cima para baixo (rotação)
+    for (const [a2, d, t] of grit) {
+      const phi = (a2 + wheelA) % (Math.PI * 2);
+      if (Math.cos(phi) < 0) continue;
+      const yy = y - wr * Math.sin(phi), xx = L + d * ww;
+      ctx.fillStyle = t > 0.5 ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.35)';
+      ctx.fillRect(xx, yy, 1.8, 1.2);
     }
     ctx.restore();
-    ctx.strokeStyle = 'rgba(0,0,0,0.5)'; ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.arc(x, y, wr, 0, Math.PI * 2); ctx.stroke();
-    // flange e cubo
-    ctx.fillStyle = '#3a3d42';
-    ctx.beginPath(); ctx.arc(x, y, wr * 0.28, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#16171a';
-    ctx.beginPath(); ctx.arc(x, y, wr * 0.09, 0, Math.PI * 2); ctx.fill();
-    // proteção (capa) na metade de cima
+    ctx.strokeStyle = 'rgba(0,0,0,0.45)'; ctx.lineWidth = 1;
+    roundRect(L, Tp, ww, wr * 2, 6); ctx.stroke();
+    // flanges laterais e eixo do spindle
     ctx.fillStyle = '#2a2c30';
-    ctx.beginPath();
-    ctx.arc(x, y, wr + 5, Math.PI * 0.95, Math.PI * 2.05);
-    ctx.arc(x, y, wr + 1, Math.PI * 2.05, Math.PI * 0.95, true);
-    ctx.closePath(); ctx.fill();
+    ctx.fillRect(L - 6, y - wr * 0.45, 6, wr * 0.9); ctx.fillRect(L + ww, y - wr * 0.45, 6, wr * 0.9);
+    ctx.fillStyle = '#16171a';
+    ctx.fillRect(L - 10, y - 4, 4, 8); ctx.fillRect(L + ww + 6, y - 4, 4, 8);
+    // capa de proteção sobre a metade de cima
+    const cg2 = ctx.createLinearGradient(0, Tp - 8, 0, y);
+    cg2.addColorStop(0, '#3a3d42'); cg2.addColorStop(1, '#1c1d20');
+    ctx.fillStyle = cg2;
+    roundRect(L - 10, Tp - 8, ww + 20, wr + 6, 8); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.1)'; roundRect(L - 10, Tp - 8, ww + 20, wr + 6, 8); ctx.stroke();
     ctx.fillStyle = '#ff5a14';
-    ctx.fillRect(x - wr * 0.5, y - wr - 6, wr, 2);
+    ctx.fillRect(x - ww * 0.35, Tp - 2, ww * 0.7, 2);
     ctx.restore();
   }
 
