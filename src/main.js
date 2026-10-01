@@ -746,7 +746,22 @@ function boot() {
 
   const procBtns = $$('[data-procs] button');
   const markProc = (torch) => procBtns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.proc === torch)));
-  const spray = initSpray($('[data-spray]'), { reduced, getBounds: heroBounds, onProcess: markProc });
+  // aviso discreto dentro da animação quando começa o revestimento
+  const toast = $('[data-hero-toast]');
+  const PAGE = { hvof: 'hvof', arc: 'arc-spray', pta: 'pta', plasma: 'hvof' };
+  let toastTimer, toastMuted = false;
+  const showToast = (info) => {
+    if (!toast || toastMuted) return;
+    toast.querySelector('[data-toast-title]').textContent = `${info.name} · ${info.material}`;
+    toast.querySelector('[data-toast-link]').href = `/processos/${PAGE[info.torch] || 'hvof'}.html`;
+    toast.hidden = false;
+    requestAnimationFrame(() => toast.classList.add('is-on'));
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { toast.classList.remove('is-on'); setTimeout(() => (toast.hidden = true), 400); }, 6000);
+  };
+  toast?.querySelector('[data-toast-close]').addEventListener('click', () => { toastMuted = true; toast.classList.remove('is-on'); setTimeout(() => (toast.hidden = true), 400); });
+  toast?.querySelector('[data-toast-link]').addEventListener('click', () => track('hero_aviso_processo'));
+  const spray = initSpray($('[data-spray]'), { reduced, getBounds: heroBounds, onProcess: markProc, onPhase: (ph, info) => ph === 'spray' && showToast(info) });
   procBtns.forEach((b) => b.addEventListener('click', () => {
     spray.setProcess(b.dataset.proc);
     track('simulacao_hero', { processo: b.dataset.proc });

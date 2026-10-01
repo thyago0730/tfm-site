@@ -289,7 +289,7 @@ export function initSpray(canvas, opts = {}) {
         for (let i = zoneI0; i <= zoneI1; i++) wear[i] = target[i];
         cutX = zoneB + 20;
       }
-      if (phaseT > W_END) { phase = 'spray'; phaseT = 0; }
+      if (phaseT > W_END) { phase = 'spray'; phaseT = 0; const [pn, pm] = PROCESSES[proc].name.split(' · '); opts.onPhase?.('spray', { torch: PROCESSES[proc].torch, name: pn, material: pm }); }
     } else if (phase === 'spray') {
       // cordão em espiral: atrás da tocha a camada já fica 100% (largura do jato ~ 14 px)
       if (!steering) {
