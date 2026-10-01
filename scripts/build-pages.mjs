@@ -34,7 +34,6 @@ function layout({ path, title, desc, h1, kicker, lead, body, crumbs, schema, ext
   <script type="module" src="/src/page.js"></script>
 </head>
 <body class="page lp">
-  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
   <header class="page-header">
     <div class="container page-header__bar">
       <a href="/" aria-label="TFM Revestimentos — início"><img src="/img/logo-tfm.webp" alt="TFM Revestimentos" width="112" height="36" /></a>
