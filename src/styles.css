@@ -781,7 +781,7 @@ address { font-style: normal; }
 .footer__top { display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; flex-wrap: wrap; padding-bottom: clamp(48px, 6vw, 80px); border-bottom: 1px solid var(--line); }
 .footer__claim { font-size: clamp(2rem, 4.4vw, 4.2rem); font-weight: 700; line-height: 1; letter-spacing: -0.035em; font-variation-settings: "wdth" 110; }
 .footer__claim span { color: var(--dim); }
-.footer__grid { display: grid; grid-template-columns: 1.6fr 1fr 1.2fr 1.2fr; gap: 40px; padding-block: clamp(48px, 6vw, 72px); }
+.footer__grid { display: grid; grid-template-columns: 1.15fr .7fr .9fr .95fr 1.7fr; gap: 40px; padding-block: clamp(48px, 6vw, 72px); }
 .footer__grid > div:first-child img { width: 130px; height: auto; margin-bottom: 20px; }
 .footer__grid p { color: var(--muted); font-size: 15px; max-width: 42ch; }
 .footer__grid h3 { font-family: var(--mono); font-weight: 400; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); margin-bottom: 16px; }
@@ -1708,3 +1708,31 @@ input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px 
 .grupo__units { margin-top: clamp(40px, 6vw, 72px); scroll-margin-top: calc(var(--header-h) + 20px); }
 .grupo__h { font-size: clamp(1.4rem, 2.4vw, 1.9rem); margin-bottom: 20px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
 .grupo__h small { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+/* contato: lista alinhada e coluna do formulário preenchida */
+.contact__list li { display: grid; grid-template-columns: 110px minmax(0, 1fr) auto; align-items: center; gap: 12px 16px; }
+.contact__list li > a { justify-self: start; font-size: 1.05rem; }
+.contact__side { display: grid; gap: 16px; min-width: 0; }
+.next { border: 1px solid var(--line); border-radius: calc(var(--radius) + 8px); background: var(--surface); padding: clamp(22px, 2.6vw, 32px); }
+.next__title { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--flame); margin-bottom: 18px; }
+.next__steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.next__steps li { display: grid; gap: 4px; align-content: start; }
+.next__steps b { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; border: 2px solid var(--flame); font: 600 11px var(--mono); margin-bottom: 6px; }
+.next__steps strong { font-size: 15px; }
+.next__steps span { font-size: 13.5px; color: var(--muted); line-height: 1.45; }
+.next__stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; margin-top: 22px; }
+.next__stats div { background: var(--bg); padding: 14px 16px; }
+.next__stats dt { font-size: 1.35rem; font-weight: 700; color: #fff; }
+.next__stats dd { margin: 2px 0 0; font-size: 12.5px; color: var(--muted); }
+@media (max-width: 640px) { .next__steps, .next__stats { grid-template-columns: 1fr; } .contact__list li { grid-template-columns: 1fr auto; } .contact__list li > span { grid-column: 1 / -1; } }
+.footer__social { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 22px; }
+.footer__social a { font-size: 14px; border-bottom: 1px solid var(--line); padding-bottom: 2px; }
+@media (max-width: 1100px) and (min-width: 701px) { .footer__grid { grid-template-columns: 1fr 1fr 1fr; } .footer__grid > div:first-child { grid-column: 1 / -1; } }
+.footer__grid a { overflow-wrap: anywhere; }
+.ex-planet { transform-box: view-box; transform-origin: 512px 250px; transform: rotate(var(--a)); }
+.ex-sun, .ex-g2, .ex-g3 { transform-box: fill-box; transform-origin: center; }
+.ex[data-step="2"] .ex-planet { animation: ex-orbit 8s linear infinite; }
+.ex[data-step="2"] .ex-sun { animation: ex-spin 2.4s linear infinite; }
+.ex[data-step="2"] .ex-g2 { animation: ex-spin 4s linear infinite reverse; }
+.ex[data-step="2"] .ex-g3 { animation: ex-spin 1.6s linear infinite; }
+@keyframes ex-orbit { from { transform: rotate(var(--a)); } to { transform: rotate(calc(var(--a) + 360deg)); } }
+.ex[data-step="2"] .ex-gearbox { transform: translate(40px, -40px) scale(1.35); transform-origin: 528px 250px; }

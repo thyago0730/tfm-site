@@ -651,15 +651,15 @@
             <!-- mancal bipartido (lado do robô), visto de lado -->
             <g class="laser__bearing">
               <rect x="322" y="420" width="72" height="10" rx="2" fill="url(#lz-dark)" stroke="rgba(255,255,255,.08)"/>
-              <path d="M334 420 L340 388 L376 388 L382 420 Z" fill="url(#lz-dark)"/>
-              <rect x="336" y="322" width="44" height="68" rx="6" fill="url(#lz-metal)" stroke="rgba(0,0,0,.4)"/>
+              <path d="M334 420 L340 392 L376 392 L382 420 Z" fill="url(#lz-dark)"/>
+              <rect x="336" y="314" width="44" height="80" rx="6" fill="url(#lz-metal)" stroke="rgba(0,0,0,.4)"/>
               <rect x="336" y="353" width="44" height="3" fill="rgba(0,0,0,.55)"/>
-              <rect x="330" y="333" width="6" height="44" rx="2" fill="#26282c"/>
-              <rect x="380" y="333" width="6" height="44" rx="2" fill="#26282c"/>
-              <rect x="338" y="316" width="10" height="8" rx="1" fill="#4a4e54"/><rect x="368" y="316" width="10" height="8" rx="1" fill="#4a4e54"/>
-              <rect x="355" y="312" width="6" height="10" rx="1" fill="#c9a227"/>
+              <rect x="329" y="326" width="7" height="58" rx="2" fill="#26282c"/>
+              <rect x="380" y="326" width="7" height="58" rx="2" fill="#26282c"/>
+              <rect x="338" y="308" width="10" height="8" rx="1" fill="#4a4e54"/><rect x="368" y="308" width="10" height="8" rx="1" fill="#4a4e54"/>
+              <rect x="355" y="304" width="6" height="10" rx="1" fill="#c9a227"/>
               <circle cx="328" cy="425" r="2.5" fill="#8b9097"/><circle cx="388" cy="425" r="2.5" fill="#8b9097"/>
-              <path d="M340 326 L376 326" stroke="rgba(255,255,255,.35)"/>
+              <path d="M340 318 L376 318" stroke="rgba(255,255,255,.35)"/>
             </g>
             <!-- plataforma móvel -->
             <g class="laser__agv">
@@ -1216,6 +1216,7 @@
           </ul>
         </div>
 
+        <div class="contact__side">
         <form class="wizard" data-wizard novalidate>
           <div class="wizard__head">
             <p class="wizard__count"><span data-wz-current>1</span> de 4 · <b data-wz-title>Necessidade</b></p>
@@ -1316,6 +1317,20 @@
           </div>
           <p class="form__status" role="status" aria-live="polite" data-form-status></p>
         </form>
+        <div class="next" data-fade>
+          <p class="next__title">O que acontece depois</p>
+          <ol class="next__steps">
+            <li><b>1</b><strong>Análise técnica</strong><span>a engenharia avalia fotos, medidas e o histórico da falha.</span></li>
+            <li><b>2</b><strong>Proposta</strong><span>processo indicado, prazo e garantia em até 1–2 dias úteis.</span></li>
+            <li><b>3</b><strong>Coleta e execução</strong><span>buscamos a peça e você acompanha cada etapa até a entrega.</span></li>
+          </ol>
+          <dl class="next__stats">
+            <div><dt>24h</dt><dd>atendimento para emergências</dd></div>
+            <div><dt>1–2 dias</dt><dd>para receber a proposta</dd></div>
+            <div><dt>100%</dt><dd>dos serviços com certificado de garantia</dd></div>
+          </dl>
+        </div>
+        </div>
       </div>
     </section>
   </main>
@@ -1331,27 +1346,28 @@
         <div>
           <img src="/img/logo-tfm.webp" alt="TFM Revestimentos" width="150" height="48" loading="lazy" />
           <p>Especializada em revestimentos superficiais (metalização), usinagem e manutenção industrial, com foco na recuperação de elementos de máquinas e beneficiamento de peças.</p>
+          <div class="footer__social"><a href="https://www.linkedin.com/company/grupo-tfm-revestimentos/" target="_blank" rel="noopener">LinkedIn · Grupo TFM</a><a href="https://www.linkedin.com/company/tfm-usinagem-e-manutencao-industrial/" target="_blank" rel="noopener">LinkedIn · TFM Usinagem</a><a href="https://www.instagram.com/tfmrevestimentos/" target="_blank" rel="noopener">Instagram</a></div>
         </div>
         <nav aria-label="Rodapé">
           <h3>Navegação</h3>
           <a href="#servicos">Serviços</a><a href="#processo">Processo</a><a href="#setores">Setores</a><a href="#cases">Cases</a><a href="#sobre">Sobre</a><a href="#unidades">Unidades</a>
         </nav>
+        <nav aria-label="Processos">
+          <h3>Processos</h3>
+          <a href="/processos/hvof.html">HVOF</a><a href="/processos/arc-spray.html">Arc Spray</a><a href="/processos/laser-cladding.html">Laser Cladding</a><a href="/processos/pta.html">PTA</a><a href="/processos/arco-submerso.html">Arco Submerso</a><a href="/processos/cromo-duro.html">Cromo duro</a>
+        </nav>
+        <nav aria-label="Setores">
+          <h3>Setores</h3>
+          <a href="/setores/mineracao.html">Mineração</a><a href="/setores/oleo-e-gas.html">Óleo &amp; Gás</a><a href="/setores/siderurgia.html">Siderurgia</a><a href="/setores/naval.html">Naval</a><a href="/setores/papel-e-celulose.html">Papel &amp; Celulose</a><a href="/setores/metal-mecanica.html">Metal Mecânica</a><a href="/setores/textil.html">Têxtil</a><a href="/setores/eolica.html">Energia Eólica</a>
+        </nav>
         <div>
           <h3>Contato</h3>
+          <a href="https://wa.me/5511950427669" data-wa="Olá, TFM! Gostaria de falar com a engenharia." data-wa-origin="rodape">WhatsApp (11) 95042-7669</a>
           <a href="tel:+551147152903">(11) 4715-2903</a>
           <a href="tel:+551147152422">(11) 4715-2422</a>
           <a href="mailto:contato@tfmrevestimentos.com.br">contato@tfmrevestimentos.com.br</a>
         </div>
-        <nav aria-label="Processos e setores">
-          <h3>Soluções</h3>
-          <a href="/processos/hvof.html">HVOF</a><a href="/processos/arc-spray.html">Arc Spray</a><a href="/processos/laser-cladding.html">Laser Cladding</a><a href="/processos/pta.html">PTA</a><a href="/processos/arco-submerso.html">Arco Submerso</a><a href="/processos/cromo-duro.html">Cromo duro</a><a href="/setores/mineracao.html">Mineração</a><a href="/setores/oleo-e-gas.html">Óleo &amp; Gás</a><a href="/setores/siderurgia.html">Siderurgia</a><a href="/setores/naval.html">Naval</a><a href="/setores/papel-e-celulose.html">Papel &amp; Celulose</a><a href="/setores/metal-mecanica.html">Metal Mecânica</a><a href="/setores/textil.html">Têxtil</a><a href="/setores/eolica.html">Energia Eólica</a>
-        </nav>
-        <div>
-          <h3>Redes</h3>
-          <a href="https://www.linkedin.com/company/grupo-tfm-revestimentos/" target="_blank" rel="noopener">LinkedIn · Grupo TFM</a>
-          <a href="https://www.linkedin.com/company/tfm-usinagem-e-manutencao-industrial/" target="_blank" rel="noopener">LinkedIn · TFM Usinagem</a>
-          <a href="https://www.instagram.com/tfmrevestimentos/" target="_blank" rel="noopener">Instagram</a>
-        </div>
+
       </div>
       <div class="footer__word" aria-hidden="true">TFM</div>
       <div class="footer__bottom">
