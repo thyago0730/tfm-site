@@ -11,7 +11,7 @@ O site antigo vendia uma lista de serviços. O novo vende **resultado**: a TFM c
 - **Promessa:** "Superfícies que resistem. Indústria que não para."
 - **Argumento central:** recuperar custa menos que substituir e pode durar mais que a peça original
   (com o ângulo de economia circular e sustentabilidade).
-- **Provas:** 70 HRC, atendimento 24h, Six Sigma DFLSS, laboratório de metrologia certificado,
+- **Provas:** 70 HRC, atendimento 24h, laboratório de metrologia certificado,
   fusão por indução, certificado de garantia, cases reais e clientes como Gerdau, CSN e Votorantim.
 - **Conversão:** CTA de orçamento sempre visível, WhatsApp flutuante e formulário que já chega
   formatado no WhatsApp ou no e-mail.

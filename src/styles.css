@@ -1424,7 +1424,7 @@ input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px 
 @media (max-width: 900px) {
   .mbar {
     position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 94;
-    display: grid; grid-template-columns: 1.4fr 1fr; gap: 8px;
+    display: grid; grid-template-columns: 1fr; gap: 8px;
     padding: 8px; border-radius: 18px;
     background: rgba(18, 18, 20, .9); border: 1px solid var(--line-strong);
     backdrop-filter: blur(14px);
@@ -1784,3 +1784,6 @@ input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px 
 .micro__note { color: #c4c4ca; line-height: 1.55; }
 .micro__foot { color: var(--dim); font-size: 12.5px; margin-top: 10px; }
 @media (max-width: 900px) { .micro__grid { grid-template-columns: 1fr; } }
+.header__cta { gap: 8px; }
+.header__cta .wa-ico { width: 16px; height: 16px; fill: currentColor; stroke: none; }
+.mbar__wa { flex: 1 1 100%; }

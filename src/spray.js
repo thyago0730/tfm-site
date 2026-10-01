@@ -1052,7 +1052,6 @@ export function initSpray(canvas, opts = {}) {
     const label = phase === 'spray' && PROCESSES[proc].torch === 'pta' ? 'DEPOSIÇÃO PTA'
       : phase === 'grind' && phaseT < G_IN ? 'TROCA DE FERRAMENTA' : LABELS[phase];
     const pct = Math.round((phase === 'wear' ? 0 : progress) * 100);
-    const mm = layerMM.toFixed(2).replace('.', ',');
     ctx.save();
     if (mobile) {
       ctx.font = '500 10px "JetBrains Mono", ui-monospace, monospace';
@@ -1089,8 +1088,9 @@ export function initSpray(canvas, opts = {}) {
     ctx.fill();
     ctx.textAlign = 'left';
     ctx.fillText(label, px + 26, py + 22);
-    row(py + 42, 'PROCESSO', PROCESSES[proc].name, dim, bright);
-    row(py + 60, 'CAMADA', `${mm} mm`, dim, bright);
+    const [pName, pMat] = PROCESSES[proc].name.split(' · ');
+    row(py + 42, 'PROCESSO', pName, dim, bright);
+    row(py + 60, 'MATERIAL', pMat, dim, bright);
     row(py + 78, 'RECUPERAÇÃO', `${pct}%`, dim, bright);
     ctx.fillStyle = 'rgba(255,255,255,0.1)';
     const gi = clamp(Math.floor(gun.x / COL), 0, cols - 1);

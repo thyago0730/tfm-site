@@ -110,7 +110,7 @@ for (const s of setores) {
       <section><h2>Peças que recuperamos</h2><ul class="lp-list">${li(s.pecas)}</ul></section>
       <section><h2>Processos indicados</h2><div class="lp-links">${s.processos.map((k) => `<a href="/processos/${k}.html"><strong>${esc(byslug[k].nome)}</strong> — ${esc(byslug[k].resumo)}</a>`).join('')}</div></section>
     </div>
-    <section class="lp-related"><h2>Por que a TFM</h2><ul class="lp-list">${li(['Todos os processos certificados e com garantia', 'Laboratório de metrologia certificado', 'Projetos com metodologia Six Sigma (DFLSS)', 'Atendimento 24h e serviço de campo na sua planta'])}</ul></section>`;
+    <section class="lp-related"><h2>Por que a TFM</h2><ul class="lp-list">${li(['Todos os processos certificados e com garantia', 'Laboratório de metrologia certificado', 'Laser cladding robotizado e móvel', 'Atendimento 24h e serviço de campo na sua planta'])}</ul></section>`;
   writeFileSync(`.${path}`, layout({
     path, kicker: 'Setor', waMsg: `Olá, tudo bem? Vi no site que vocês atendem o setor de ${s.nome.toLowerCase().replace('&', 'e')}. Queria mandar fotos de uma peça para vocês avaliarem.`, h1: `Revestimentos e recuperação de peças para ${s.nome}`, lead: s.texto, body,
     title: `Recuperação de peças para ${s.nome} | TFM Revestimentos`,
