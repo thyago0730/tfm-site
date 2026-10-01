@@ -295,7 +295,7 @@ export function initSpray(canvas, opts = {}) {
       if (!steering) {
         for (let i = zoneI0; i <= zoneI1; i++) {
           const d = gun.x - i * COL;
-          if (d > -6) { const full = wear[i] + over[i]; const k = clamp((d + 6) / 20, 0, 1); coat[i] = Math.max(coat[i], full * k); }
+          if (d > -6 && d < 26) { const full = wear[i] + over[i]; const k = clamp((d + 6) / 20, 0, 1); coat[i] = Math.max(coat[i], full * k); }
         }
       }
       let sw = 0, sc = 0;
@@ -338,7 +338,12 @@ export function initSpray(canvas, opts = {}) {
     } else if (phase === 'spray') {
       // passe único em espiral: avança em linha reta e deposita a camada completa por onde passa
       const speed = (mobile ? 42 : 60) * (PROCESSES[proc].torch === 'pta' ? 0.75 : 1);
-      tx = Math.min(gun.x + speed * dt, zoneB + 14);
+      // retoma de onde parou: corre rápido até o primeiro trecho ainda sem camada
+      let front = zoneB + 14;
+      for (let i = zoneI0; i <= zoneI1; i++) if (coat[i] < (wear[i] + over[i]) * 0.97 && wear[i] + over[i] > 0.02) { front = i * COL; break; }
+      const gap = front - gun.x;
+      if (Math.abs(gap) > 10) tx = gun.x + Math.sign(gap) * Math.min(Math.abs(gap), speed * 7 * dt);
+      else tx = Math.min(gun.x + speed * dt, zoneB + 14);
     } else {
       tx = phase === 'wear' ? zoneA : gun.x;
     }
@@ -1380,8 +1385,13 @@ export function initSpray(canvas, opts = {}) {
       return;
     }
     const pw = 214, ph = 122;
-    let px = gun.x + bodyW / 2 + 18;
-    if (px + pw > W - 12) px = gun.x - bodyW / 2 - 18 - pw;
+    // o painel acompanha a ferramenta que está trabalhando
+    const hx = phase === 'wear' && cutter.x > railA && cutter.x < railB ? cutter.x
+      : (phase === 'grind' || phase === 'done') && tool.wx > railA && tool.wx < railB ? tool.wx : gun.x;
+    const hw = phase === 'grind' || phase === 'done' ? r * 1.1 : bodyW / 2;
+    let px = hx + hw + 18;
+    if (px + pw > W - 12) px = hx - hw - 18 - pw;
+    px = clamp(px, 12, W - 12 - pw);
     const py = bodyTop - 10;
     ctx.fillStyle = 'rgba(11,11,12,0.72)';
     roundRect(px, py, pw, ph, 10);
