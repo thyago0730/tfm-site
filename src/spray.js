@@ -552,7 +552,7 @@ export function initSpray(canvas, opts = {}) {
       // luz do cilindro: o mesmo brilho/sombra do cromo modela a camada
       if (lit) {
         layerCtx.globalCompositeOperation = 'overlay';
-        layerCtx.drawImage(chrome, 0, 0, 1, 256, 0, 0, zw, zh);
+        layerCtx.drawImage(chrome, 0, 0, 1, 256, 0, om, zw, zh - om * 2);
       }
       layerCtx.globalCompositeOperation = 'destination-in';
       layerCtx.imageSmoothingEnabled = true;
@@ -560,7 +560,7 @@ export function initSpray(canvas, opts = {}) {
       zoneCtx.drawImage(layerCv, 0, 0);
     };
     zoneCtx.clearRect(0, 0, zw, zh);
-    zoneCtx.drawImage(chrome, 0, 0, 1, 256, 0, 0, zw, zh);
+    zoneCtx.drawImage(chrome, 0, 0, 1, 256, 0, om, zw, zh - om * 2);
     layer(worn, (i) => Math.min(1, wear[i] * 6) * (1 - polish[i]));
     layer(PROCESSES[proc].torch === 'pta' ? bead : coating, (i) => (wear[i] > 0.01 ? Math.min(1, coat[i] / wear[i]) : coat[i] > 0.01 ? 1 : 0) * (1 - polish[i]), true);
     ctx.save();
