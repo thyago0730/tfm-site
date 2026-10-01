@@ -1152,7 +1152,9 @@ export function initSpray(canvas, opts = {}) {
     if (endUp(tool.wx) > 0) { ctx.beginPath(); ctx.rect(0, railY - 4, W, H); ctx.clip(); }
     ctx.translate(0, -endUp(tool.wx));
     const wr = r * (mobile ? 0.95 : 1.05);
-    const x = tool.wx;
+    const ww = wr * 0.55;
+    // a face direita da pedra é o ponto de contato que avança sobre o eixo
+    const x = tool.wx - ww / 2;
     const work = cy - r - wr, park = railY + 26 + wr;
     const y = work - Math.max(0, work - park) * tool.wLift;
     // braço até o carro no trilho
@@ -1167,7 +1169,7 @@ export function initSpray(canvas, opts = {}) {
     ctx.fillStyle = ag;
     ctx.fillRect(x - 5, top, 10, Math.max(0, y - top));
     // pedra abrasiva vista de frente (de topo para o eixo): cilindro largo girando
-    const ww = wr * 1.15, L = x - ww / 2, Tp = y - wr, Bt = y + wr;
+    const L = x - ww / 2, Tp = y - wr, Bt = y + wr;
     const g = ctx.createLinearGradient(0, Tp, 0, Bt);
     g.addColorStop(0, '#5c5852'); g.addColorStop(0.3, '#c9c4ba'); g.addColorStop(0.55, '#a29d93'); g.addColorStop(1, '#4a4741');
     ctx.fillStyle = g;
