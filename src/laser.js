@@ -3,11 +3,11 @@ export function initLaser(root, { reduced } = {}) {
   const svg = root?.querySelector('.laser__svg');
   if (!svg) return;
   const q = (s) => svg.querySelector(s);
-  const l1 = q('[data-lz-l1]'), l2 = q('[data-lz-l2]'), head = q('[data-lz-head]'), cable = q('[data-lz-cable]');
+  const l1 = q('[data-lz-l1]'), l2 = q('[data-lz-l2]'), head = q('[data-lz-head]'), cable = q('[data-lz-cable]'), hose = q('[data-lz-hose]');
   const beam = q('[data-lz-beam]'), cone = q('[data-lz-cone]'), glow = q('[data-lz-glow]');
   const bead = q('[data-lz-bead]'), bead2 = q('[data-lz-bead2]'), sparks = q('[data-lz-sparks]'), fume = q('[data-lz-fume]');
   const NS = 'http://www.w3.org/2000/svg';
-  const base = { x: 150, y: 336 }, L1 = 230, L2 = 200;
+  const base = { x: 150, y: 302 }, L1 = 230, L2 = 200;
   const X0 = 336, X1 = 548, TOP = 331, HEAD = 44, GAP = 12;
   const deg = (r) => (r * 180) / Math.PI;
   let t = 0, last = 0, raf = 0, visible = false;
@@ -23,7 +23,11 @@ export function initLaser(root, { reduced } = {}) {
     l1.setAttribute('transform', `translate(${base.x} ${base.y}) rotate(${deg(q1)})`);
     l2.setAttribute('transform', `translate(${ex} ${ey}) rotate(${deg(q1 + q2)})`);
     head.setAttribute('transform', `translate(${wx} ${wy + 20})`);
-    cable.setAttribute('d', `M${base.x - 18} ${base.y + 6} Q${(base.x + ex) / 2 - 30} ${(base.y + ey) / 2 - 30} ${ex - 8} ${ey - 22} Q${(ex + wx) / 2} ${Math.min(ey, wy) - 40} ${wx - 26} ${wy - 16}`);
+    // cabo de energia/fibra: da base, por cima dos elos, até o topo do cabeçote
+    const hx = wx, hy = wy + 2;
+    cable.setAttribute('d', `M${base.x - 20} ${base.y + 8} Q${(base.x + ex) / 2 - 26} ${(base.y + ey) / 2 - 26} ${ex - 4} ${ey - 24} Q${(ex + hx) / 2} ${Math.min(ey, hy) - 34} ${hx - 4} ${hy}`);
+    // mangueira de pó: do cotovelo até a entrada lateral do cabeçote
+    hose.setAttribute('d', `M${ex + 6} ${ey - 20} Q${(ex + hx) / 2 + 10} ${Math.min(ey, hy) - 22} ${hx + 13} ${hy + 26}`);
     return { x: wx, tip: wy + 20 + HEAD };
   };
 
