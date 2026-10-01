@@ -736,7 +736,13 @@ function boot() {
   initReveals();
   initTimeline();
 
-  initSpray($('[data-spray]'), { reduced, getBounds: heroBounds });
+  const procBtns = $$('[data-procs] button');
+  const markProc = (torch) => procBtns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.proc === torch)));
+  const spray = initSpray($('[data-spray]'), { reduced, getBounds: heroBounds, onProcess: markProc });
+  procBtns.forEach((b) => b.addEventListener('click', () => {
+    spray.setProcess(b.dataset.proc);
+    track('simulacao_hero', { processo: b.dataset.proc });
+  }));
   heroIntro();
   ScrollTrigger.refresh();
 }

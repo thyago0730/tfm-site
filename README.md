@@ -37,7 +37,8 @@ O site antigo vendia uma lista de serviços. O novo vende **resultado**: a TFM c
 | Orçamento em 4 etapas, com resumo e simulação anexada, enviado por WhatsApp ou e-mail | Orçamento (`src/wizard.js`) |
 | Link do guia de soluções para o case relacionado, cópia de contatos, barra de leitura | Global |
 | Widget de WhatsApp com atalhos (foto da peça, emergência, orçamento, serviço de campo) e convite após engajamento | Global (`src/whatsapp.js`) |
-| Botões de WhatsApp com mensagem pronta em cada serviço, setor, case, desgaste, jornada, simulador e FAQ | Seções |
+| Escolha do processo na animação do hero (HVOF, Plasma, Arc Spray, PTA) | Hero |
+| Menu Soluções com páginas de processo e setor | Global |
 | Barra fixa no mobile (WhatsApp + Orçamento) | Mobile |
 | Cursor customizado, botões magnéticos, marquee reativo à velocidade, grão de filme | Global |
 
@@ -104,7 +105,7 @@ para o Google Tag Manager):
 
 | Evento | Quando |
 |---|---|
-| `whatsapp_click` | qualquer clique que abre o WhatsApp, com `origem` (hero, cabecalho, servico, setor, case, guia, jornada, processo, simulador, faq, contato, widget_foto, widget_emergencia, widget_orcamento, widget_campo, widget_texto) |
+| `whatsapp_click` | qualquer clique que abre o WhatsApp, com `origem` (hero, cabecalho, processo, simulador, faq, contato, lp_<página>, widget_foto, widget_emergencia, widget_orcamento, widget_campo, widget_texto) |
 | `whatsapp_widget_aberto` | abertura do widget de WhatsApp |
 | `cta_click` | clique em telefone, e-mail, PDFs e botões de orçamento (`cta`, `secao`) |
 | `simulacao_enviada` | simulação levada para o orçamento (`economia`) |
@@ -129,7 +130,7 @@ Recomendado: no Google Cloud Console, restrinja a chave de API do Firebase aos d
 
 1. **Fotos profissionais** das peças e da planta (as atuais vieram do site antigo e estão em 585×415).
 2. **Registrar leads no Firestore ou em um CRM** (RD Station, HubSpot), mantendo o WhatsApp como canal de envio.
-3. **Páginas por setor e por processo** (ex.: "HVOF para mineração") para capturar buscas orgânicas.
+3. Mais conteúdo técnico (artigos e glossário) ligado às páginas de processo.
 4. **Números de impacto** dos cases (vida útil antes/depois, economia em R$), com autorização dos clientes.
 5. Google Business Profile para as três unidades e CNPJ na política de privacidade.
 6. Confirmar se há certificação ISO 9001 (aparece na apresentação institucional) para destacá-la no site.

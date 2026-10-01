@@ -9,10 +9,11 @@ const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, 
 const byslug = Object.fromEntries(processos.map((p) => [p.slug, p]));
 const li = (arr) => arr.map((x) => `<li>${esc(x)}</li>`).join('');
 
-function layout({ path, title, desc, h1, kicker, lead, body, crumbs, schema }) {
+function layout({ path, title, desc, h1, kicker, lead, body, crumbs, schema, extraSchema }) {
   const ld = [
     { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: crumbs.map(([n, u], i) => ({ '@type': 'ListItem', position: i + 1, name: n, item: SITE + u })) },
     schema,
+    ...(extraSchema ? [extraSchema] : []),
   ];
   return `<!doctype html>
 <html lang="pt-BR">
@@ -83,12 +84,14 @@ for (const p of processos) {
       <section><h2>Aplicações típicas</h2><ul class="lp-list">${li(p.aplicacoes)}</ul></section>
     </div>
     ${p.caso ? `<section class="lp-case"><p class="kicker"><span>Case</span> Resultado real</p><p>${esc(p.caso)}</p></section>` : ''}
+    ${p.faq ? `<section class="lp-related lp-faq"><h2>Perguntas frequentes</h2>${p.faq.map((f) => `<details><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`).join('')}</section>` : ''}
     <section class="lp-related"><h2>Setores que usam ${esc(p.nome)}</h2><div class="lp-links">${usados.map((s) => `<a href="/setores/${s.slug}.html">${esc(s.nome)} →</a>`).join('')}</div></section>`;
   writeFileSync(`.${path}`, layout({
     path, kicker: 'Processo', h1: p.titulo, lead: p.resumo, body,
     title: `${p.titulo} | TFM Revestimentos — SP e RJ`,
     desc: `${p.resumo} Recuperação e revestimento de peças industriais com garantia. Unidades em SP e RJ.`,
     crumbs: [['Início', '/'], ['Processos', '/#tecnologias'], [p.nome, path]],
+    extraSchema: p.faq ? { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: p.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) } : null,
     schema: { '@context': 'https://schema.org', '@type': 'Service', name: p.titulo, serviceType: p.nome, description: p.resumo, areaServed: 'BR', provider: { '@type': 'Organization', name: 'Grupo TFM Revestimentos', url: SITE } },
   }));
   urls.push(path);

@@ -7,6 +7,8 @@ export function initMatrix(root) {
   const name = root.querySelector('[data-tech-name]');
   const desc = root.querySelector('[data-tech-desc]');
   const eyebrow = root.querySelector('.tech__eyebrow');
+  const page = root.querySelector('[data-tech-page]');
+  const PAGES = { arc: 'arc-spray', pta: 'pta', hvof: 'hvof' };
   let locked = rows.find((r) => r.dataset.proc === 'hvof') || rows[0];
 
   const setCol = (col) => {
@@ -23,6 +25,9 @@ export function initMatrix(root) {
     eyebrow.textContent = tr === locked ? 'Processo selecionado' : 'Processo';
     name.innerHTML = `${tr.dataset.name} <small>${tr.dataset.mode}</small>`;
     desc.textContent = tr.dataset.desc;
+    const slug = PAGES[tr.dataset.proc];
+    page.hidden = !slug;
+    if (slug) page.href = `/processos/${slug}.html`;
   };
 
   const showMaterial = (col) => {

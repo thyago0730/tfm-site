@@ -76,6 +76,7 @@ export function initSpray(canvas, opts = {}) {
   let shaftPath = null;
   let running = false, raf = 0, last = 0, inView = true, ready = false;
   // qualidade adaptativa: aparelhos lentos recebem menos partículas e resolução menor
+  let locked = false; // visitante escolheu um processo: para de alternar
   let quality = 1, dprCap = 1.75, frameCost = 8, degradeAt = 0;
 
   // ---------- texturas ----------
@@ -179,13 +180,13 @@ export function initSpray(canvas, opts = {}) {
     if (mobile) {
       r = clamp(W * 0.085, 28, 40);
       bodyW = 40; bodyH = 56; nozzleLen = 22;
-      railY = b.header + 22;
+      railY = b.header + 66; // espaço para os botões de processo acima do trilho
       railA = gutter; railB = W - gutter;
       shaftA = -40; journal = 0;
     } else {
       r = clamp(H * 0.075, 46, 80);
       bodyW = 58; bodyH = 84; nozzleLen = 36;
-      railY = b.header + 58;
+      railY = b.header + 92; // abaixo dos botões de processo
       railA = Math.min(b.contentRight + 56, W - 340);
       railB = W - gutter;
       shaftA = railA - 30;
@@ -226,7 +227,8 @@ export function initSpray(canvas, opts = {}) {
       target[i] = Math.pow(Math.max(0, edge), 0.7) * rand(0.9, 1);
     }
     zoneMM = Math.round(rand(0.5, 1.2) * 100) / 100;
-    proc = (proc + 1) % PROCESSES.length;
+    if (!locked) proc = (proc + 1) % PROCESSES.length;
+    opts.onProcess?.(PROCESSES[proc].torch);
     canvas.dataset.process = PROCESSES[proc].torch;
     phase = 'wear';
     phaseT = 0;
@@ -1072,5 +1074,14 @@ export function initSpray(canvas, opts = {}) {
   if (reduced) staticFrame();
   else start();
 
-  return { relayout: layout, stop };
+  // escolha manual do processo (botões no hero)
+  function setProcess(torch) {
+    const idx = PROCESSES.findIndex((p) => p.torch === torch);
+    if (idx < 0) return;
+    locked = true;
+    proc = idx;
+    newZone();
+    if (reduced) staticFrame();
+  }
+  return { relayout: layout, stop, setProcess };
 }

@@ -1533,3 +1533,27 @@ input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px 
 .lp-nav .dd.is-open .dd__panel { transform: none; }
 @media (max-width: 760px) { .lp-nav ul { display: none; } }
 .dd__cta .link-arrow { font-size: 11.5px; }
+
+/* ---------- escolha do processo no hero ---------- */
+.hero__procs {
+  position: absolute; z-index: 3; right: var(--gutter); top: calc(var(--header-h) + 14px);
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px; border-radius: 999px;
+  background: rgba(11,11,12,.6); border: 1px solid var(--line); backdrop-filter: blur(10px);
+}
+.hero__procs span { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: 0 6px 0 10px; }
+.hero__procs button { white-space: nowrap; padding: 6px 12px; border-radius: 999px; font-size: 13px; font-weight: 500; color: #c4c4ca; transition: background .25s, color .25s; }
+.hero__procs button:hover { color: #fff; background: rgba(255,255,255,.07); }
+.hero__procs button[aria-pressed="true"] { background: var(--flame-strong); color: #fff; }
+@media (max-width: 900px) {
+  .hero__procs { top: auto; right: auto; left: 50%; transform: translateX(-50%); bottom: auto; position: absolute; top: calc(var(--header-h) + 6px); }
+  .hero__procs span { display: none; }
+  .hero__procs button { padding: 5px 10px; font-size: 12px; }
+}
+.lp-faq details { border-top: 1px solid var(--line); }
+.lp-faq summary { cursor: pointer; padding: 14px 0; font-weight: 600; list-style: none; }
+.lp-faq summary::-webkit-details-marker { display: none; }
+.lp-faq summary::before { content: "+ "; color: var(--flame); }
+.lp-faq details[open] summary::before { content: "– "; }
+.lp-faq p { padding-bottom: 14px; color: #c4c4ca; }
+.tech__page { align-self: flex-start; }
