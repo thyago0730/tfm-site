@@ -263,6 +263,8 @@ export function initSpray(canvas, opts = {}) {
   }
 
   const grindStart = () => Math.max(mobile ? railA + 20 : shaftA + 10, railA + 20);
+  // transição suave da peça polida para a próxima (com marcas de uso)
+  const usedFade = () => (phase === 'wear' ? easeInOut(clamp(phaseT / 1.2, 0, 1)) : 1);
   const ptaGap = () => (mobile ? 10 : 14);
   const tipFor = (type) => (type === 'pta' ? cy - r - ptaGap() : tipY);
   const radiusAt = (i) => (i >= 0 && i < cols ? r - (wear[i] - coat[i]) * depth : r);
@@ -603,7 +605,8 @@ export function initSpray(canvas, opts = {}) {
     // trechos íntegros
     // fora da zona: superfície usada; depois da retífica, polida (cromo) por onde o rebolo passou
     const pX = phase === 'done' || grindDone ? W + 40 : phase === 'grind' && phaseT > G_IN ? (sweepX <= grindStart() + 2 ? x0 : sweepX) : x0;
-    const seg2 = (a, b) => { if (b <= a) return; const m = clamp(pX, a, b); ctx.drawImage(chrome, 0, 0, 1, 256, a, cy - r, m - a, r * 2); ctx.drawImage(used, 0, 0, 1, 256, m, cy - r, b - m, r * 2); };
+    const uf = usedFade();
+    const seg2 = (a, b) => { if (b <= a) return; const m = clamp(pX, a, b); ctx.drawImage(chrome, 0, 0, 1, 256, a, cy - r, b - a, r * 2); ctx.globalAlpha = uf; ctx.drawImage(used, 0, 0, 1, 256, m, cy - r, b - m, r * 2); ctx.globalAlpha = 1; };
     seg2(x0, zA);
     seg2(zB, W + 40);
 
@@ -646,7 +649,8 @@ export function initSpray(canvas, opts = {}) {
       zoneCtx.drawImage(layerCv, 0, 0);
     };
     zoneCtx.clearRect(0, 0, zw, zh);
-    zoneCtx.drawImage(used, 0, 0, 1, 256, 0, om, zw, zh - om * 2);
+    zoneCtx.drawImage(chrome, 0, 0, 1, 256, 0, om, zw, zh - om * 2);
+    zoneCtx.globalAlpha = usedFade(); zoneCtx.drawImage(used, 0, 0, 1, 256, 0, om, zw, zh - om * 2); zoneCtx.globalAlpha = 1;
     layer(worn, (i) => Math.min(1, wear[i] * 6) * (1 - polish[i]));
     layer(PROCESSES[proc].torch === 'pta' ? bead : coating, (i) => (wear[i] > 0.01 ? Math.min(1, coat[i] / wear[i]) : coat[i] > 0.01 ? 1 : 0) * (1 - polish[i]), true);
     // retificado: volta ao cromo polido
