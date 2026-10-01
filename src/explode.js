@@ -55,7 +55,7 @@ export function initExplode(root) {
   const show = (phase, step) => {
     root.dataset.step = step;
     root.dataset.phase = phase;
-    tabs.forEach((t, k) => t.setAttribute('aria-selected', String(k === step && !['run', 'fault', 'fixed', 'close'].includes(phase))));
+    tabs.forEach((t, k) => t.setAttribute('aria-pressed', String(k === step && !['run', 'fault', 'fixed', 'close'].includes(phase))));
     const key = TEXT[phase];
     texts.forEach((el, k) => (el.hidden = k !== key));
     spin(phase === 'run' || phase === 'close' ? 1.6 : 0);

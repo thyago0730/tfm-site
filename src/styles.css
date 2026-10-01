@@ -1578,7 +1578,7 @@ input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px 
 @keyframes lz-blink { 50% { opacity: .2; } }
 .laser__cap { display: flex; align-items: center; gap: 10px; margin-top: 10px; font: 500 .72rem "JetBrains Mono", ui-monospace, monospace; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.55); }
 .laser__cap .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--flame); box-shadow: 0 0 10px var(--flame); }
-.badge-new { display: inline-block; font: 600 .6rem "JetBrains Mono", ui-monospace, monospace; font-style: normal; letter-spacing: .1em; text-transform: uppercase; color: #fff; background: var(--flame); border-radius: 99px; padding: 2px 7px; vertical-align: middle; margin-left: 4px; }
+.badge-new { display: inline-block; font: 600 .6rem "JetBrains Mono", ui-monospace, monospace; font-style: normal; letter-spacing: .1em; text-transform: uppercase; color: #fff; background: #c2410c; border-radius: 99px; padding: 2px 7px; vertical-align: middle; margin-left: 4px; }
 @media (max-width: 900px) { .laser__grid { grid-template-columns: 1fr; } }
 .laser .section-title { font-size: clamp(2.4rem, 4.4vw, 4.4rem); }
 .laser .section-lead { margin-top: 20px; }
@@ -1643,8 +1643,8 @@ input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px 
 .ex__steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
 .ex__steps button { width: 100%; text-align: left; display: flex; gap: 12px; align-items: center; padding: 12px 14px; border-radius: 12px; border: 1px solid transparent; background: none; color: var(--muted); font: inherit; cursor: pointer; transition: background .3s, color .3s, border-color .3s; }
 .ex__steps button span { font-family: var(--mono); font-size: 12px; color: var(--dim); }
-.ex__steps button[aria-selected="true"] { color: #fff; background: rgba(255,90,20,.1); border-color: rgba(255,90,20,.45); }
-.ex__steps button[aria-selected="true"] span { color: var(--flame); }
+.ex__steps button[aria-pressed="true"] { color: #fff; background: rgba(255,90,20,.1); border-color: rgba(255,90,20,.45); }
+.ex__steps button[aria-pressed="true"] span { color: var(--flame); }
 .ex__copy h3 { font-size: 1.25rem; margin-bottom: 8px; }
 .ex__copy p { color: #c4c4ca; line-height: 1.6; }
 .ex__nav { margin-top: auto; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
@@ -1762,3 +1762,6 @@ input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px 
 .ex[data-step="0"] .ex-bearing { opacity: 0; }
 .ex-call { transition: opacity .35s; }
 .ex[data-step="2"] .ex-call--gear, .ex[data-step="3"] .ex-call--seat, .ex[data-step="3"] .ex-call--seat2 { transition: opacity .7s .5s; }
+.lp-laser { padding: 40px 0 clamp(40px, 6vw, 72px); background: none; max-width: 900px; }
+.lp-nav .btn--sm { flex: none; min-width: max-content; }
+.nav a.btn { padding: 0 20px; font-size: 12.5px; color: #fff; }

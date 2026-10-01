@@ -73,10 +73,15 @@ mkdirSync('processos', { recursive: true });
 mkdirSync('setores', { recursive: true });
 const urls = [];
 
+// vitrine animada do laser (mesmo desenho da home)
+const home = readFileSync('index.html', 'utf8');
+const laserStage = (() => { const a = home.indexOf('<figure class="laser__stage"'); const z = home.indexOf('</figure>', a) + 9; return a > 0 ? home.slice(a, z) : ''; })();
+
 for (const p of processos) {
   const path = `/processos/${p.slug}.html`;
   const usados = setores.filter((s) => s.processos.includes(p.slug));
-  const body = `
+  const vitrine = p.slug === 'laser-cladding' && laserStage ? `<section class="lp-laser laser" data-laser>${laserStage}</section>` : '';
+  const body = `${vitrine}
     <div class="lp-grid">
       <section><h2>Como funciona</h2><p>${esc(p.como)}</p></section>
       <section><h2>Benefícios</h2><ul class="lp-list">${li(p.beneficios)}</ul></section>

@@ -33,7 +33,89 @@
       <a class="btn btn--flame" href="https://wa.me/5511950427669?text=Ol%C3%A1%2C%20tudo%20bem%3F%20Vi%20no%20site%20sobre%20Laser%20Cladding%20e%20queria%20saber%20se%20serve%20para%20uma%20pe%C3%A7a%20minha.%20Posso%20mandar%20umas%20fotos%3F" target="_blank" rel="noopener" data-wa-origin="lp_laser-cladding"><span>Enviar foto da peça no WhatsApp</span></a>
       <a class="btn btn--ghost" href="/#contato"><span>Solicitar orçamento</span></a>
     </div>
-    
+    <section class="lp-laser laser" data-laser><figure class="laser__stage" data-reveal>
+          <svg class="laser__svg" viewBox="0 0 600 460" role="img" aria-label="Robô industrial em plataforma móvel aplicando revestimento a laser sobre um eixo apoiado em mancal">
+            <defs>
+              <linearGradient id="lz-shaft" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a2c30"/><stop offset=".22" stop-color="#e4e7eb"/><stop offset=".4" stop-color="#9aa0a7"/><stop offset=".7" stop-color="#3a3d42"/><stop offset="1" stop-color="#141517"/></linearGradient>
+              <linearGradient id="lz-bead-g" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3b332c"/><stop offset=".45" stop-color="#b8aa98"/><stop offset="1" stop-color="#4a4037"/></linearGradient>
+              <linearGradient id="lz-bead-shade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(0,0,0,.55)"/><stop offset=".22" stop-color="rgba(255,255,255,.25)"/><stop offset=".45" stop-color="rgba(0,0,0,0)"/><stop offset=".75" stop-color="rgba(0,0,0,.45)"/><stop offset="1" stop-color="rgba(0,0,0,.8)"/></linearGradient>
+              <pattern id="lz-bead" width="7" height="60" patternUnits="userSpaceOnUse"><rect width="7" height="60" fill="url(#lz-bead-g)"/></pattern>
+              <linearGradient id="lz-orange" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffa257"/><stop offset=".35" stop-color="#f97316"/><stop offset="1" stop-color="#9a3412"/></linearGradient>
+              <linearGradient id="lz-metal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8b9097"/><stop offset=".5" stop-color="#3a3d42"/><stop offset="1" stop-color="#17181b"/></linearGradient>
+              <linearGradient id="lz-dark" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a3d42"/><stop offset="1" stop-color="#141517"/></linearGradient>
+              <radialGradient id="lz-joint"><stop offset="0" stop-color="#b9bec4"/><stop offset=".55" stop-color="#4a4e54"/><stop offset="1" stop-color="#1c1d20"/></radialGradient>
+              <radialGradient id="lz-glow"><stop offset="0" stop-color="#fff"/><stop offset=".2" stop-color="#ffe2a0"/><stop offset=".5" stop-color="rgba(255,120,30,.55)"/><stop offset="1" stop-color="rgba(255,90,20,0)"/></radialGradient>
+              <filter id="lz-blur"><feGaussianBlur stdDeviation="1.2"/></filter>
+            </defs>
+            <line x1="0" y1="431" x2="600" y2="431" class="laser__floor"/>
+            <ellipse cx="145" cy="432" rx="120" ry="6" fill="rgba(0,0,0,.6)"/>
+            <ellipse cx="358" cy="432" rx="40" ry="5" fill="rgba(0,0,0,.5)"/>
+            <!-- peça entrando pela direita, apoiada em um mancal -->
+            <rect x="316" y="331" width="300" height="48" fill="url(#lz-shaft)"/>
+            <g data-lz-bead-wrap><rect x="566" y="327" width="0" height="56" rx="3" fill="url(#lz-bead)" data-lz-bead/><rect x="566" y="327" width="0" height="56" rx="3" fill="url(#lz-bead-shade)" data-lz-bead2/></g>
+            <path d="M316 334 L320 331 L320 379 L316 376 Z" fill="#4a4e54"/>
+            <!-- mancal bipartido (lado do robô), visto de lado -->
+            <g class="laser__bearing">
+              <rect x="322" y="420" width="72" height="10" rx="2" fill="url(#lz-dark)" stroke="rgba(255,255,255,.08)"/>
+              <path d="M334 420 L340 392 L376 392 L382 420 Z" fill="url(#lz-dark)"/>
+              <rect x="336" y="314" width="44" height="80" rx="6" fill="url(#lz-metal)" stroke="rgba(0,0,0,.4)"/>
+              <rect x="336" y="353" width="44" height="3" fill="rgba(0,0,0,.55)"/>
+              <rect x="329" y="326" width="7" height="58" rx="2" fill="#26282c"/>
+              <rect x="380" y="326" width="7" height="58" rx="2" fill="#26282c"/>
+              <rect x="338" y="308" width="10" height="8" rx="1" fill="#4a4e54"/><rect x="368" y="308" width="10" height="8" rx="1" fill="#4a4e54"/>
+              <rect x="355" y="304" width="6" height="10" rx="1" fill="#c9a227"/>
+              <circle cx="328" cy="425" r="2.5" fill="#8b9097"/><circle cx="388" cy="425" r="2.5" fill="#8b9097"/>
+              <path d="M340 318 L376 318" stroke="rgba(255,255,255,.35)"/>
+            </g>
+            <!-- plataforma móvel -->
+            <g class="laser__agv">
+              <path d="M34 382 Q34 372 44 372 L246 372 Q256 372 256 382 L256 412 Q256 420 248 420 L42 420 Q34 420 34 412 Z" fill="url(#lz-dark)" stroke="rgba(255,255,255,.12)"/>
+              <rect x="34" y="404" width="222" height="6" fill="#141517"/>
+              <g fill="#f5b400"><path d="M44 404h12l-6 6h-12z"/><path d="M68 404h12l-6 6h-12z"/><path d="M212 404h12l-6 6h-12z"/><path d="M236 404h12l-6 6h-12z"/></g>
+              <rect x="40" y="376" width="14" height="8" rx="2" fill="#0f1012"/><circle cx="47" cy="380" r="2" fill="#5ad1ff" class="laser__led"/>
+              <rect x="236" y="376" width="14" height="8" rx="2" fill="#0f1012"/>
+              <g fill="#0f1012" stroke="#4a4e54" stroke-width="2"><rect x="58" y="414" width="34" height="16" rx="8"/><rect x="198" y="414" width="34" height="16" rx="8"/></g>
+              <g stroke="#6d7279" stroke-width="1.5"><path d="M64 416l6 12M72 416l6 12M80 416l6 12M204 416l6 12M212 416l6 12M220 416l6 12"/></g>
+              <circle cx="232" cy="388" r="3" fill="#7ddc9a" class="laser__led"/>
+              <text x="104" y="394" class="laser__tag">PLATAFORMA MÓVEL</text>
+            </g>
+            <!-- robô: base giratória -->
+            <path d="M112 372 L120 318 L180 318 L188 372 Z" fill="url(#lz-metal)"/>
+            <rect x="104" y="366" width="92" height="8" rx="2" fill="#26282c"/>
+            <path d="M118 320 Q118 288 150 288 Q182 288 182 320 Z" fill="url(#lz-orange)"/>
+            <g data-lz-robot>
+              <path data-lz-cable fill="none" stroke="#141517" stroke-width="5" stroke-linecap="round"/>
+              <path data-lz-hose fill="none" stroke="#2f80ed" stroke-width="2.5" stroke-linecap="round"/>
+              <g data-lz-l1>
+                <path d="M0 -26 L230 -17 Q240 0 230 17 L0 26 Z" fill="url(#lz-orange)"/>
+                <path d="M10 -18 L222 -11" stroke="rgba(255,255,255,.35)" stroke-width="2"/>
+                <rect x="70" y="-9" width="70" height="18" rx="3" fill="rgba(0,0,0,.18)"/>
+                <circle r="30" fill="url(#lz-orange)"/><circle r="17" fill="url(#lz-joint)"/><circle r="5" fill="#141517"/>
+              </g>
+              <g data-lz-l2>
+                <rect x="-46" y="-20" width="44" height="40" rx="8" fill="url(#lz-orange)"/>
+                <rect x="-40" y="-13" width="20" height="26" rx="3" fill="url(#lz-dark)"/>
+                <path d="M0 -18 L200 -9 L200 9 L0 18 Z" fill="url(#lz-orange)"/>
+                <path d="M8 -12 L196 -5" stroke="rgba(255,255,255,.3)" stroke-width="2"/>
+                <circle r="21" fill="url(#lz-orange)"/><circle r="12" fill="url(#lz-joint)"/><circle r="4" fill="#141517"/>
+                <circle cx="200" r="10" fill="url(#lz-joint)" stroke="#9a3412" stroke-width="3"/>
+              </g>
+              <g data-lz-head>
+                <path d="M-10 -14 Q-10 -20 -4 -20 L4 -20 Q10 -20 10 -14 L10 0 L-10 0 Z" fill="url(#lz-metal)"/>
+                <rect x="-13" y="0" width="26" height="30" rx="3" fill="#1d1e21" stroke="rgba(255,255,255,.18)"/>
+                <rect x="-13" y="9" width="26" height="3" fill="#ff5a14"/>
+                <rect x="-9" y="16" width="18" height="10" rx="1" fill="#2a2c30"/>
+                <path d="M-9 30 L9 30 L4 44 L-4 44 Z" fill="url(#lz-metal)"/>
+              </g>
+            </g>
+            <line data-lz-beam stroke="#ffb15c" stroke-width="1.6" class="laser__beam"/>
+            <path data-lz-cone fill="rgba(255,150,60,.18)"/>
+            <circle data-lz-glow r="24" fill="url(#lz-glow)" class="laser__glow"/>
+            <g data-lz-sparks></g>
+            <g data-lz-fume></g>
+          </svg>
+          <figcaption class="laser__cap"><span class="dot"></span> Robô industrial · 6 eixos · laser cladding</figcaption>
+        </figure></section>
     <div class="lp-grid">
       <section><h2>Como funciona</h2><p>Um feixe laser de alta potência cria uma poça de fusão rasa sobre a peça, onde o pó metálico é injetado e fundido. O robô industrial de 6 eixos executa a trajetória programada com repetibilidade, formando cordões sobrepostos de espessura controlada e ligação metalúrgica com o metal base.</p></section>
       <section><h2>Benefícios</h2><ul class="lp-list"><li>Diluição mínima: a liga mantém suas propriedades</li><li>Zona termicamente afetada estreita, sem distorção</li><li>Ligação metalúrgica, sem destacamento</li><li>Precisão e repetibilidade robótica</li><li>Robô móvel: aplicação na planta do cliente</li><li>Menos sobremetal e menos usinagem posterior</li></ul></section>
