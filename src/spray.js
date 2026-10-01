@@ -244,7 +244,7 @@ export function initSpray(canvas, opts = {}) {
       let x = rand(zoneA + 10, zoneB - 10), y = 0.08 + rand(0, 0.15);
       const pts = [[x, y]], len = 6 + Math.floor(rand(0, 6));
       for (let k = 0; k < len; k++) { x += rand(-9, 9); y += rand(0.04, 0.1); pts.push([x, y]); }
-      cracks.push({ pts, at: rand(0.4, 1.4), br: pts.length > 4 ? { from: 2 + Math.floor(rand(0, 2)), dx: rand(-1, 1) > 0 ? 1 : -1 } : null });
+      cracks.push({ pts, phi0: rand(0, Math.PI * 2), at: rand(0.4, 1.4), br: pts.length > 4 ? { from: 2 + Math.floor(rand(0, 2)), dx: rand(-1, 1) > 0 ? 1 : -1 } : null });
     }
     cutX = -1;
     if (!locked) proc = (proc + 1) % PROCESSES.length;
@@ -882,10 +882,22 @@ export function initSpray(canvas, opts = {}) {
       const grow = clamp((phaseT - c.at) / 0.8, 0, 1);
       if (grow <= 0) continue;
       const n = Math.max(2, Math.ceil(c.pts.length * grow));
+      // a trinca gira com a peça: cada ponto vive num ângulo da superfície e só aparece na face visível
+      const spin = time * 2.4;
       const draw = (pts, w) => {
-        ctx.beginPath();
-        pts.forEach(([x, y], k) => { const yy = cy - r + y * r * 1.2; if (k) ctx.lineTo(x, yy); else ctx.moveTo(x, yy); });
-        ctx.lineWidth = w; ctx.stroke();
+        let prev = null;
+        for (const [x, y] of pts) {
+          const phi = c.phi0 + spin + y * 1.4;
+          const vis = Math.sin(phi);
+          const cur = { x, y: cy - r * Math.cos(phi), vis };
+          if (prev && prev.vis > 0 && vis > 0) {
+            ctx.globalAlpha = Math.min(prev.vis, vis) ** 0.6;
+            ctx.lineWidth = w * (0.5 + 0.5 * Math.min(prev.vis, vis));
+            ctx.beginPath(); ctx.moveTo(prev.x, prev.y); ctx.lineTo(cur.x, cur.y); ctx.stroke();
+          }
+          prev = cur;
+        }
+        ctx.globalAlpha = 1;
       };
       // corte da ferramenta remove a trinca
       ctx.save();
