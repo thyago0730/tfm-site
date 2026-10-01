@@ -17,7 +17,7 @@ export function initLaser(root, { reduced } = {}) {
     });
   };
   const base = { x: 150, y: 302 }, L1 = 230, L2 = 200;
-  const X0 = 336, X1 = 548, TOP = 331, HEAD = 44, GAP = 12;
+  const X0 = 336, X1 = 536, TOP = 331, HEAD = 44, GAP = 12;
   const deg = (r) => (r * 180) / Math.PI;
   let t = 0, last = 0, raf = 0, visible = false;
 
