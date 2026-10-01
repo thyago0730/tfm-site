@@ -66,6 +66,7 @@ export function initSpray(canvas, opts = {}) {
   // troca de ferramenta: recuo (0 = trabalhando, 1 = recuada) e posição no trilho
   const cutter = { x: -999, lift: 1 }; // ferramenta de usinagem (rebaixo)
   let cracks = [], cutX = -1;
+  const chips = []; // cavacos em espiral
   const tool = { gx: 0, gx0: 0, gLift: 0, wx: -999, wx0: -999, wLift: 1 };
   const grit = Array.from({ length: 70 }, () => [Math.random() * Math.PI * 2, Math.random(), Math.random()]);
   let pointerX = null, pointerT = -99, pointerUsed = reduced;
@@ -282,7 +283,8 @@ export function initSpray(canvas, opts = {}) {
         const k = easeInOut((phaseT - C_IN) / C_DUR);
         cutX = zoneA - 6 + (zoneB - zoneA + 12) * k;
         for (let i = zoneI0; i <= zoneI1; i++) if (i * COL < cutX) wear[i] = Math.max(wear[i], target[i]);
-        if (Math.random() < 0.8) spawnSpark(cutX + 6, cy - r + 4, true);
+        const ci = clamp(Math.floor(cutX / COL), 0, cols - 1);
+        if (chips.length < 40 && Math.random() < 0.3) chips.push({ x: cutX + 4, y: cy - r + target[ci] * depth, vx: rand(-60, 40), vy: rand(-260, -140), a: rand(0, 6.28), va: rand(-14, 14), r: rand(6, 12), turns: rand(1.6, 3), life: 0, max: rand(0.9, 1.5), hue: Math.random() });
       } else if (phaseT >= C_IN + C_DUR) {
         for (let i = zoneI0; i <= zoneI1; i++) wear[i] = target[i];
         cutX = zoneB + 20;
@@ -312,6 +314,13 @@ export function initSpray(canvas, opts = {}) {
     }
 
     wheelA += dt * 28;
+
+    // cavacos: sobem, giram e caem com a gravidade
+    for (let k = chips.length - 1; k >= 0; k--) {
+      const c = chips[k];
+      c.life += dt; c.vy += 520 * dt; c.x += c.vx * dt; c.y += c.vy * dt; c.a += c.va * dt;
+      if (c.life > c.max || c.y > cy + r + 30) chips.splice(k, 1);
+    }
 
     // pistola
     const minG = railA + bodyW * 0.7, maxG = railB - bodyW * 0.7;
@@ -888,27 +897,75 @@ export function initSpray(canvas, opts = {}) {
     ctx.restore();
   }
 
+  function drawChips() {
+    if (!chips.length) return;
+    ctx.save();
+    ctx.lineCap = 'round';
+    for (const c of chips) {
+      const fade = 1 - clamp((c.life - c.max * 0.7) / (c.max * 0.3), 0, 1);
+      // cor de revenido: palha → azulado
+      ctx.strokeStyle = c.hue < 0.5 ? `rgba(214,178,110,${fade})` : `rgba(120,150,200,${fade})`;
+      ctx.lineWidth = 2.2;
+      ctx.beginPath();
+      const n = 28;
+      for (let k = 0; k <= n; k++) {
+        const t = (k / n) * c.turns * Math.PI * 2;
+        const rr = c.r * (0.35 + 0.65 * (k / n));
+        const px = c.x + Math.cos(t + c.a) * rr, py = c.y + Math.sin(t + c.a) * rr * 0.55;
+        if (k) ctx.lineTo(px, py); else ctx.moveTo(px, py);
+      }
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
   function drawCutter() {
     const fa = railFade(cutter.x);
     if (fa <= 0 || phase !== 'wear') return;
-    const x = cutter.x, work = cy - r + (target[clamp(Math.floor(x / COL), 0, cols - 1)] || 0) * depth * 0.2;
-    const park = railY + 40;
-    const tipY2 = work - (work - park) * easeInOut(cutter.lift);
+    const x = cutter.x;
+    const ci = clamp(Math.floor(x / COL), 0, cols - 1);
+    const work = cy - r + (target[ci] || 0) * depth; // ponta no fundo do rebaixo
+    const park = railY + 60;
+    const tip = work - (work - park) * easeInOut(cutter.lift);
     ctx.save(); ctx.globalAlpha = fa;
-    // carro e haste
-    ctx.fillStyle = '#26282c'; roundRect(x - 24, railY - 7, 48, 14, 3); ctx.fill();
+    // carro e coluna
+    ctx.fillStyle = '#26282c'; roundRect(x - 26, railY - 7, 52, 14, 3); ctx.fill();
     ctx.strokeStyle = 'rgba(255,255,255,0.14)'; ctx.stroke();
-    const hg = ctx.createLinearGradient(x - 4, 0, x + 4, 0);
+    const S = mobile ? 1.2 : 1.7; // escala do conjunto porta-ferramenta
+    const hg = ctx.createLinearGradient(x - 5, 0, x + 5, 0);
     hg.addColorStop(0, '#1c1d20'); hg.addColorStop(0.5, '#70757c'); hg.addColorStop(1, '#1c1d20');
-    ctx.fillStyle = hg; ctx.fillRect(x - 4, railY + 7, 8, Math.max(0, tipY2 - 46 - railY - 7));
-    // porta-ferramenta
-    const bg = ctx.createLinearGradient(x - 16, 0, x + 16, 0);
-    bg.addColorStop(0, '#141517'); bg.addColorStop(0.4, '#5d626a'); bg.addColorStop(1, '#0f1012');
-    ctx.fillStyle = bg; roundRect(x - 16, tipY2 - 46, 32, 34, 4); ctx.fill();
-    ctx.fillStyle = '#ff5a14'; ctx.fillRect(x - 11, tipY2 - 20, 22, 3);
-    // pastilha de metal duro
-    ctx.fillStyle = '#c9a227';
-    ctx.beginPath(); ctx.moveTo(x - 8, tipY2 - 12); ctx.lineTo(x + 8, tipY2 - 12); ctx.lineTo(x + 2, tipY2); ctx.lineTo(x - 4, tipY2 - 2); ctx.closePath(); ctx.fill();
+    const holdTop = tip - 64 * S;
+    ctx.fillStyle = hg; ctx.fillRect(x - 5, railY + 7, 10, Math.max(0, holdTop - railY - 7));
+    ctx.save(); ctx.translate(x, tip); ctx.scale(S, S); ctx.translate(-x, -tip);
+    const hT = tip - 64;
+    // torre porta-ferramenta
+    const tg = ctx.createLinearGradient(x - 20, 0, x + 20, 0);
+    tg.addColorStop(0, '#141517'); tg.addColorStop(0.35, '#5d626a'); tg.addColorStop(0.6, '#2b2d31'); tg.addColorStop(1, '#0f1012');
+    ctx.fillStyle = tg; roundRect(x - 20, hT, 40, 26, 4); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.12)'; ctx.stroke();
+    ctx.fillStyle = '#16171a';
+    ctx.beginPath(); ctx.arc(x - 9, hT + 13, 3, 0, Math.PI * 2); ctx.arc(x + 9, hT + 13, 3, 0, Math.PI * 2); ctx.fill();
+    // haste do suporte (inclinada, como um suporte de torneamento)
+    const sg = ctx.createLinearGradient(x - 8, 0, x + 8, 0);
+    sg.addColorStop(0, '#2a2c30'); sg.addColorStop(0.5, '#8b9097'); sg.addColorStop(1, '#2a2c30');
+    ctx.fillStyle = sg;
+    ctx.beginPath(); ctx.moveTo(x - 8, hT + 26); ctx.lineTo(x + 8, hT + 26); ctx.lineTo(x + 8, tip - 14); ctx.lineTo(x + 2, tip - 6); ctx.lineTo(x - 8, tip - 10); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#ff5a14'; ctx.fillRect(x - 8, hT + 34, 16, 2.5);
+    // pastilha rômbica de metal duro com grampo
+    ctx.save(); ctx.translate(x + 1, tip - 5); ctx.rotate(-0.35);
+    const ig = ctx.createLinearGradient(-7, -7, 7, 7);
+    ig.addColorStop(0, '#e6c45a'); ig.addColorStop(1, '#8a6a18');
+    ctx.fillStyle = ig;
+    ctx.beginPath(); ctx.moveTo(0, 6); ctx.lineTo(7, -1); ctx.lineTo(0, -8); ctx.lineTo(-7, -1); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#16171a'; ctx.beginPath(); ctx.arc(0, -1, 1.8, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    ctx.restore();
+    // brilho de corte quando trabalhando
+    if (cutter.lift < 0.05) {
+      const g = ctx.createRadialGradient(x + 2, tip, 0, x + 2, tip, 14);
+      g.addColorStop(0, 'rgba(255,220,160,.55)'); g.addColorStop(1, 'rgba(255,140,40,0)');
+      ctx.fillStyle = g; ctx.fillRect(x - 12, tip - 14, 28, 28);
+    }
     ctx.restore();
   }
 
@@ -1223,6 +1280,7 @@ export function initSpray(canvas, opts = {}) {
     drawCracks();
     drawGun();
     drawCutter();
+    drawChips();
     drawWheel();
     drawHud();
   }
