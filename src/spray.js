@@ -558,7 +558,8 @@ export function initSpray(canvas, opts = {}) {
       const cx0 = jx - cw;
       // cabeçote (corpo da máquina) atrás da placa
       {
-        const hR = cx0 - r * 0.5, hL = Math.max(-20, hR - r * 2.5), hT = cy - r * 1.9, hB = cy + r * 1.75;
+        const gapW = r * 0.7; // eixo-árvore exposto entre o cabeçote e a placa
+        const hR = cx0 - r * 0.5 - gapW, hL = Math.max(-20, hR - r * 2.5), hT = cy - r * 1.45, hB = cy + r * 1.35;
         const hg = ctx.createLinearGradient(0, hT, 0, hB);
         hg.addColorStop(0, '#2c2f33'); hg.addColorStop(0.12, '#3d4146'); hg.addColorStop(0.55, '#1f2124'); hg.addColorStop(1, '#141517');
         ctx.fillStyle = hg;
@@ -571,9 +572,11 @@ export function initSpray(canvas, opts = {}) {
         ctx.fillStyle = 'rgba(0,0,0,0.45)';
         for (let k = 0; k < 6; k++) ctx.fillRect(hL + 12, cy - r * 0.6 + k * r * 0.22, (hR - hL) * 0.38, 2);
         // flange do eixo-árvore saindo para a placa
-        const fg = ctx.createLinearGradient(0, cy - r * 0.9, 0, cy + r * 0.9);
-        fg.addColorStop(0, '#2a2c30'); fg.addColorStop(0.3, '#7c8188'); fg.addColorStop(1, '#16171a');
-        ctx.fillStyle = fg; ctx.fillRect(hR - 2, cy - r * 0.85, r * 0.55, r * 1.7);
+        const fg = ctx.createLinearGradient(0, cy - r * 0.42, 0, cy + r * 0.42);
+        fg.addColorStop(0, '#2a2c30'); fg.addColorStop(0.3, '#c9ced4'); fg.addColorStop(0.6, '#6f747b'); fg.addColorStop(1, '#16171a');
+        ctx.fillStyle = fg; ctx.fillRect(hR - 2, cy - r * 0.42, gapW + 4, r * 0.84);
+        // anel de fixação junto à placa
+        ctx.fillStyle = '#3a3d42'; ctx.fillRect(hR + gapW - 8, cy - r * 0.62, 8, r * 1.24);
       }
       const pg = ctx.createLinearGradient(0, cy - chh / 2, 0, cy + chh / 2);
       pg.addColorStop(0, '#1a1b1e'); pg.addColorStop(0.25, '#4a4e55'); pg.addColorStop(0.5, '#2a2c30'); pg.addColorStop(0.8, '#3b3e44'); pg.addColorStop(1, '#141517');
