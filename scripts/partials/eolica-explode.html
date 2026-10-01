@@ -1,0 +1,143 @@
+<section class="ex" data-explode data-step="0" aria-labelledby="ex-title">
+  <div class="ex__head">
+    <p class="kicker"><span>◆</span> Engenharia por dentro</p>
+    <h2 id="ex-title">Do topo da torre até o eixo principal</h2>
+    <p class="ex__lead">Navegue pela nacele de um aerogerador e veja onde a TFM atua: abrimos a carcaça, separamos a multiplicadora e recuperamos o eixo principal sem esperar meses por uma peça importada.</p>
+  </div>
+  <div class="ex__grid">
+    <figure class="ex__stage">
+      <svg class="ex__svg" viewBox="0 0 900 540" role="img" aria-label="Vista explodida da nacele de um aerogerador">
+        <defs>
+          <linearGradient id="ex-steel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a2c30"/><stop offset=".25" stop-color="#d9dde2"/><stop offset=".45" stop-color="#8b9097"/><stop offset=".8" stop-color="#2f3236"/><stop offset="1" stop-color="#141517"/></linearGradient>
+          <linearGradient id="ex-shell" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f1f2f4"/><stop offset=".6" stop-color="#b9bec4"/><stop offset="1" stop-color="#7c8188"/></linearGradient>
+          <linearGradient id="ex-dark" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a3d42"/><stop offset="1" stop-color="#141517"/></linearGradient>
+          <linearGradient id="ex-gear" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5d7a8c"/><stop offset="1" stop-color="#22313b"/></linearGradient>
+          <linearGradient id="ex-gen" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a5560"/><stop offset="1" stop-color="#1c2228"/></linearGradient>
+          <linearGradient id="ex-tower" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#9aa0a7"/><stop offset=".4" stop-color="#e4e7eb"/><stop offset="1" stop-color="#6d7279"/></linearGradient>
+          <radialGradient id="ex-hot"><stop offset="0" stop-color="rgba(255,120,30,.9)"/><stop offset="1" stop-color="rgba(255,90,20,0)"/></radialGradient>
+          <pattern id="ex-grid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0V24" fill="none" stroke="rgba(255,255,255,.04)"/></pattern>
+        </defs>
+        <rect width="900" height="540" fill="url(#ex-grid)"/>
+        <g class="ex-shake">
+        <!-- torre -->
+        <path d="M478 540 L490 330 L560 330 L572 540 Z" fill="url(#ex-tower)"/>
+        <rect x="470" y="318" width="110" height="14" rx="3" fill="url(#ex-dark)"/>
+        <!-- chassi (bedplate) -->
+        <path class="ex-bed" d="M250 318 L700 318 L690 300 L262 300 Z" fill="url(#ex-dark)" stroke="rgba(255,255,255,.08)"/>
+
+        <!-- gerador -->
+        <g class="ex-part ex-gen">
+          <rect x="600" y="214" width="110" height="86" rx="10" fill="url(#ex-gen)" stroke="rgba(255,255,255,.12)"/>
+          <g stroke="rgba(255,255,255,.12)"><path d="M618 222v70M636 222v70M654 222v70M672 222v70M690 222v70"/></g>
+          <rect x="585" y="250" width="16" height="14" fill="url(#ex-steel)"/>
+          <text x="655" y="320" class="ex-tag" text-anchor="middle">GERADOR</text>
+        </g>
+
+        <!-- multiplicadora (redutor) -->
+        <g class="ex-part ex-gearbox">
+          <path d="M466 192 L590 202 Q596 203 596 209 L596 292 Q596 298 590 298 L466 302 Q460 302 460 296 L460 198 Q460 192 466 192 Z" fill="url(#ex-gear)" stroke="rgba(255,255,255,.18)"/>
+            <path d="M466 192 L590 202 L590 210 L466 202 Z" fill="rgba(255,255,255,.12)"/>
+            <g fill="#1c2228" stroke="rgba(255,255,255,.2)"><circle cx="470" cy="200" r="2.5"/><circle cx="586" cy="210" r="2.5"/><circle cx="470" cy="294" r="2.5"/><circle cx="586" cy="290" r="2.5"/></g>
+            <g stroke="rgba(0,0,0,.35)" stroke-width="3"><path d="M548 206v88M578 208v84"/></g>
+            <rect x="452" y="236" width="10" height="30" rx="2" fill="url(#ex-steel)"/>
+            <rect x="596" y="244" width="12" height="14" rx="2" fill="url(#ex-steel)"/>
+            <rect x="476" y="300" width="24" height="10" rx="2" fill="#1c2228"/><rect x="560" y="296" width="24" height="12" rx="2" fill="#1c2228"/>
+          <g class="ex-gears">
+            <circle cx="512" cy="250" r="44" fill="rgba(10,16,20,.65)"/>
+            <rect x="542" y="206" width="44" height="88" rx="4" fill="rgba(10,16,20,.65)"/>
+            <path d="M548.0 250.0 L544.9 251.9 L544.8 253.7 L547.5 256.0 L547.1 258.0 L543.7 259.1 L543.1 260.9 L545.3 263.8 L544.4 265.6 L540.9 266.0 L539.9 267.6 L541.4 270.8 L540.1 272.4 L536.6 272.0 L535.3 273.3 L536.0 276.8 L534.4 278.1 L531.1 276.9 L529.6 277.9 L529.4 281.5 L527.6 282.4 L524.6 280.5 L522.9 281.1 L522.0 284.6 L520.0 285.1 L517.5 282.5 L515.7 282.8 L514.0 285.9 L512.0 286.0 L510.1 282.9 L508.3 282.8 L506.0 285.5 L504.0 285.1 L502.9 281.7 L501.1 281.1 L498.2 283.3 L496.4 282.4 L496.0 278.9 L494.4 277.9 L491.2 279.4 L489.6 278.1 L490.0 274.6 L488.7 273.3 L485.2 274.0 L483.9 272.4 L485.1 269.1 L484.1 267.6 L480.5 267.4 L479.6 265.6 L481.5 262.6 L480.9 260.9 L477.4 260.0 L476.9 258.0 L479.5 255.5 L479.2 253.7 L476.1 252.0 L476.0 250.0 L479.1 248.1 L479.2 246.3 L476.5 244.0 L476.9 242.0 L480.3 240.9 L480.9 239.1 L478.7 236.2 L479.6 234.4 L483.1 234.0 L484.1 232.4 L482.6 229.2 L483.9 227.6 L487.4 228.0 L488.7 226.7 L488.0 223.2 L489.6 221.9 L492.9 223.1 L494.4 222.1 L494.6 218.5 L496.4 217.6 L499.4 219.5 L501.1 218.9 L502.0 215.4 L504.0 214.9 L506.5 217.5 L508.3 217.2 L510.0 214.1 L512.0 214.0 L513.9 217.1 L515.7 217.2 L518.0 214.5 L520.0 214.9 L521.1 218.3 L522.9 218.9 L525.8 216.7 L527.6 217.6 L528.0 221.1 L529.6 222.1 L532.8 220.6 L534.4 221.9 L534.0 225.4 L535.3 226.7 L538.8 226.0 L540.1 227.6 L538.9 230.9 L539.9 232.4 L543.5 232.6 L544.4 234.4 L542.5 237.4 L543.1 239.1 L546.6 240.0 L547.1 242.0 L544.5 244.5 L544.8 246.3 L547.9 248.0 Z" fill="none" stroke="#9fc3d8" stroke-width="1.6"/><g class="ex-planet" style="--a:0deg"><path class="" d="M520.0 229.0 L522.8 230.9 L522.3 232.8 L518.9 233.0 L518.1 234.1 L519.1 237.4 L517.5 238.5 L514.7 236.5 L513.4 236.9 L512.0 240.0 L510.1 239.8 L509.3 236.5 L508.0 235.9 L504.9 237.4 L503.6 236.1 L505.1 233.0 L504.5 231.7 L501.2 230.9 L501.0 229.0 L504.1 227.6 L504.5 226.3 L502.5 223.5 L503.6 221.9 L506.9 222.9 L508.0 222.1 L508.2 218.7 L510.1 218.2 L512.0 221.0 L513.4 221.1 L515.8 218.7 L517.5 219.5 L517.1 222.9 L518.1 223.9 L521.5 223.5 L522.3 225.2 L519.9 227.6 Z" fill="rgba(159,195,216,.12)" stroke="#9fc3d8" stroke-width="1.6" stroke-linejoin="round"/><circle cx="512" cy="229" r="2.5" fill="#9fc3d8"/></g><g class="ex-planet" style="--a:120deg"><path class="" d="M520.0 229.0 L522.8 230.9 L522.3 232.8 L518.9 233.0 L518.1 234.1 L519.1 237.4 L517.5 238.5 L514.7 236.5 L513.4 236.9 L512.0 240.0 L510.1 239.8 L509.3 236.5 L508.0 235.9 L504.9 237.4 L503.6 236.1 L505.1 233.0 L504.5 231.7 L501.2 230.9 L501.0 229.0 L504.1 227.6 L504.5 226.3 L502.5 223.5 L503.6 221.9 L506.9 222.9 L508.0 222.1 L508.2 218.7 L510.1 218.2 L512.0 221.0 L513.4 221.1 L515.8 218.7 L517.5 219.5 L517.1 222.9 L518.1 223.9 L521.5 223.5 L522.3 225.2 L519.9 227.6 Z" fill="rgba(159,195,216,.12)" stroke="#9fc3d8" stroke-width="1.6" stroke-linejoin="round"/><circle cx="512" cy="229" r="2.5" fill="#9fc3d8"/></g><g class="ex-planet" style="--a:240deg"><path class="" d="M520.0 229.0 L522.8 230.9 L522.3 232.8 L518.9 233.0 L518.1 234.1 L519.1 237.4 L517.5 238.5 L514.7 236.5 L513.4 236.9 L512.0 240.0 L510.1 239.8 L509.3 236.5 L508.0 235.9 L504.9 237.4 L503.6 236.1 L505.1 233.0 L504.5 231.7 L501.2 230.9 L501.0 229.0 L504.1 227.6 L504.5 226.3 L502.5 223.5 L503.6 221.9 L506.9 222.9 L508.0 222.1 L508.2 218.7 L510.1 218.2 L512.0 221.0 L513.4 221.1 L515.8 218.7 L517.5 219.5 L517.1 222.9 L518.1 223.9 L521.5 223.5 L522.3 225.2 L519.9 227.6 Z" fill="rgba(159,195,216,.12)" stroke="#9fc3d8" stroke-width="1.6" stroke-linejoin="round"/><circle cx="512" cy="229" r="2.5" fill="#9fc3d8"/></g><path class="ex-sun" d="M521.0 250.0 L523.9 251.9 L523.4 253.7 L520.0 254.1 L519.3 255.3 L520.5 258.5 L519.1 259.7 L516.1 258.0 L514.8 258.6 L513.9 261.9 L512.0 262.0 L510.6 258.9 L509.2 258.6 L506.6 260.7 L504.9 259.7 L505.6 256.4 L504.7 255.3 L501.3 255.4 L500.6 253.7 L503.1 251.4 L503.0 250.0 L500.1 248.1 L500.6 246.3 L504.0 245.9 L504.7 244.7 L503.5 241.5 L504.9 240.3 L507.9 242.0 L509.2 241.4 L510.1 238.1 L512.0 238.0 L513.4 241.1 L514.8 241.4 L517.4 239.3 L519.1 240.3 L518.4 243.6 L519.3 244.7 L522.7 244.6 L523.4 246.3 L520.9 248.6 Z" fill="rgba(159,195,216,.35)" stroke="#9fc3d8" stroke-width="1.6" stroke-linejoin="round"/><path class="ex-g2" d="M574.0 224.0 L576.9 225.7 L576.6 227.3 L573.3 228.0 L572.8 229.2 L574.7 232.0 L573.7 233.4 L570.5 232.5 L569.5 233.4 L570.0 236.7 L568.5 237.5 L566.0 235.3 L564.7 235.7 L563.7 238.9 L562.0 239.0 L560.7 235.9 L559.3 235.7 L557.0 238.2 L555.5 237.5 L555.6 234.2 L554.5 233.4 L551.4 234.6 L550.3 233.4 L551.8 230.4 L551.2 229.2 L547.8 229.0 L547.4 227.3 L550.1 225.3 L550.0 224.0 L547.1 222.3 L547.4 220.7 L550.7 220.0 L551.2 218.8 L549.3 216.0 L550.3 214.6 L553.5 215.5 L554.5 214.6 L554.0 211.3 L555.5 210.5 L558.0 212.7 L559.3 212.3 L560.3 209.1 L562.0 209.0 L563.3 212.1 L564.7 212.3 L567.0 209.8 L568.5 210.5 L568.4 213.8 L569.5 214.6 L572.6 213.4 L573.7 214.6 L572.2 217.6 L572.8 218.8 L576.2 219.0 L576.6 220.7 L573.9 222.7 Z" fill="rgba(159,195,216,.12)" stroke="#9fc3d8" stroke-width="1.6" stroke-linejoin="round"/><path class="ex-g3" d="M573.0 276.0 L575.4 277.6 L574.9 279.2 L572.1 279.5 L571.4 280.5 L572.1 283.3 L570.8 284.2 L568.4 282.6 L567.2 282.9 L566.0 285.5 L564.4 285.4 L563.6 282.6 L562.5 282.1 L559.9 283.3 L558.7 282.1 L559.9 279.5 L559.4 278.4 L556.6 277.6 L556.5 276.0 L559.1 274.8 L559.4 273.6 L557.8 271.2 L558.7 269.9 L561.5 270.6 L562.5 269.9 L562.8 267.1 L564.4 266.6 L566.0 269.0 L567.2 269.1 L569.2 267.1 L570.8 267.8 L570.5 270.6 L571.4 271.5 L574.2 271.2 L574.9 272.8 L572.9 274.8 Z" fill="rgba(159,195,216,.12)" stroke="#9fc3d8" stroke-width="1.6" stroke-linejoin="round"/>
+          </g>
+          <text x="528" y="322" class="ex-tag" text-anchor="middle">MULTIPLICADORA</text>
+        </g>
+
+        <!-- eixo principal + mancal -->
+        <g class="ex-part ex-shaft">
+          <path d="M268.0 195.4 L275.4 195.4 L275.4 209.0 A16.6 16.6 0 0 0 292.0 224.6 L321.2 224.6 L383.0 229.4 L383.0 232.6 L388.4 232.6 L388.4 233.0 L406.4 233.0 L406.4 232.6 L411.4 232.6 L411.4 232.6 L423.4 232.6 L432.0 232.6 L432.0 233.0 L443.2 233.0 L443.2 269.0 L432.0 269.0 L432.0 269.4 L423.4 269.4 L411.4 269.4 L411.4 269.4 L406.4 269.4 L406.4 269.0 L388.4 269.0 L388.4 269.4 L383.0 269.4 L383.0 272.6 L321.2 277.4 L292.0 277.4 A16.6 16.6 0 0 0 275.4 293.0 L275.4 306.6 L268.0 306.6 Z" fill="url(#ex-steel)" stroke="rgba(0,0,0,.35)"/>
+          <path d="M383.0 232.6 L383.0 269.4" stroke="rgba(0,0,0,.35)"/><path d="M388.4 232.6 L388.4 269.4" stroke="rgba(0,0,0,.35)"/><path d="M406.4 232.6 L406.4 269.4" stroke="rgba(0,0,0,.35)"/><path d="M411.4 232.6 L411.4 269.4" stroke="rgba(0,0,0,.35)"/><path d="M423.4 232.6 L423.4 269.4" stroke="rgba(0,0,0,.35)"/><path d="M432.0 232.6 L432.0 269.4" stroke="rgba(0,0,0,.35)"/>
+          <rect class="ex-seat" x="292.0" y="224.6" width="29.2" height="52.8" fill="none" stroke="rgba(255,255,255,.25)"/>
+          
+          <g class="ex-bearing"><path d="M293.2 205.3 L320.0 205.3 L323.0 243.0 L323.0 259.0 L320.0 296.5 Q318.0 311.1 314.0 325.1 L291.2 325.1 Q285.2 304.5 293.2 296.5 L290.2 259.0 L290.2 243.0 Z" fill="url(#ex-dark)" stroke="rgba(255,255,255,.22)" stroke-linejoin="round"/><rect x="295.2" y="201.3" width="5" height="6" fill="#2a2c30"/><rect x="313.0" y="201.3" width="5" height="6" fill="#2a2c30"/><rect x="295.2" y="207.5" width="22.8" height="5" fill="rgba(255,90,20,.55)"/><rect x="295.2" y="289.5" width="22.8" height="5" fill="rgba(255,90,20,.55)"/><circle cx="304.6" cy="318.1" r="5" fill="#141517" stroke="rgba(255,255,255,.25)"/><text x="306.6" y="195.3" class="ex-tag" text-anchor="middle" style="font-size:8px">MANCAL DIANTEIRO</text></g>
+          <g class="ex-bearing"><path d="M385.1 211.5 L409.7 211.5 L413.7 241.0 L413.7 261.0 L409.7 286.6 L385.1 286.6 L381.1 261.0 L381.1 241.0 Z" fill="url(#ex-dark)" stroke="rgba(255,255,255,.22)" stroke-linejoin="round"/><rect x="387.1" y="207.5" width="5" height="6" fill="#2a2c30"/><rect x="402.7" y="207.5" width="5" height="6" fill="#2a2c30"/><rect x="387.1" y="214.8" width="20.6" height="5" fill="rgba(255,90,20,.55)"/><rect x="387.1" y="282.2" width="20.6" height="5" fill="rgba(255,90,20,.55)"/><text x="397.4" y="201.5" class="ex-tag" text-anchor="middle" style="font-size:8px">MANCAL TRASEIRO</text></g>
+          <ellipse class="ex-hot" cx="306.6" cy="251" rx="22" ry="30" fill="url(#ex-hot)"/>
+          <ellipse class="ex-hot" cx="397.4" cy="251" rx="16" ry="22" fill="url(#ex-hot)"/>
+          <text x="355" y="330" class="ex-tag" text-anchor="middle">EIXO PRINCIPAL</text>
+        </g>
+
+        <!-- rotor (cubo + pás) -->
+        <g class="ex-part ex-hub">
+          <path d="M268 206 Q200 206 180 251 Q200 296 268 296 Z" fill="url(#ex-shell)"/>
+          <g data-ex-blades></g>
+          <text x="210" y="320" class="ex-tag" text-anchor="middle">CUBO DO ROTOR</text>
+        </g>
+
+        <!-- carcaça da nacele -->
+        <g class="ex-part ex-cover">
+          <path d="M262 300 L262 210 Q262 176 300 172 L660 168 Q724 168 730 214 L730 300 Z" fill="url(#ex-shell)" stroke="rgba(0,0,0,.25)"/>
+          <path d="M300 186 L650 182" stroke="rgba(255,255,255,.8)" stroke-width="2"/>
+          <rect x="560" y="196" width="60" height="20" rx="3" fill="rgba(0,0,0,.12)"/>
+          <text x="496" y="244" class="ex-tag ex-tag--dark" text-anchor="middle">NACELE</text>
+        </g>
+
+        </g>
+        <!-- alerta de vibração e manutenção concluída -->
+        <g class="ex-alert">
+          <circle cx="307" cy="251" r="30" class="ex-alert__ring"/>
+          <circle cx="307" cy="251" r="30" class="ex-alert__ring ex-alert__ring--2"/>
+          <path d="M290 330 q4 -6 8 0 t8 0 t8 0 t8 0" class="ex-wave"/>
+          <path d="M290 340 q4 -6 8 0 t8 0 t8 0 t8 0" class="ex-wave ex-wave--2"/>
+          <rect x="300" y="64" width="300" height="34" rx="17" class="ex-pill ex-pill--warn"/>
+          <text x="450" y="86" text-anchor="middle" class="ex-pill__t">⚠ VIBRAÇÃO ANORMAL · MANCAL</text>
+        </g>
+        <g class="ex-ok">
+          <rect x="300" y="64" width="300" height="34" rx="17" class="ex-pill ex-pill--ok"/>
+          <text x="450" y="86" text-anchor="middle" class="ex-pill__t">✓ MANUTENÇÃO CONCLUÍDA</text>
+        </g>
+        <g class="ex-run">
+          <rect x="330" y="64" width="240" height="34" rx="17" class="ex-pill"/>
+          <text x="450" y="86" text-anchor="middle" class="ex-pill__t">● GERANDO ENERGIA</text>
+        </g>
+
+        <!-- chamadas técnicas -->
+        <g class="ex-call ex-call--gear">
+          <path d="M528 196 L600 120 L760 120" class="ex-line"/>
+          <circle cx="528" cy="196" r="4" class="ex-dot"/>
+          <text x="610" y="110" class="ex-label">Multiplicadora</text>
+          <text x="610" y="138" class="ex-sub">Eixos, assentos e engrenagens</text>
+        </g>
+        <g class="ex-call ex-call--seat">
+          <path d="M306.6 224.6 L280 120 L110 120" class="ex-line"/>
+          <circle cx="306.6" cy="224.6" r="4" class="ex-dot"/>
+          <text x="114" y="110" class="ex-label">Assento do rolamento principal</text>
+          <text x="114" y="138" class="ex-sub">Recuperado por laser cladding</text>
+        </g>
+        <g class="ex-call ex-call--seat2">
+          <path d="M397.4 233.0 L500 120 L720 120" class="ex-line"/>
+          <circle cx="397.4" cy="233.0" r="4" class="ex-dot"/>
+          <text x="510" y="110" class="ex-label">Colo do lado da multiplicadora</text>
+          <text x="510" y="138" class="ex-sub">Usinagem e metrologia</text>
+        </g>
+      </svg>
+    </figure>
+    <div class="ex__panel" aria-live="polite">
+      <ol class="ex__steps">
+        <li><button type="button" data-ex-go="0" aria-pressed="false"><span>01</span> Aerogerador</button></li>
+        <li><button type="button" data-ex-go="1"><span>02</span> Abrir a nacele</button></li>
+        <li><button type="button" data-ex-go="2"><span>03</span> Multiplicadora</button></li>
+        <li><button type="button" data-ex-go="3"><span>04</span> Eixo principal</button></li>
+      </ol>
+      <div class="ex__copy" data-ex-copy>
+        <article data-ex-text="run" hidden><h3>Turbina em operação</h3><p>O rotor gira e o eixo principal transmite toda a carga do vento, apoiado nos mancais, até a multiplicadora e o gerador.</p></article>
+        <article data-ex-text="fault" hidden><h3>Vibração na torre</h3><p>Desgaste no assento do rolamento gera folga, ruído e vibração. A turbina para — e cada dia parada é energia que deixa de ser vendida.</p></article>
+        <article data-ex-text="fixed" hidden><h3>Recuperado, de volta ao vento</h3><p>Assentos recuperados com laser cladding e retificados na cota original. A nacele é montada e a turbina volta a gerar, com garantia TFM.</p></article>
+        <article data-ex-text="0" hidden><h3>Turbina parada custa caro</h3><p>Um eixo ou uma multiplicadora importada pode levar meses. A recuperação devolve a turbina ao vento em semanas, com garantia.</p></article>
+        <article data-ex-text="1" hidden><h3>Desmontagem da carcaça</h3><p>Com a nacele aberta, os componentes do trem de força ficam acessíveis: cubo do rotor, eixo principal, mancal, multiplicadora e gerador.</p></article>
+        <article data-ex-text="2" hidden><h3>Multiplicadora (redutor)</h3><p>Converte a baixa rotação do rotor para o gerador. Recuperamos eixos, assentos de rolamento e superfícies de vedação, com metrologia dimensional antes da montagem.</p></article>
+        <article data-ex-text="3" hidden><h3>Main shaft</h3><p>O assento do rolamento principal sofre desgaste e corrosão por atrito. Recuperamos com <strong>laser cladding</strong> (diluição mínima, sem empenar) e retífica na cota original, com robô móvel inclusive em campo.</p></article>
+      </div>
+      <div class="ex__nav">
+        <button type="button" class="ex__btn" data-ex-prev aria-label="Etapa anterior">←</button>
+        <button type="button" class="ex__btn" data-ex-next aria-label="Próxima etapa">→</button>
+      </div>
+    </div>
+  </div>
+</section>
