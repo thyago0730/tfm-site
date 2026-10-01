@@ -10,6 +10,7 @@ import { initSimulator } from './simulator.js';
 import { initWizard } from './wizard.js';
 import { initConsent, logAnalytics } from './analytics.js';
 import { initWhatsApp, waUrl, WHATSAPP } from './whatsapp.js';
+import { initDropdowns } from './nav.js';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
@@ -68,7 +69,7 @@ else window.addEventListener('scroll', () => onScroll(window.scrollY), { passive
 
 // link ativo no menu
 function initNav() {
-  $$('.nav a').forEach((link) => {
+  $$('.nav a[href^="#"]').forEach((link) => {
     const section = $(link.getAttribute('href'));
     if (!section) return;
     ScrollTrigger.create({
@@ -696,6 +697,7 @@ function boot() {
   // a seção com pin é criada primeiro para que os demais gatilhos considerem o espaço que ela ocupa
   initProcess();
   initNav();
+  initDropdowns();
   initCounters();
   initMarquees();
   initPointerFx();
