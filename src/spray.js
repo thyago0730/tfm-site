@@ -852,20 +852,20 @@ export function initSpray(canvas, opts = {}) {
     const offR = railB + 30, offL = railA - 30, wStart = zoneA - 10;
     if (phase === 'grind') {
       tool.gLift = seg(0, 0.45);
-      gun.x = tool.gx = tool.gx0 + (offR - tool.gx0) * seg(0.45, 1.05);
-      tool.wx = phaseT < G_IN ? offL + (wStart - offL) * seg(0.75, 1.4) : sweepX;
+      gun.x = tool.gx = tool.gx0 + (offR - tool.gx0) * seg(0.45, 0.85);
+      tool.wx = phaseT < G_IN ? offL + (wStart - offL) * seg(0.9, 1.3) : sweepX;
       tool.wLift = 1 - seg(1.4, G_IN);
     } else if (phase === 'done') {
       tool.gLift = 1; tool.wLift = 0; tool.wx = sweepX; gun.x = tool.gx;
     } else if (phase === 'wear') {
       tool.wLift = Math.max(tool.wLift, seg(0, 0.4));
-      tool.wx = tool.wx0 < railA - 100 ? -999 : tool.wx0 + (offR - tool.wx0) * seg(0.4, 1.0);
+      tool.wx = tool.wx0 < railA - 100 ? -999 : tool.wx0 + (offR - tool.wx0) * seg(0.4, 0.8);
       // ferramenta de usinagem: entra recuada, desce, rebaixa e sai pelo fim da régua
-      if (phaseT < C_IN) { cutter.x = offL + (zoneA - 6 - offL) * seg(2.0, 2.6); cutter.lift = 1 - seg(2.6, C_IN); }
+      if (phaseT < C_IN) { cutter.x = offL + (zoneA - 6 - offL) * seg(2.2, 2.6); cutter.lift = 1 - seg(2.6, C_IN); }
       else if (phaseT < C_IN + C_DUR) { cutter.x = cutX; cutter.lift = 0; }
-      else { cutter.lift = seg(C_IN + C_DUR, C_IN + C_DUR + 0.35); cutter.x = (zoneB + 6) + (offR - zoneB - 6) * seg(C_IN + C_DUR + 0.35, C_IN + C_DUR + 0.95); }
+      else { cutter.lift = seg(C_IN + C_DUR, C_IN + C_DUR + 0.35); cutter.x = (zoneB + 6) + (offR - zoneB - 6) * seg(C_IN + C_DUR + 0.35, C_IN + C_DUR + 0.75); }
       const g0 = C_IN + C_DUR + 0.7;
-      gun.x = tool.gx = offL + (zoneA - offL) * seg(g0, g0 + 0.6);
+      gun.x = tool.gx = offL + (zoneA - offL) * seg(g0, g0 + 0.4);
       tool.gLift = 1 - seg(g0 + 0.6, g0 + 1.1);
     } else {
       cutter.x = -999;
@@ -886,7 +886,7 @@ export function initSpray(canvas, opts = {}) {
   function drawElevators() {
     // a comporta só abre enquanto uma ferramenta está entrando/saindo por ela (além da ponta do trilho)
     const xs = [gun.x, tool.wx, phase === 'wear' ? cutter.x : -999];
-    const near = (hx) => Math.max(0, ...xs.map((x) => (hx < railA ? clamp((railA - 4 - x) / 12, 0, 1) : clamp((x - railB - 4) / 12, 0, 1)) * (x > -500 ? 1 : 0)));
+    const near = (hx) => Math.max(0, ...xs.map((x) => (hx < railA ? clamp((railA - 4 - x) / 8, 0, 1) * clamp((x - (railA - 30) - 0.5) / 3, 0, 1) : clamp((x - railB - 4) / 8, 0, 1) * clamp((railB + 30 - x - 0.5) / 3, 0, 1)) * (x > -500 ? 1 : 0)));
     for (const hx of [hxA(), hxB()]) {
       const w = HW(), y = railY - 4, h = 8;
       const open = easeInOut(near(hx));
