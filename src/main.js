@@ -9,7 +9,7 @@ import { initMatrix } from './matrix.js';
 import { initSimulator } from './simulator.js';
 import { initWizard } from './wizard.js';
 import { initConsent, logAnalytics } from './analytics.js';
-import { initWhatsApp, waUrl, WHATSAPP } from './whatsapp.js';
+import { initWhatsApp, WHATSAPP, UNITS } from './whatsapp.js';
 import { initDropdowns } from './nav.js';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
@@ -701,7 +701,7 @@ function boot() {
   initMarquees();
   initPointerFx();
   initTracking();
-  initWhatsApp({ track, reduced, ScrollTrigger });
+  const wa = initWhatsApp({ track, reduced, ScrollTrigger });
   initConsent();
   initProgress();
 
@@ -725,7 +725,7 @@ function boot() {
     };
     lazy($('#laser'), () => import('./laser.js').then(({ initLaser }) => initLaser($('#laser'), { reduced })));
     lazy($('[data-micro-root]'), () => import('./micro.js').then(({ initMicro }) => initMicro($('[data-micro-root]'), { reduced })));
-    const wizard = initWizard($('[data-wizard]'), { reduced, whatsapp: WHATSAPP, email: EMAIL, track, toast });
+    const wizard = initWizard($('[data-wizard]'), { reduced, whatsapp: WHATSAPP, units: UNITS, email: EMAIL, track, toast });
     initSimulator($('[data-sim]'), {
       reduced,
       onSend: (sim) => {
@@ -734,7 +734,7 @@ function boot() {
         scrollToTarget('#contato');
       },
       onWhatsApp: (sim) => {
-        window.open(waUrl(`Olá, tudo bem? Fiz a simulação no site de vocês e queria avaliar a recuperação de uma peça.\n\n${sim.text}`), '_blank', 'noopener');
+        wa?.open(`Olá, tudo bem? Fiz a simulação no site de vocês e queria avaliar a recuperação de uma peça. ${sim.text}`);
         track('whatsapp_click', { origem: 'simulador' });
         track('simulacao_enviada', { economia: Math.round(sim.total), canal: 'whatsapp' });
       },

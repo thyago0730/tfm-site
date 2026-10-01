@@ -3,7 +3,9 @@ import gsap from 'gsap';
 const TITLES = ['Necessidade', 'A peça', 'Prazo', 'Contato'];
 
 // Orçamento em 4 etapas, enviado pronto para WhatsApp ou e-mail.
-export function initWizard(form, { reduced, whatsapp, email, track, toast }) {
+export function initWizard(form, { reduced, whatsapp, units, email, track, toast }) {
+  const UNIT_KEY = { 'Alumínio-SP': 'aluminio', 'Rio das Ostras-RJ': 'ostras', 'Nova Friburgo-RJ': 'friburgo' };
+  const phoneFor = () => units?.[UNIT_KEY[values().unidade]]?.phone || whatsapp;
   const steps = [...form.querySelectorAll('.wz-step')];
   const bars = [...form.querySelectorAll('.wizard__progress li')];
   const current = form.querySelector('[data-wz-current]');
@@ -166,7 +168,7 @@ export function initWizard(form, { reduced, whatsapp, email, track, toast }) {
     <div>
       <strong>Sua mensagem está pronta no WhatsApp.</strong>
       <p>Toque em enviar na conversa e, se puder, mande fotos da peça: isso acelera o diagnóstico.</p>
-      <p><a data-wz-reopen href="https://wa.me/${whatsapp}" target="_blank" rel="noopener">O WhatsApp não abriu? Clique aqui</a> · <button type="button" data-wz-restart>Fazer outro pedido</button></p>
+      <p><a data-wz-reopen href="https://wa.me/${phoneFor()}" target="_blank" rel="noopener">O WhatsApp não abriu? Clique aqui</a> · <button type="button" data-wz-restart>Fazer outro pedido</button></p>
     </div>`;
   form.append(done);
   done.querySelector('[data-wz-restart]').addEventListener('click', () => {
@@ -180,7 +182,7 @@ export function initWizard(form, { reduced, whatsapp, email, track, toast }) {
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     if (!validate(index)) return;
-    const url = `https://wa.me/${whatsapp}?text=${encodeURIComponent(message())}`;
+    const url = `https://wa.me/${phoneFor()}?text=${encodeURIComponent(message())}`;
     window.open(url, '_blank', 'noopener');
     done.querySelector('[data-wz-reopen]').href = url;
     done.hidden = false;

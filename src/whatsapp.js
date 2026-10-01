@@ -5,12 +5,35 @@ export const WA_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true" class="wa-ic
 
 export const waUrl = (message) => `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(message)}`;
 
-const QUICK = [
-  { key: 'foto', label: 'Enviar foto de uma peça para avaliação', msg: 'Olá, tudo bem? Queria mandar umas fotos de uma peça para vocês avaliarem.' },
-  { key: 'emergencia', label: 'Emergência: equipamento parado', msg: 'Olá! Estou com um equipamento parado e preciso de ajuda com urgência.' },
-  { key: 'orcamento', label: 'Orçamento de recuperação ou revestimento', msg: 'Olá, tudo bem? Queria um orçamento para recuperar uma peça.' },
-  { key: 'campo', label: 'Serviço de campo na minha planta', msg: 'Olá, tudo bem? Preciso de um serviço de campo aqui na nossa planta.' },
+// Unidades ativas e o que cada uma executa
+export const UNITS = {
+  aluminio: { name: 'Alumínio · SP', phone: '5511950427669', services: ['metalizacao', 'solda', 'usinagem'] },
+  ostras: { name: 'Rio das Ostras · RJ', phone: '5521999265869', services: ['caldeiraria', 'metalizacao', 'solda', 'usinagem'] },
+  friburgo: { name: 'Nova Friburgo · RJ', phone: '5522981810145', services: ['cromo', 'usinagem'] },
+};
+const SERVICES = [
+  ['metalizacao', 'Metalização / aspersão térmica'],
+  ['solda', 'Soldas especiais (laser, PTA, arco submerso)'],
+  ['cromo', 'Cromo duro'],
+  ['usinagem', 'Usinagem'],
+  ['caldeiraria', 'Caldeiraria'],
 ];
+const REGIONS = [
+  ['sp', 'SP, Sul, Centro-Oeste ou MG'],
+  ['rj', 'Rio de Janeiro, Baixada ou Serra'],
+  ['nf', 'Norte Fluminense, ES ou offshore'],
+  ['ne', 'Norte ou Nordeste'],
+];
+// regra: a unidade mais próxima que executa o serviço
+export function route(service, region) {
+  if (service === 'cromo') return 'friburgo';
+  if (service === 'caldeiraria') return 'ostras';
+  if (region === 'nf') return 'ostras';
+  if (region === 'rj') return service === 'usinagem' ? 'friburgo' : 'ostras';
+  return 'aluminio';
+}
+const unitUrl = (unit, msg) => `https://wa.me/${UNITS[unit].phone}?text=${encodeURIComponent(msg)}`;
+const LS = 'tfm-unidade';
 
 
 // Links estáticos marcados com data-wa="mensagem"
@@ -34,18 +57,65 @@ function initWidget({ track, reduced }) {
   let open = false;
   let teaserTimer;
 
-  QUICK.forEach((q) => {
-    const li = document.createElement('li');
-    const a = document.createElement('a');
-    a.href = waUrl(q.msg);
-    a.target = '_blank';
-    a.rel = 'noopener';
-    a.dataset.waOrigin = `widget_${q.key}`;
-    a.innerHTML = `<span>${q.label}</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>`;
-    a.addEventListener('click', () => setOpen(false));
-    li.append(a);
-    list.append(li);
-  });
+  // direcionamento: serviço → região → unidade
+  const state = { service: null, region: null, msg: null };
+  try { Object.assign(state, JSON.parse(localStorage.getItem(LS) || '{}'), { msg: null }); } catch { /* ignore */ }
+  const label = (arr, k) => arr.find(([v]) => v === k)?.[1] || '';
+  const chips = (arr, onPick) => {
+    const ul = document.createElement('ul');
+    ul.className = 'wa-quick';
+    arr.forEach(([k, txt]) => {
+      const li = document.createElement('li');
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.innerHTML = `<span>${txt}</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>`;
+      b.addEventListener('click', () => onPick(k));
+      li.append(b); ul.append(li);
+    });
+    return ul;
+  };
+  const bubble = (txt, me) => { const p = document.createElement('p'); p.className = me ? 'wa-bubble wa-bubble--me' : 'wa-bubble'; p.textContent = txt; return p; };
+  const body = list.parentElement;
+  const message = () => {
+    const base = state.msg || 'Olá, tudo bem? Queria um orçamento.';
+    const svc = label(SERVICES, state.service).replace(/ \(.*\)| \/.*/, '').toLowerCase();
+    const reg = state.region ? ` Estamos na região de ${label(REGIONS, state.region).replace(' ou ', ' / ')}.` : '';
+    return `${base} Seria um serviço de ${svc}.${reg}`;
+  };
+  const render = () => {
+    body.replaceChildren();
+    body.append(bubble('Olá! Para falar direto com a unidade certa, qual serviço você precisa?'));
+    if (!state.service) { body.append(chips(SERVICES, (k) => { state.service = k; state.region = null; render(); })); return; }
+    body.append(bubble(label(SERVICES, state.service), true));
+    const needsRegion = !['cromo', 'caldeiraria'].includes(state.service);
+    if (needsRegion && !state.region) {
+      body.append(bubble('E onde fica a sua planta?'));
+      body.append(chips(REGIONS, (k) => { state.region = k; render(); }));
+      requestAnimationFrame(() => { body.scrollTop = body.scrollHeight; });
+      return;
+    }
+    if (needsRegion) body.append(bubble(label(REGIONS, state.region), true));
+    const unit = route(state.service, state.region);
+    try { localStorage.setItem(LS, JSON.stringify({ service: state.service, region: state.region })); } catch { /* ignore */ }
+    const card = document.createElement('div');
+    card.className = 'wa-route';
+    card.innerHTML = `<small>Você será atendido pela unidade</small><strong>${UNITS[unit].name}</strong>`;
+    const go = document.createElement('a');
+    go.className = 'wa-route__go';
+    go.href = unitUrl(unit, message());
+    go.target = '_blank'; go.rel = 'noopener';
+    go.dataset.waOrigin = `widget_${unit}`;
+    go.innerHTML = `${WA_ICON}<span>Abrir conversa no WhatsApp</span>`;
+    go.addEventListener('click', () => { track?.('whatsapp_unidade', { unidade: unit, servico: state.service, regiao: state.region || '' }); setOpen(false, { focus: false }); });
+    const redo = document.createElement('button');
+    redo.type = 'button'; redo.className = 'wa-route__redo'; redo.textContent = 'Trocar serviço ou região';
+    redo.addEventListener('click', () => { state.service = null; state.region = null; render(); });
+    card.append(go, redo);
+    body.append(card);
+    requestAnimationFrame(() => { body.scrollTop = body.scrollHeight; });
+    form.dataset.unit = unit;
+  };
+  render();
 
   const hideTeaser = () => {
     clearTimeout(teaserTimer);
@@ -61,7 +131,7 @@ function initWidget({ track, reduced }) {
     if (open) {
       try { sessionStorage.setItem('tfm-wa-seen', '1'); } catch { /* ignore */ }
       track?.('whatsapp_widget_aberto');
-      if (focus) requestAnimationFrame(() => list.querySelector('a')?.focus());
+      if (focus) requestAnimationFrame(() => panel.querySelector('.wa-panel__body button, .wa-panel__body a')?.focus());
     } else if (focus) {
       toggle.focus();
     }
@@ -74,20 +144,24 @@ function initWidget({ track, reduced }) {
   root.querySelector('[data-wa-close]').addEventListener('click', () => setOpen(false));
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && open) setOpen(false); });
   document.addEventListener('click', (e) => {
-    if (open && !root.contains(e.target) && !e.target.closest('[data-wa-open]')) setOpen(false, { focus: false });
+    if (open && e.target.isConnected && !root.contains(e.target) && !e.target.closest('[data-wa-open], a[data-wa]')) setOpen(false, { focus: false });
   });
+  // qualquer botão/link de WhatsApp do site abre o direcionamento, levando a mensagem do contexto
   document.addEventListener('click', (e) => {
-    const opener = e.target.closest('[data-wa-open]');
-    if (!opener) return;
+    const opener = e.target.closest('[data-wa-open], a[data-wa]');
+    if (!opener || root.contains(opener)) return;
     e.preventDefault();
+    state.msg = opener.dataset.wa || null;
+    render();
     setOpen(true);
   });
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const text = input.value.trim();
-    const msg = text ? `Olá! ${text}` : QUICK[0].msg;
-    window.open(waUrl(msg), '_blank', 'noopener');
+    const unit = form.dataset.unit || 'aluminio';
+    const msg = text ? `Olá! ${text}` : message();
+    window.open(unitUrl(unit, msg), '_blank', 'noopener');
     track?.('whatsapp_click', { origem: 'widget_texto' });
     input.value = '';
     setOpen(false, { focus: false });
@@ -121,7 +195,7 @@ function initWidget({ track, reduced }) {
   teaser.querySelector('[data-wa-teaser-close]').addEventListener('click', hideTeaser);
   teaser.querySelector('[data-wa-teaser-open]').addEventListener('click', () => setOpen(true));
 
-  return { setOpen };
+  return { setOpen, open: (msg) => { state.msg = msg || null; render(); setOpen(true); } };
 }
 
 // Barra fixa no mobile: aparece depois do hero e some quando o orçamento está na tela
