@@ -533,7 +533,9 @@ export function initSpray(canvas, opts = {}) {
 
     // zona de trabalho: texturas contínuas mascaradas pela proporção de cada camada
     const zw = Math.max(1, Math.round(zB - zA));
-    const zh = Math.max(1, Math.round(r * 2));
+    // margem para o sobremetal, que fica acima do diâmetro nominal
+    const om = Math.ceil(OVER * depth) + 2;
+    const zh = Math.max(1, Math.round(r * 2 + om * 2));
     if (zoneCv.width !== zw || zoneCv.height !== zh) {
       zoneCv.width = layerCv.width = zw;
       zoneCv.height = layerCv.height = zh;
@@ -558,7 +560,7 @@ export function initSpray(canvas, opts = {}) {
     layer(PROCESSES[proc].torch === 'pta' ? bead : coating, (i) => (wear[i] > 0.01 ? Math.min(1, coat[i] / wear[i]) : coat[i] > 0.01 ? 1 : 0) * (1 - polish[i]));
     ctx.save();
     ctx.clip(shaftPath);
-    ctx.drawImage(zoneCv, zA, cy - r);
+    ctx.drawImage(zoneCv, zA, cy - r - om);
     ctx.restore();
 
     // linhas de giro
