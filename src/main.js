@@ -138,9 +138,8 @@ function heroIntro() {
   }
   gsap.set(lines, { yPercent: 110 });
   const tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
-  tl.to('.loader', { clipPath: 'inset(0 0 100% 0)', duration: 1, ease: 'expo.inOut' })
-    .add(() => root.classList.add('is-loaded'))
-    .to(lines, { yPercent: 0, duration: 1.4, stagger: 0.1 }, '-=0.45')
+  root.classList.add('is-loaded');
+  tl.to(lines, { yPercent: 0, duration: 1.4, stagger: 0.1 })
     .fromTo('.hero .eyebrow', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 1 }, '<')
     .fromTo(fades, { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: 1.2, stagger: 0.1 }, '-=1.05')
     .fromTo('.hero__canvas', { opacity: 0 }, { opacity: 1, duration: 1.6, ease: 'power2.out' }, '-=1.3');
@@ -742,7 +741,5 @@ function boot() {
   ScrollTrigger.refresh();
 }
 
-const fontsReady = document.fonts ? document.fonts.ready : Promise.resolve();
-const minDelay = new Promise((r) => setTimeout(r, reduced ? 0 : 400));
-const timeout = new Promise((r) => setTimeout(r, 2500));
-Promise.race([Promise.all([fontsReady, minDelay]), timeout]).then(boot);
+// sem tela de carregamento: inicia assim que o script roda (fontes entram com font-display: swap)
+boot();
