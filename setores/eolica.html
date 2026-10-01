@@ -53,6 +53,7 @@
           <pattern id="ex-grid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0V24" fill="none" stroke="rgba(255,255,255,.04)"/></pattern>
         </defs>
         <rect width="900" height="540" fill="url(#ex-grid)"/>
+        <g class="ex-shake">
         <!-- torre -->
         <path d="M478 540 L490 330 L560 330 L572 540 Z" fill="url(#ex-tower)"/>
         <rect x="470" y="318" width="110" height="14" rx="3" fill="url(#ex-dark)"/>
@@ -100,8 +101,7 @@
         <!-- rotor (cubo + pás) -->
         <g class="ex-part ex-hub">
           <path d="M268 206 Q200 206 180 251 Q200 296 268 296 Z" fill="url(#ex-shell)"/>
-          <path d="M212 216 L196 40 L224 40 L236 214 Z" fill="url(#ex-shell)" opacity=".95"/>
-          <path d="M212 286 L196 520 L224 520 L236 288 Z" fill="url(#ex-shell)" opacity=".7"/>
+          <g data-ex-blades></g>
           <text x="210" y="320" class="ex-tag" text-anchor="middle">CUBO DO ROTOR</text>
         </g>
 
@@ -111,6 +111,25 @@
           <path d="M300 186 L650 182" stroke="rgba(255,255,255,.8)" stroke-width="2"/>
           <rect x="560" y="196" width="60" height="20" rx="3" fill="rgba(0,0,0,.12)"/>
           <text x="496" y="244" class="ex-tag ex-tag--dark" text-anchor="middle">NACELE</text>
+        </g>
+
+        </g>
+        <!-- alerta de vibração e manutenção concluída -->
+        <g class="ex-alert">
+          <circle cx="307" cy="251" r="30" class="ex-alert__ring"/>
+          <circle cx="307" cy="251" r="30" class="ex-alert__ring ex-alert__ring--2"/>
+          <path d="M290 330 q4 -6 8 0 t8 0 t8 0 t8 0" class="ex-wave"/>
+          <path d="M290 340 q4 -6 8 0 t8 0 t8 0 t8 0" class="ex-wave ex-wave--2"/>
+          <rect x="300" y="64" width="300" height="34" rx="17" class="ex-pill ex-pill--warn"/>
+          <text x="450" y="86" text-anchor="middle" class="ex-pill__t">⚠ VIBRAÇÃO ANORMAL · MANCAL</text>
+        </g>
+        <g class="ex-ok">
+          <rect x="300" y="64" width="300" height="34" rx="17" class="ex-pill ex-pill--ok"/>
+          <text x="450" y="86" text-anchor="middle" class="ex-pill__t">✓ MANUTENÇÃO CONCLUÍDA</text>
+        </g>
+        <g class="ex-run">
+          <rect x="330" y="64" width="240" height="34" rx="17" class="ex-pill"/>
+          <text x="450" y="86" text-anchor="middle" class="ex-pill__t">● GERANDO ENERGIA</text>
         </g>
 
         <!-- chamadas técnicas -->
@@ -142,7 +161,10 @@
         <li><button type="button" role="tab" data-ex-go="3"><span>04</span> Eixo principal</button></li>
       </ol>
       <div class="ex__copy" data-ex-copy>
-        <article data-ex-text="0"><h3>Turbina parada custa caro</h3><p>Um eixo ou uma multiplicadora importada pode levar meses. A recuperação devolve a turbina ao vento em semanas, com garantia.</p></article>
+        <article data-ex-text="run" hidden><h3>Turbina em operação</h3><p>O rotor gira e o eixo principal transmite toda a carga do vento, apoiado nos mancais, até a multiplicadora e o gerador.</p></article>
+        <article data-ex-text="fault" hidden><h3>Vibração na torre</h3><p>Desgaste no assento do rolamento gera folga, ruído e vibração. A turbina para — e cada dia parada é energia que deixa de ser vendida.</p></article>
+        <article data-ex-text="fixed" hidden><h3>Recuperado, de volta ao vento</h3><p>Assentos recuperados com laser cladding e retificados na cota original. A nacele é montada e a turbina volta a gerar, com garantia TFM.</p></article>
+        <article data-ex-text="0" hidden><h3>Turbina parada custa caro</h3><p>Um eixo ou uma multiplicadora importada pode levar meses. A recuperação devolve a turbina ao vento em semanas, com garantia.</p></article>
         <article data-ex-text="1" hidden><h3>Desmontagem da carcaça</h3><p>Com a nacele aberta, os componentes do trem de força ficam acessíveis: cubo do rotor, eixo principal, mancal, multiplicadora e gerador.</p></article>
         <article data-ex-text="2" hidden><h3>Multiplicadora (redutor)</h3><p>Converte a baixa rotação do rotor para o gerador. Recuperamos eixos, assentos de rolamento e superfícies de vedação, com metrologia dimensional antes da montagem.</p></article>
         <article data-ex-text="3" hidden><h3>Main shaft</h3><p>O assento do rolamento principal sofre desgaste e corrosão por atrito. Recuperamos com <strong>laser cladding</strong> (diluição mínima, sem empenar) e retífica na cota original, com robô móvel inclusive em campo.</p></article>

@@ -1736,3 +1736,29 @@ input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px 
 .ex[data-step="2"] .ex-g3 { animation: ex-spin 1.6s linear infinite; }
 @keyframes ex-orbit { from { transform: rotate(var(--a)); } to { transform: rotate(calc(var(--a) + 360deg)); } }
 .ex[data-step="2"] .ex-gearbox { transform: translate(40px, -40px) scale(1.35); transform-origin: 528px 250px; }
+/* história da turbina: operação, vibração, manutenção e retorno */
+.ex-alert, .ex-ok, .ex-run { opacity: 0; transition: opacity .5s; pointer-events: none; }
+.ex[data-phase="run"] .ex-run, .ex[data-phase="close"] .ex-run { opacity: 1; }
+.ex[data-phase="fault"] .ex-alert { opacity: 1; }
+.ex[data-phase="fixed"] .ex-ok { opacity: 1; }
+.ex-pill { fill: rgba(14,14,16,.85); stroke: rgba(125,220,154,.6); }
+.ex-pill--warn { stroke: rgba(255,80,60,.8); }
+.ex-pill--ok { stroke: #7ddc9a; }
+.ex-pill__t { font: 600 12px "JetBrains Mono", ui-monospace, monospace; letter-spacing: .12em; fill: #fff; }
+.ex[data-phase="run"] .ex-run .ex-pill__t { fill: #7ddc9a; }
+.ex-alert__ring { fill: none; stroke: #ff503c; stroke-width: 2; transform-box: fill-box; transform-origin: center; animation: ex-ring 1.2s ease-out infinite; }
+.ex-alert__ring--2 { animation-delay: .6s; }
+@keyframes ex-ring { from { transform: scale(.5); opacity: 1; } to { transform: scale(1.8); opacity: 0; } }
+.ex-wave { fill: none; stroke: #ff503c; stroke-width: 1.5; animation: ex-wave .4s linear infinite alternate; }
+.ex-wave--2 { animation-delay: .2s; }
+@keyframes ex-wave { to { transform: translateY(3px); opacity: .3; } }
+.ex[data-phase="fault"] .ex-shake { animation: ex-shake .09s linear infinite; }
+@keyframes ex-shake { 0% { transform: translate(0, 0); } 25% { transform: translate(1.6px, -1px); } 50% { transform: translate(-1.4px, 1px); } 75% { transform: translate(1px, 1.4px); } 100% { transform: translate(-1px, -1px); } }
+.ex[data-phase="fault"] .ex-seat, .ex[data-phase="fault"] .ex-bearing path { stroke: #ff503c; }
+.ex[data-phase="fixed"] .ex-hot { animation: none; opacity: 0; }
+.ex[data-phase="fixed"] .ex-seat { stroke: #7ddc9a; stroke-width: 2; }
+.ex[data-step="3"] .ex-bearing .ex-tag { opacity: 0; }
+@media (prefers-reduced-motion: reduce) { .ex-shake, .ex-alert__ring, .ex-wave { animation: none !important; } }
+.ex[data-step="0"] .ex-bearing { opacity: 0; }
+.ex-call { transition: opacity .35s; }
+.ex[data-step="2"] .ex-call--gear, .ex[data-step="3"] .ex-call--seat, .ex[data-step="3"] .ex-call--seat2 { transition: opacity .7s .5s; }
