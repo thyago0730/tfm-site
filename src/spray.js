@@ -43,6 +43,7 @@ const PROCESSES = [
   { name: 'PTA · STELLITE 6', torch: 'pta' },
 ];
 const OVER = 0.35; // sobremetal: a camada passa do diâmetro nominal para ser retificada
+const C_IN = 3.0, C_DUR = 2.2, W_END = C_IN + C_DUR + 1.9; // trinca → rebaixo → entra a tocha
 const G_IN = 1.9; // tempo da troca pistola → rebolo antes de retificar
 const LABELS = { wear: 'DIAGNÓSTICO', spray: 'ASPERSÃO', grind: 'RETÍFICA', done: 'RECUPERADO ✓' };
 
@@ -63,6 +64,8 @@ export function initSpray(canvas, opts = {}) {
   let phase = 'wear', phaseT = 0, sweepX = 0, progress = 0, layerMM = 0;
   let time = 0, emit = 0, emitAcc = 0, wheelA = 0;
   // troca de ferramenta: recuo (0 = trabalhando, 1 = recuada) e posição no trilho
+  const cutter = { x: -999, lift: 1 }; // ferramenta de usinagem (rebaixo)
+  let cracks = [], cutX = -1;
   const tool = { gx: 0, gx0: 0, gLift: 0, wx: -999, wx0: -999, wLift: 1 };
   const grit = Array.from({ length: 70 }, () => [Math.random() * Math.PI * 2, Math.random(), Math.random()]);
   let pointerX = null, pointerT = -99, pointerUsed = reduced;
@@ -233,6 +236,16 @@ export function initSpray(canvas, opts = {}) {
       over[i] = OVER * Math.pow(Math.sin(Math.PI * u), 0.35);
     }
     zoneMM = Math.round(rand(0.5, 1.2) * 100) / 100;
+    // trincas na superfície: ramificações a partir de pontos na zona
+    cracks = [];
+    const nC = 3 + Math.floor(rand(0, 3));
+    for (let c = 0; c < nC; c++) {
+      let x = rand(zoneA + 10, zoneB - 10), y = 0.08 + rand(0, 0.15);
+      const pts = [[x, y]], len = 6 + Math.floor(rand(0, 6));
+      for (let k = 0; k < len; k++) { x += rand(-9, 9); y += rand(0.04, 0.1); pts.push([x, y]); }
+      cracks.push({ pts, at: rand(0.4, 1.4), br: pts.length > 4 ? { from: 2 + Math.floor(rand(0, 2)), dx: rand(-1, 1) > 0 ? 1 : -1 } : null });
+    }
+    cutX = -1;
     if (!locked) proc = (proc + 1) % PROCESSES.length;
     opts.onProcess?.(PROCESSES[proc].torch);
     canvas.dataset.process = PROCESSES[proc].torch;
@@ -254,9 +267,27 @@ export function initSpray(canvas, opts = {}) {
 
     // máquina de estados
     if (phase === 'wear') {
-      const k = easeInOut(clamp(phaseT / 1.2, 0, 1));
-      for (let i = zoneI0; i <= zoneI1; i++) wear[i] = target[i] * k;
-      if (phaseT > 1.9) { phase = 'spray'; phaseT = 0; }
+      // trinca e quebra: um fragmento se solta
+      if (phaseT > 1.7 && phaseT - dt <= 1.7) {
+        const c = cracks[0];
+        if (c) {
+          const x0 = c.pts[0][0];
+          for (let i = Math.max(zoneI0, Math.floor((x0 - 14) / COL)); i <= Math.min(zoneI1, Math.ceil((x0 + 14) / COL)); i++) wear[i] = Math.max(wear[i], target[i] * 0.45);
+          for (let k = 0; k < 10; k++) spawnSpark(x0 + rand(-8, 8), cy - r + 2, false);
+          for (let k = 0; k < 5; k++) smoke.push({ x: x0, y: cy - r, vx: rand(-20, 20), vy: rand(-40, -15), life: 0, max: rand(0.8, 1.4), size: rand(6, 12) });
+        }
+      }
+      // usinagem: a ferramenta rebaixa a zona até a profundidade de recuperação
+      if (phaseT > C_IN && phaseT < C_IN + C_DUR) {
+        const k = easeInOut((phaseT - C_IN) / C_DUR);
+        cutX = zoneA - 6 + (zoneB - zoneA + 12) * k;
+        for (let i = zoneI0; i <= zoneI1; i++) if (i * COL < cutX) wear[i] = Math.max(wear[i], target[i]);
+        if (Math.random() < 0.8) spawnSpark(cutX + 6, cy - r + 4, true);
+      } else if (phaseT >= C_IN + C_DUR) {
+        for (let i = zoneI0; i <= zoneI1; i++) wear[i] = target[i];
+        cutX = zoneB + 20;
+      }
+      if (phaseT > W_END) { phase = 'spray'; phaseT = 0; }
     } else if (phase === 'spray') {
       let sw = 0, sc = 0;
       for (let i = zoneI0; i <= zoneI1; i++) { sw += wear[i] + over[i]; sc += coat[i]; }
@@ -809,9 +840,15 @@ export function initSpray(canvas, opts = {}) {
     } else if (phase === 'wear') {
       tool.wLift = Math.max(tool.wLift, seg(0, 0.4));
       tool.wx = tool.wx0 < railA - 100 ? -999 : tool.wx0 + (offR - tool.wx0) * seg(0.4, 1.0);
-      gun.x = tool.gx = offL + (zoneA - offL) * seg(0.7, 1.35);
-      tool.gLift = 1 - seg(1.35, 1.85);
+      // ferramenta de usinagem: entra recuada, desce, rebaixa e sai pelo fim da régua
+      if (phaseT < C_IN) { cutter.x = offL + (zoneA - 6 - offL) * seg(2.0, 2.6); cutter.lift = 1 - seg(2.6, C_IN); }
+      else if (phaseT < C_IN + C_DUR) { cutter.x = cutX; cutter.lift = 0; }
+      else { cutter.lift = seg(C_IN + C_DUR, C_IN + C_DUR + 0.35); cutter.x = (zoneB + 6) + (offR - zoneB - 6) * seg(C_IN + C_DUR + 0.35, C_IN + C_DUR + 0.95); }
+      const g0 = C_IN + C_DUR + 0.7;
+      gun.x = tool.gx = offL + (zoneA - offL) * seg(g0, g0 + 0.6);
+      tool.gLift = 1 - seg(g0 + 0.6, g0 + 1.1);
     } else {
+      cutter.x = -999;
       tool.gx0 = tool.gx = gun.x; tool.gLift = 0;
       tool.wx0 = tool.wx; tool.wLift = 1;
     }
@@ -821,6 +858,59 @@ export function initSpray(canvas, opts = {}) {
 
   // a ferramenta aparece/some nas pontas da régua
   const railFade = (x) => clamp(Math.min(x - (railA - 40), railB + 40 - x) / 40, 0, 1);
+
+  function drawCracks() {
+    if (phase !== 'wear' || !cracks.length) return;
+    ctx.save();
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    for (const c of cracks) {
+      const grow = clamp((phaseT - c.at) / 0.8, 0, 1);
+      if (grow <= 0) continue;
+      const n = Math.max(2, Math.ceil(c.pts.length * grow));
+      const draw = (pts, w) => {
+        ctx.beginPath();
+        pts.forEach(([x, y], k) => { const yy = cy - r + y * r * 1.2; if (k) ctx.lineTo(x, yy); else ctx.moveTo(x, yy); });
+        ctx.lineWidth = w; ctx.stroke();
+      };
+      // corte da ferramenta remove a trinca
+      ctx.save();
+      if (cutX > 0) { ctx.beginPath(); ctx.rect(cutX, 0, W, H); ctx.clip(); }
+      const pts = c.pts.slice(0, n);
+      ctx.strokeStyle = 'rgba(0,0,0,.75)'; draw(pts, 2.2);
+      ctx.strokeStyle = 'rgba(255,255,255,.18)'; ctx.save(); ctx.translate(0.8, 0.8); draw(pts, 0.8); ctx.restore();
+      if (c.br && n > c.br.from + 1) {
+        const [bx, by] = c.pts[c.br.from];
+        ctx.strokeStyle = 'rgba(0,0,0,.6)';
+        draw([[bx, by], [bx + c.br.dx * 8, by + 0.08], [bx + c.br.dx * 13, by + 0.17]], 1.4);
+      }
+      ctx.restore();
+    }
+    ctx.restore();
+  }
+
+  function drawCutter() {
+    const fa = railFade(cutter.x);
+    if (fa <= 0 || phase !== 'wear') return;
+    const x = cutter.x, work = cy - r + (target[clamp(Math.floor(x / COL), 0, cols - 1)] || 0) * depth * 0.2;
+    const park = railY + 40;
+    const tipY2 = work - (work - park) * easeInOut(cutter.lift);
+    ctx.save(); ctx.globalAlpha = fa;
+    // carro e haste
+    ctx.fillStyle = '#26282c'; roundRect(x - 24, railY - 7, 48, 14, 3); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.14)'; ctx.stroke();
+    const hg = ctx.createLinearGradient(x - 4, 0, x + 4, 0);
+    hg.addColorStop(0, '#1c1d20'); hg.addColorStop(0.5, '#70757c'); hg.addColorStop(1, '#1c1d20');
+    ctx.fillStyle = hg; ctx.fillRect(x - 4, railY + 7, 8, Math.max(0, tipY2 - 46 - railY - 7));
+    // porta-ferramenta
+    const bg = ctx.createLinearGradient(x - 16, 0, x + 16, 0);
+    bg.addColorStop(0, '#141517'); bg.addColorStop(0.4, '#5d626a'); bg.addColorStop(1, '#0f1012');
+    ctx.fillStyle = bg; roundRect(x - 16, tipY2 - 46, 32, 34, 4); ctx.fill();
+    ctx.fillStyle = '#ff5a14'; ctx.fillRect(x - 11, tipY2 - 20, 22, 3);
+    // pastilha de metal duro
+    ctx.fillStyle = '#c9a227';
+    ctx.beginPath(); ctx.moveTo(x - 8, tipY2 - 12); ctx.lineTo(x + 8, tipY2 - 12); ctx.lineTo(x + 2, tipY2); ctx.lineTo(x - 4, tipY2 - 2); ctx.closePath(); ctx.fill();
+    ctx.restore();
+  }
 
   function drawWheel() {
     const fa = railFade(tool.wx);
@@ -981,9 +1071,13 @@ export function initSpray(canvas, opts = {}) {
       ctx.lineWidth = 3;
       ctx.strokeStyle = '#2f6fd6';
       ctx.beginPath();
-      ctx.moveTo(x + bodyW / 2, bodyTop + 14);
-      ctx.quadraticCurveTo(x + bodyW / 2 + 16, bodyTop - 10, x + bodyW / 2 + 4, bodyTop - 30);
+      // mangueira de água: sai do corpo e sobe junto da haste até o carro no trilho
+      ctx.moveTo(x + bodyW / 2 - 2, bodyTop + 14);
+      ctx.bezierCurveTo(x + bodyW / 2 + 12, bodyTop + 6, x + 10, bodyTop - 14, x + 6, bodyTop - 26);
+      ctx.lineTo(x + 6, railY + 9);
       ctx.stroke();
+      ctx.fillStyle = '#3a3d42';
+      ctx.fillRect(x + bodyW / 2 - 5, bodyTop + 10, 6, 8);
     } else if (type === 'hvof') {
       // cano longo de combustão com anéis de refrigeração
       ctx.fillStyle = metal(x - 7, x + 7);
@@ -1050,7 +1144,8 @@ export function initSpray(canvas, opts = {}) {
 
   function drawHud() {
     const label = phase === 'spray' && PROCESSES[proc].torch === 'pta' ? 'DEPOSIÇÃO PTA'
-      : phase === 'grind' && phaseT < G_IN ? 'TROCA DE FERRAMENTA' : LABELS[phase];
+      : phase === 'grind' && phaseT < G_IN ? 'TROCA DE FERRAMENTA'
+      : phase === 'wear' ? (phaseT < 2.0 ? 'TRINCA DETECTADA' : phaseT < C_IN + C_DUR + 0.4 ? 'USINAGEM · REBAIXO' : 'TROCA DE FERRAMENTA') : LABELS[phase];
     const pct = Math.round((phase === 'wear' ? 0 : progress) * 100);
     ctx.save();
     if (mobile) {
@@ -1125,7 +1220,9 @@ export function initSpray(canvas, opts = {}) {
     drawHeat();
     drawSmoke();
     drawSprayFx();
+    drawCracks();
     drawGun();
+    drawCutter();
     drawWheel();
     drawHud();
   }
