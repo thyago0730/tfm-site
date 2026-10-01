@@ -543,12 +543,17 @@ export function initSpray(canvas, opts = {}) {
     const n = zoneI1 - zoneI0 + 1;
     if (stripCv.width !== n) { stripCv.width = n; stripCv.height = 1; }
     const strip = stripCtx.createImageData(n, 1);
-    const layer = (tex, alphaAt) => {
+    const layer = (tex, alphaAt, lit = false) => {
       for (let k = 0; k < n; k++) strip.data[k * 4 + 3] = clamp(alphaAt(zoneI0 + k), 0, 1) * 255;
       stripCtx.putImageData(strip, 0, 0);
       layerCtx.globalCompositeOperation = 'source-over';
       layerCtx.clearRect(0, 0, zw, zh);
       layerCtx.drawImage(tex, 0, 0, tex.width, 256, 0, 0, zw, zh);
+      // luz do cilindro: o mesmo brilho/sombra do cromo modela a camada
+      if (lit) {
+        layerCtx.globalCompositeOperation = 'overlay';
+        layerCtx.drawImage(chrome, 0, 0, 1, 256, 0, 0, zw, zh);
+      }
       layerCtx.globalCompositeOperation = 'destination-in';
       layerCtx.imageSmoothingEnabled = true;
       layerCtx.drawImage(stripCv, 0, 0, n, 1, 0, 0, zw, zh);
@@ -557,7 +562,7 @@ export function initSpray(canvas, opts = {}) {
     zoneCtx.clearRect(0, 0, zw, zh);
     zoneCtx.drawImage(chrome, 0, 0, 1, 256, 0, 0, zw, zh);
     layer(worn, (i) => Math.min(1, wear[i] * 6) * (1 - polish[i]));
-    layer(PROCESSES[proc].torch === 'pta' ? bead : coating, (i) => (wear[i] > 0.01 ? Math.min(1, coat[i] / wear[i]) : coat[i] > 0.01 ? 1 : 0) * (1 - polish[i]));
+    layer(PROCESSES[proc].torch === 'pta' ? bead : coating, (i) => (wear[i] > 0.01 ? Math.min(1, coat[i] / wear[i]) : coat[i] > 0.01 ? 1 : 0) * (1 - polish[i]), true);
     ctx.save();
     ctx.clip(shaftPath);
     ctx.drawImage(zoneCv, zA, cy - r - om);
