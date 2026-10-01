@@ -291,6 +291,13 @@ export function initSpray(canvas, opts = {}) {
       }
       if (phaseT > W_END) { phase = 'spray'; phaseT = 0; }
     } else if (phase === 'spray') {
+      // cordão em espiral: atrás da tocha a camada já fica 100% (largura do jato ~ 14 px)
+      if (!steering) {
+        for (let i = zoneI0; i <= zoneI1; i++) {
+          const d = gun.x - i * COL;
+          if (d > -6) { const full = wear[i] + over[i]; const k = clamp((d + 6) / 20, 0, 1); coat[i] = Math.max(coat[i], full * k); }
+        }
+      }
       let sw = 0, sc = 0;
       for (let i = zoneI0; i <= zoneI1; i++) { sw += wear[i] + over[i]; sc += coat[i]; }
       progress = sw ? sc / sw : 1;
@@ -329,10 +336,9 @@ export function initSpray(canvas, opts = {}) {
       pointerUsed = true;
       tx = clamp(pointerX, minG, maxG);
     } else if (phase === 'spray') {
-      const speed = (mobile ? 120 : 170) * (PROCESSES[proc].torch === 'pta' ? 0.55 : 1);
-      tx = gun.x + gun.dir * speed * dt;
-      if (tx > zoneB + 12) gun.dir = -1;
-      if (tx < zoneA - 12) gun.dir = 1;
+      // passe único em espiral: avança em linha reta e deposita a camada completa por onde passa
+      const speed = (mobile ? 42 : 60) * (PROCESSES[proc].torch === 'pta' ? 0.75 : 1);
+      tx = Math.min(gun.x + speed * dt, zoneB + 14);
     } else {
       tx = phase === 'wear' ? zoneA : gun.x;
     }
