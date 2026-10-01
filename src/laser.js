@@ -7,23 +7,9 @@ export function initLaser(root, { reduced } = {}) {
   const beam = q('[data-lz-beam]'), cone = q('[data-lz-cone]'), glow = q('[data-lz-glow]');
   const bead = q('[data-lz-bead]'), bead2 = q('[data-lz-bead2]'), sparks = q('[data-lz-sparks]'), fume = q('[data-lz-fume]');
   const NS = 'http://www.w3.org/2000/svg';
-  // giro da peça: riscos que passam pela face visível e castanhas da placa girando
-  const spin = q('[data-lz-spin]'), jaws = [...svg.querySelectorAll('[data-lz-jaws] rect')];
-  const lines = Array.from({ length: 7 }, (_, i) => {
-    const l = document.createElementNS(NS, 'line');
-    l.setAttribute('x1', 320); l.setAttribute('x2', 556);
-    l.setAttribute('stroke-width', i % 2 ? 1 : 1.6);
-    spin.appendChild(l);
-    return l;
-  });
+  // giro da peça: castanhas da placa girando
+  const jaws = [...svg.querySelectorAll('[data-lz-jaws] rect')];
   const spinStep = (a) => {
-    lines.forEach((l, i) => {
-      const phi = (a + (i / lines.length) * Math.PI * 2) % (Math.PI * 2);
-      const vis = phi < Math.PI;
-      const y = 355 - 27 * Math.cos(phi);
-      l.setAttribute('y1', y); l.setAttribute('y2', y);
-      l.setAttribute('stroke', `rgba(${i % 3 ? '0,0,0' : '255,255,255'},${vis ? 0.22 * Math.sin(phi) : 0})`);
-    });
     jaws.forEach((j, i) => {
       const phi = a + (i / jaws.length) * Math.PI * 2;
       j.setAttribute('y', 351 - 26 * Math.cos(phi));
