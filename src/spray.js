@@ -556,6 +556,32 @@ export function initSpray(canvas, opts = {}) {
       // placa do torno (3 castanhas) — as castanhas giram com o eixo
       const cw = r * 0.9, chh = r * 2.3;
       const cx0 = jx - cw;
+      // cabeçote (corpo da máquina) atrás da placa
+      {
+        const hR = cx0 - r * 0.5, hL = Math.max(-20, hR - r * 2.5), hT = cy - r * 1.9, hB = cy + r * 1.75;
+        const hg = ctx.createLinearGradient(0, hT, 0, hB);
+        hg.addColorStop(0, '#2c2f33'); hg.addColorStop(0.12, '#3d4146'); hg.addColorStop(0.55, '#1f2124'); hg.addColorStop(1, '#141517');
+        ctx.fillStyle = hg;
+        roundRect(hL, hT, hR - hL + 4, hB - hT, 8); ctx.fill();
+        ctx.strokeStyle = 'rgba(255,255,255,0.08)'; ctx.lineWidth = 1; roundRect(hL + 0.5, hT + 0.5, hR - hL + 3, hB - hT - 1, 8); ctx.stroke();
+        // aresta de luz no topo e faixa da marca
+        ctx.fillStyle = 'rgba(255,255,255,0.12)'; ctx.fillRect(hL + 6, hT + 2, hR - hL - 8, 1.5);
+        ctx.fillStyle = '#ff5a14'; ctx.fillRect(hL + 10, hB - 16, (hR - hL) * 0.45, 3);
+        // painel de comando com visor
+        const pW = Math.min(r * 1.3, (hR - hL) * 0.5), pX = hR - pW - 10, pY = hT + 12;
+        ctx.fillStyle = '#0e0f11'; roundRect(pX, pY, pW, r * 0.75, 4); ctx.fill();
+        ctx.fillStyle = 'rgba(125,220,154,0.75)'; ctx.font = `500 ${Math.max(7, r * 0.16)}px "JetBrains Mono", monospace`;
+        ctx.textBaseline = 'top'; ctx.fillText(`${Math.round(800 + Math.sin(time) * 6)} RPM`, pX + 5, pY + 5); ctx.textBaseline = 'alphabetic';
+        ctx.fillStyle = '#2c6b45'; ctx.beginPath(); ctx.arc(pX + 7, pY + r * 0.75 + 9, 2.5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#7a1d10'; ctx.beginPath(); ctx.arc(pX + 17, pY + r * 0.75 + 9, 2.5, 0, Math.PI * 2); ctx.fill();
+        // grelha de ventilação do motor
+        ctx.fillStyle = 'rgba(0,0,0,0.45)';
+        for (let k = 0; k < 6; k++) ctx.fillRect(hL + 12, cy - r * 0.6 + k * r * 0.22, (hR - hL) * 0.38, 2);
+        // flange do eixo-árvore saindo para a placa
+        const fg = ctx.createLinearGradient(0, cy - r * 0.9, 0, cy + r * 0.9);
+        fg.addColorStop(0, '#2a2c30'); fg.addColorStop(0.3, '#7c8188'); fg.addColorStop(1, '#16171a');
+        ctx.fillStyle = fg; ctx.fillRect(hR - 2, cy - r * 0.85, r * 0.55, r * 1.7);
+      }
       const pg = ctx.createLinearGradient(0, cy - chh / 2, 0, cy + chh / 2);
       pg.addColorStop(0, '#1a1b1e'); pg.addColorStop(0.25, '#4a4e55'); pg.addColorStop(0.5, '#2a2c30'); pg.addColorStop(0.8, '#3b3e44'); pg.addColorStop(1, '#141517');
       ctx.fillStyle = pg;
