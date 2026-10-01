@@ -62,6 +62,7 @@ export function initSpray(canvas, opts = {}) {
   let cols = 0, wear, target, coat, heat, polish, over;
   let zoneA = 0, zoneB = 0, zoneI0 = 0, zoneI1 = 0, zoneMM = 0.8, proc = 0;
   let phase = 'wear', phaseT = 0, sweepX = 0, progress = 0, layerMM = 0;
+  let ptaLift = 0, pilot = 0;
   let time = 0, emit = 0, emitAcc = 0, wheelA = 0;
   // troca de ferramenta: recuo (0 = trabalhando, 1 = recuada) e posição no trilho
   const cutter = { x: -999, lift: 1 }; // ferramenta de usinagem (rebaixo)
@@ -349,7 +350,12 @@ export function initSpray(canvas, opts = {}) {
     toolChange();
 
     // emissão
-    const wantEmit = phase === 'spray' ? 1 : 0;
+    // fora da zona de aplicação a tocha fica em chama piloto; no PTA ela recua e só fecha o arco sobre a peça
+    const inZone = gun.x > zoneA - 8 && gun.x < zoneB + 8;
+    const wantEmit = phase === 'spray' && inZone ? 1 : 0;
+    const isPta = PROCESSES[proc].torch === 'pta';
+    ptaLift += ((phase === 'spray' && isPta && !inZone ? 1 : 0) - ptaLift) * (1 - Math.exp(-6 * dt));
+    pilot = phase === 'spray' ? 1 : 0;
     emit += (wantEmit - emit) * (1 - Math.exp(-10 * dt));
     const T = TORCHES[PROCESSES[proc].torch];
     const rate = (mobile ? 380 : 720) * emit * quality * T.rate;
@@ -864,7 +870,7 @@ export function initSpray(canvas, opts = {}) {
       tool.gLift = 1 - seg(g0 + 0.6, g0 + 1.1);
     } else {
       cutter.x = -999;
-      tool.gx0 = tool.gx = gun.x; tool.gLift = 0;
+      tool.gx0 = tool.gx = gun.x; tool.gLift = ptaLift * 0.22;
       tool.wx0 = tool.wx; tool.wLift = 1;
     }
     if (phase !== 'wear') tool.wx0 = tool.wx;
@@ -877,38 +883,37 @@ export function initSpray(canvas, opts = {}) {
   const HW = () => (mobile ? 26 : 34); // meia largura da casa do elevador
   const hxA = () => railA - 30, hxB = () => railB + 30;
   const endUp = (x) => clamp(Math.max(railA - 4 - x, x - railB - 4) / 26, 0, 1) * (cy - railY + r + 60);
+  // comporta nas pontas do trilho: duas folhas que se abrem para a ferramenta subir ou descer
   function drawElevators() {
-    const near = (hx) => Math.max(0, ...[gun.x, tool.wx, phase === 'wear' ? cutter.x : -999].map((x) => 1 - clamp((Math.abs(x - hx) - 34) / 70, 0, 1)));
+    const near = (hx) => Math.max(0, ...[gun.x, tool.wx, phase === 'wear' ? cutter.x : -999].map((x) => 1 - clamp((Math.abs(x - hx) - 30) / 70, 0, 1)));
     for (const hx of [hxA(), hxB()]) {
-      const w = HW(), bot = railY + 20;
+      const w = HW(), y = railY - 4, h = 8;
       const open = easeInOut(near(hx));
       ctx.save();
-      // casa do elevador
-      const g = ctx.createLinearGradient(hx - w, 0, hx + w, 0);
-      g.addColorStop(0, '#0e0f11'); g.addColorStop(0.5, '#1f2124'); g.addColorStop(1, '#0c0d0f');
-      ctx.fillStyle = g;
-      ctx.fillRect(hx - w, -10, w * 2, bot + 10);
-      ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 1;
-      ctx.strokeRect(hx - w + 0.5, -10, w * 2 - 1, bot + 10);
-      ctx.fillStyle = 'rgba(255,255,255,0.05)';
-      for (let y = 12; y < bot - 14; y += 14) ctx.fillRect(hx - w + 6, y, w * 2 - 12, 1);
-      // luz de status
-      ctx.fillStyle = open > 0.05 ? '#ff8a1f' : '#2c6b45';
-      ctx.beginPath(); ctx.arc(hx, bot - 22, 2.5, 0, Math.PI * 2); ctx.fill();
-      // comporta bipartida: as folhas deslizam para os lados
-      ctx.beginPath(); ctx.rect(hx - w, bot - 10, w * 2, 12); ctx.clip();
+      // vão escuro
+      ctx.fillStyle = '#050506';
+      ctx.fillRect(hx - w, y, w * 2, h);
+      // folhas
       const leaf = w * (1 - open);
       for (const side of [-1, 1]) {
         const x0 = side < 0 ? hx - w : hx + w - leaf;
-        ctx.fillStyle = '#2b2d31'; ctx.fillRect(x0, bot - 10, leaf, 12);
-        ctx.save(); ctx.beginPath(); ctx.rect(x0, bot - 10, leaf, 12); ctx.clip();
+        const g = ctx.createLinearGradient(0, y, 0, y + h);
+        g.addColorStop(0, '#4a4e54'); g.addColorStop(1, '#1c1d20');
+        ctx.fillStyle = g; ctx.fillRect(x0, y, leaf, h);
+        ctx.save(); ctx.beginPath(); ctx.rect(x0, y + h - 3, leaf, 3); ctx.clip();
         ctx.fillStyle = '#e0a400';
-        for (let k = -2; k < 12; k++) { const sx = x0 + k * 10 + (side < 0 ? 0 : 5); ctx.beginPath(); ctx.moveTo(sx, bot + 2); ctx.lineTo(sx + 5, bot + 2); ctx.lineTo(sx + 11, bot - 10); ctx.lineTo(sx + 6, bot - 10); ctx.closePath(); ctx.fill(); }
+        for (let k = -1; k < w / 5 + 2; k++) { const sx = x0 + k * 8; ctx.beginPath(); ctx.moveTo(sx, y + h); ctx.lineTo(sx + 4, y + h); ctx.lineTo(sx + 7, y + h - 3); ctx.lineTo(sx + 3, y + h - 3); ctx.closePath(); ctx.fill(); }
         ctx.restore();
       }
+      // batentes e luz
+      ctx.fillStyle = '#2b2d31';
+      ctx.fillRect(hx - w - 4, y - 3, 4, h + 6); ctx.fillRect(hx + w, y - 3, 4, h + 6);
+      ctx.fillStyle = open > 0.05 ? '#ff8a1f' : '#2c6b45';
+      ctx.beginPath(); ctx.arc(hx + w + 10, y + h / 2, 2.2, 0, Math.PI * 2); ctx.fill();
       ctx.restore();
     }
   }
+
 
   function drawCracks() {
     if (phase !== 'wear' || !cracks.length) return;
@@ -994,6 +999,7 @@ export function initSpray(canvas, opts = {}) {
     const park = railY + 16 + (34 + 9 + 46) * S0;
     const tip = work - (work - park) * easeInOut(cutter.lift);
     ctx.save(); ctx.globalAlpha = fa;
+    if (endUp(x) > 0) { ctx.beginPath(); ctx.rect(0, railY - 4, W, H); ctx.clip(); }
     ctx.translate(0, -endUp(x));
     // carro e coluna
     ctx.fillStyle = '#26282c'; roundRect(x - 26, railY - 7, 52, 14, 3); ctx.fill();
@@ -1094,6 +1100,7 @@ export function initSpray(canvas, opts = {}) {
     if (fa <= 0) return;
     ctx.save();
     ctx.globalAlpha = fa;
+    if (endUp(tool.wx) > 0) { ctx.beginPath(); ctx.rect(0, railY - 4, W, H); ctx.clip(); }
     ctx.translate(0, -endUp(tool.wx));
     const wr = r * (mobile ? 0.95 : 1.05);
     const x = tool.wx;
@@ -1152,6 +1159,7 @@ export function initSpray(canvas, opts = {}) {
     if (fa <= 0) return;
     ctx.save();
     ctx.globalAlpha = fa;
+    if (endUp(gun.x) > 0) { ctx.beginPath(); ctx.rect(0, railY - 4, W, H); ctx.clip(); }
     ctx.translate(0, -endUp(gun.x));
     drawGunBody();
     ctx.restore();
@@ -1203,6 +1211,22 @@ export function initSpray(canvas, opts = {}) {
     ctx.fillRect(x - bodyW * 0.32, bodyTop + bodyH - 9, bodyW * 0.64, 4);
 
     drawNozzle(x, PROCESSES[proc].torch);
+
+    // chama piloto: pequena e azulada enquanto a tocha está fora da peça
+    const pk = pilot * (1 - emit);
+    if (pk > 0.03) {
+      const type = PROCESSES[proc].torch;
+      const ty = type === 'pta' ? tipFor('pta') : tipY;
+      const fl = (type === 'pta' ? 7 : 12) * (0.85 + Math.random() * 0.3);
+      ctx.save();
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.globalAlpha = pk;
+      const g = ctx.createRadialGradient(x, ty + fl * 0.4, 0, x, ty + fl * 0.4, fl);
+      g.addColorStop(0, 'rgba(220,235,255,.95)'); g.addColorStop(0.4, 'rgba(110,160,255,.7)'); g.addColorStop(1, 'rgba(60,90,255,0)');
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.ellipse(x, ty + fl * 0.45, fl * 0.32, fl, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    }
 
     if (emit > 0.02 && PROCESSES[proc].torch !== 'pta') {
       ctx.globalCompositeOperation = 'lighter';
