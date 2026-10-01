@@ -35,7 +35,7 @@ export function initMicro(root, { reduced } = {}) {
     seed = 11;
     splats = [];
     if (P.kind === 'spray') {
-      const top = H * 0.24, n = Math.round((W / 14) * ((base() - top) / 4) * (P.flat < 0.2 ? 1.4 : 1));
+      const top = H * 0.24, n = Math.round((W / 14) * ((base() - top) / 4) * (P.flat < 0.2 ? 2.2 : 1.5));
       for (let i = 0; i < n; i++) {
         const w = 18 + rnd() * 34 * (P.flat / 0.2), h = 3 + rnd() * 5 * (P.flat / 0.2) * 0.6;
         splats.push({ x: rnd() * W, w, h, o: rnd() < P.oxide, p: rnd() < P.pores * 6, d: i / n });
