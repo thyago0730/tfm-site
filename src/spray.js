@@ -4,7 +4,23 @@
 // Depois vem a retífica e o ciclo recomeça em outro ponto do eixo.
 
 const COL = 3; // largura de cada coluna do eixo (px)
-const KERNEL = [0.15, 0.45, 0.8, 1, 0.8, 0.45, 0.15];
+// núcleos gaussianos: deposição do revestimento e espalhamento do calor
+const gauss = (n, sigma) => Array.from({ length: n * 2 + 1 }, (_, k) => Math.exp(-((k - n) ** 2) / (2 * sigma * sigma)));
+const COAT_K = gauss(7, 3);
+const HEAT_K = gauss(10, 4.5);
+const HEAT_ROWS = 28;
+// rampa de corpo negro: vermelho escuro → laranja → amarelo → branco
+const RAMP = [[0, 0, 0, 0], [0.18, 110, 18, 0], [0.42, 220, 60, 8], [0.66, 255, 140, 35], [0.86, 255, 210, 120], [1, 255, 248, 225]];
+function rampColor(t) {
+  for (let k = 1; k < RAMP.length; k++) {
+    if (t <= RAMP[k][0]) {
+      const a = RAMP[k - 1], b = RAMP[k];
+      const u = (t - a[0]) / (b[0] - a[0]);
+      return [a[1] + (b[1] - a[1]) * u, a[2] + (b[2] - a[2]) * u, a[3] + (b[3] - a[3]) * u];
+    }
+  }
+  return [255, 248, 225];
+}
 // cada processo tem tocha, jato e partículas próprios
 const TORCHES = {
   hvof: { spread: 0.12, speed: [1150, 1650], rate: 1, width: [1.1, 1.5], spark: 0.1,
@@ -45,7 +61,15 @@ export function initSpray(canvas, opts = {}) {
   const gun = { x: 0, vx: 0, dir: 1 };
   const parts = [];
   const sparks = [];
-  let chrome, worn, coating, glow;
+  let chrome, worn, coating, glow, smokeSprite;
+  // camadas fora da tela para desenhar a zona e o calor de forma contínua
+  const mk = () => { const c = document.createElement('canvas'); return [c, c.getContext('2d')]; };
+  const [zoneCv, zoneCtx] = mk();
+  const [layerCv, layerCtx] = mk();
+  const [stripCv, stripCtx] = mk();
+  const [heatCv, heatCtx] = mk();
+  const smoke = [];
+  let shaftPath = null;
   let running = false, raf = 0, last = 0, inView = true, ready = false;
   // qualidade adaptativa: aparelhos lentos recebem menos partículas e resolução menor
   let quality = 1, dprCap = 1.75, frameCost = 8, degradeAt = 0;
@@ -92,6 +116,14 @@ export function initSpray(canvas, opts = {}) {
       [0, '#141312'], [0.08, '#4d4a46'], [0.2, '#aca79f'], [0.3, '#c2bdb5'],
       [0.5, '#7c7770'], [0.68, '#44413d'], [0.84, '#6b665f'], [1, '#121110'],
     ], 30);
+    smokeSprite = document.createElement('canvas');
+    smokeSprite.width = smokeSprite.height = 64;
+    const sgc = smokeSprite.getContext('2d');
+    const srg = sgc.createRadialGradient(32, 32, 0, 32, 32, 32);
+    srg.addColorStop(0, 'rgba(180,176,170,0.5)');
+    srg.addColorStop(1, 'rgba(180,176,170,0)');
+    sgc.fillStyle = srg;
+    sgc.fillRect(0, 0, 64, 64);
     glow = document.createElement('canvas');
     glow.width = glow.height = 128;
     const g = glow.getContext('2d');
@@ -274,12 +306,28 @@ export function initSpray(canvas, opts = {}) {
     }
 
     // calor: difusão + resfriamento
-    const decay = Math.exp(-1.1 * dt);
-    let prev = heat[0];
-    for (let i = 1; i < cols - 1; i++) {
-      const cur = heat[i];
-      heat[i] = (cur * 0.8 + (prev + heat[i + 1]) * 0.1) * decay;
-      prev = cur;
+    const decay = Math.exp(-0.85 * dt);
+    for (let pass = 0; pass < 2; pass++) {
+      let prev = heat[0];
+      for (let i = 1; i < cols - 1; i++) {
+        const cur = heat[i];
+        heat[i] = cur * 0.6 + (prev + heat[i + 1]) * 0.2;
+        prev = cur;
+      }
+    }
+    for (let i = 0; i < cols; i++) heat[i] *= decay;
+
+    // fumaça
+    for (let n = smoke.length - 1; n >= 0; n--) {
+      const m = smoke[n];
+      m.life += dt;
+      m.x += m.vx * dt;
+      m.y += m.vy * dt;
+      m.vx *= 0.99;
+      if (m.life > m.max) {
+        smoke[n] = smoke[smoke.length - 1];
+        smoke.pop();
+      }
     }
 
     // leituras
@@ -289,17 +337,24 @@ export function initSpray(canvas, opts = {}) {
   }
 
   function impact(i, p) {
-    for (let d = -3; d <= 3; d++) {
-      const j = i + d;
-      if (j < 0 || j >= cols) continue;
-      const w = KERNEL[d + 3];
-      if (phase === 'spray') {
+    if (phase === 'spray') {
+      const n = (COAT_K.length - 1) / 2;
+      for (let d = -n; d <= n; d++) {
+        const j = i + d;
+        if (j < 0 || j >= cols) continue;
         const room = wear[j] - coat[j];
-        if (room > 0) coat[j] += Math.min(room, 0.0105 * w);
+        if (room > 0) coat[j] += Math.min(room, 0.0053 * COAT_K[d + n]);
       }
-      heat[j] = Math.min(1, heat[j] + 0.03 * w);
+    }
+    const n = (HEAT_K.length - 1) / 2;
+    for (let d = -n; d <= n; d++) {
+      const j = i + d;
+      if (j >= 0 && j < cols) heat[j] = Math.min(1, heat[j] + 0.012 * HEAT_K[d + n]);
     }
     if (Math.random() < TORCHES[PROCESSES[proc].torch].spark) spawnSpark(p.x, p.y, false);
+    if (Math.random() < 0.025 && smoke.length < 60) {
+      smoke.push({ x: p.x + rand(-6, 6), y: p.y - 4, vx: rand(-12, 12), vy: rand(-55, -30), life: 0, max: rand(1.4, 2.4), size: rand(14, 22) });
+    }
   }
 
   function spawnSpark(x, y, grind) {
@@ -371,28 +426,45 @@ export function initSpray(canvas, opts = {}) {
     ctx.drawImage(chrome, 0, 0, 1, 256, x0, cy - r, Math.max(0, zA - x0), r * 2);
     ctx.drawImage(chrome, 0, 0, 1, 256, zB, cy - r, W - zB + 40, r * 2);
 
-    // zona de trabalho, coluna a coluna
-    for (let i = zoneI0; i <= zoneI1; i++) {
-      const x = i * COL;
-      const rc = radiusAt(i);
-      const sx = i % 128;
-      const w = wear[i];
-      if (w < 0.01 && polish[i] < 0.01) {
-        ctx.drawImage(chrome, 0, 0, 1, 256, x, cy - rc, COL + 0.6, rc * 2);
-        continue;
-      }
-      ctx.drawImage(worn, sx, 0, 1, 256, x, cy - rc, COL + 0.6, rc * 2);
-      const c = w > 0 ? clamp(coat[i] / w, 0, 1) : 0;
-      if (c > 0.01) {
-        ctx.globalAlpha = c;
-        ctx.drawImage(coating, sx, 0, 1, 256, x, cy - rc, COL + 0.6, rc * 2);
-      }
-      if (polish[i] > 0.01) {
-        ctx.globalAlpha = polish[i];
-        ctx.drawImage(chrome, 0, 0, 1, 256, x, cy - rc, COL + 0.6, rc * 2);
-      }
-      ctx.globalAlpha = 1;
+    // contorno real do eixo (o diâmetro muda na zona desgastada)
+    shaftPath = new Path2D();
+    shaftPath.moveTo(x0, cy - r);
+    for (let i = Math.max(0, Math.floor(x0 / COL)); i < cols; i += 2) shaftPath.lineTo(i * COL, cy - radiusAt(i));
+    shaftPath.lineTo(W + 40, cy - r);
+    shaftPath.lineTo(W + 40, cy + r);
+    for (let i = cols - 1; i >= Math.max(0, Math.floor(x0 / COL)); i -= 2) shaftPath.lineTo(i * COL, cy + radiusAt(i));
+    shaftPath.lineTo(x0, cy + r);
+    shaftPath.closePath();
+
+    // zona de trabalho: texturas contínuas mascaradas pela proporção de cada camada
+    const zw = Math.max(1, Math.round(zB - zA));
+    const zh = Math.max(1, Math.round(r * 2));
+    if (zoneCv.width !== zw || zoneCv.height !== zh) {
+      zoneCv.width = layerCv.width = zw;
+      zoneCv.height = layerCv.height = zh;
     }
+    const n = zoneI1 - zoneI0 + 1;
+    if (stripCv.width !== n) { stripCv.width = n; stripCv.height = 1; }
+    const strip = stripCtx.createImageData(n, 1);
+    const layer = (tex, alphaAt) => {
+      for (let k = 0; k < n; k++) strip.data[k * 4 + 3] = clamp(alphaAt(zoneI0 + k), 0, 1) * 255;
+      stripCtx.putImageData(strip, 0, 0);
+      layerCtx.globalCompositeOperation = 'source-over';
+      layerCtx.clearRect(0, 0, zw, zh);
+      layerCtx.drawImage(tex, 0, 0, tex.width, 256, 0, 0, zw, zh);
+      layerCtx.globalCompositeOperation = 'destination-in';
+      layerCtx.imageSmoothingEnabled = true;
+      layerCtx.drawImage(stripCv, 0, 0, n, 1, 0, 0, zw, zh);
+      zoneCtx.drawImage(layerCv, 0, 0);
+    };
+    zoneCtx.clearRect(0, 0, zw, zh);
+    zoneCtx.drawImage(chrome, 0, 0, 1, 256, 0, 0, zw, zh);
+    layer(worn, (i) => Math.min(1, wear[i] * 6) * (1 - polish[i]));
+    layer(coating, (i) => (wear[i] > 0.01 ? coat[i] / wear[i] : 0) * (1 - polish[i]));
+    ctx.save();
+    ctx.clip(shaftPath);
+    ctx.drawImage(zoneCv, zA, cy - r);
+    ctx.restore();
 
     // linhas de giro
     ctx.save();
@@ -409,9 +481,12 @@ export function initSpray(canvas, opts = {}) {
     ctx.restore();
 
     // arestas
-    ctx.fillStyle = 'rgba(255,255,255,0.22)';
-    ctx.fillRect(x0, cy - r, Math.max(0, zA - x0), 1);
-    ctx.fillRect(zB, cy - r, W - zB + 40, 1);
+    ctx.strokeStyle = 'rgba(255,255,255,0.22)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x0, cy - r + 0.5);
+    for (let i = Math.max(0, Math.floor(x0 / COL)); i < cols; i += 2) ctx.lineTo(i * COL, cy - radiusAt(i) + 0.5);
+    ctx.stroke();
   }
 
   function endCap(x, rr, shoulder) {
@@ -429,19 +504,43 @@ export function initSpray(canvas, opts = {}) {
   }
 
   function drawHeat() {
-    ctx.globalCompositeOperation = 'lighter';
-    for (let i = 0; i < cols; i++) {
-      const h = heat[i];
-      if (h < 0.02) continue;
-      const x = i * COL;
-      if (!onShaft(x)) continue;
-      const rc = radiusAt(i);
-      ctx.fillStyle = `rgba(255,${(70 + h * 130) | 0},${(10 + h * 50) | 0},${h * 0.75})`;
-      ctx.fillRect(x, cy - rc, COL + 0.6, rc * 0.9);
-      ctx.fillStyle = `rgba(255,80,20,${h * 0.28})`;
-      ctx.fillRect(x, cy - rc * 0.1, COL + 0.6, rc * 1.1);
+    let max = 0;
+    for (let i = 0; i < cols; i++) if (heat[i] > max) max = heat[i];
+    if (max < 0.015 || !shaftPath) return;
+    if (heatCv.width !== cols) { heatCv.width = cols; heatCv.height = HEAT_ROWS; }
+    const img = heatCtx.createImageData(cols, HEAT_ROWS);
+    const d = img.data;
+    for (let y = 0; y < HEAT_ROWS; y++) {
+      const t = y / (HEAT_ROWS - 1);
+      // mais quente na faixa superior (onde o jato bate), esfriando suavemente para baixo
+      const prof = 0.28 + 0.72 * Math.exp(-(((t - 0.2) / 0.3) ** 2));
+      for (let i = 0; i < cols; i++) {
+        const h = heat[i] * prof;
+        if (h < 0.01) continue;
+        const [cr, cg, cb] = rampColor(Math.min(1, h * 1.15));
+        const o = (y * cols + i) * 4;
+        d[o] = cr; d[o + 1] = cg; d[o + 2] = cb;
+        d[o + 3] = Math.min(1, h * 1.4) * 235;
+      }
     }
-    ctx.globalCompositeOperation = 'source-over';
+    heatCtx.putImageData(img, 0, 0);
+    ctx.save();
+    ctx.clip(shaftPath);
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.imageSmoothingEnabled = true;
+    ctx.drawImage(heatCv, 0, 0, cols, HEAT_ROWS, 0, cy - r, cols * COL, r * 2);
+    ctx.restore();
+  }
+
+  function drawSmoke() {
+    if (!smoke.length) return;
+    for (const m of smoke) {
+      const u = m.life / m.max;
+      const sz = m.size * (1 + u * 2.2);
+      ctx.globalAlpha = 0.22 * Math.sin(Math.PI * u);
+      ctx.drawImage(smokeSprite, m.x - sz / 2, m.y - sz / 2, sz, sz);
+    }
+    ctx.globalAlpha = 1;
   }
 
   function drawSprayFx() {
@@ -524,15 +623,18 @@ export function initSpray(canvas, opts = {}) {
     }
 
     // faíscas
-    ctx.beginPath();
-    for (let n = 0; n < sparks.length; n++) {
-      const s = sparks[n];
-      ctx.moveTo(s.x - s.vx * 0.018, s.y - s.vy * 0.018);
-      ctx.lineTo(s.x, s.y);
-    }
-    ctx.strokeStyle = 'rgba(255,200,120,0.85)';
-    ctx.lineWidth = 1.2;
-    ctx.stroke();
+    [['rgba(255,236,180,0.95)', (s) => s.life > 0.35], ['rgba(240,110,40,0.75)', (s) => s.life <= 0.35]].forEach(([col, test]) => {
+      ctx.beginPath();
+      for (let n = 0; n < sparks.length; n++) {
+        const s = sparks[n];
+        if (!test(s)) continue;
+        ctx.moveTo(s.x - s.vx * 0.018, s.y - s.vy * 0.018);
+        ctx.lineTo(s.x, s.y);
+      }
+      ctx.strokeStyle = col;
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+    });
 
     // retífica
     if (phase === 'grind') {
@@ -691,7 +793,7 @@ export function initSpray(canvas, opts = {}) {
       ctx.restore();
       return;
     }
-    const pw = 214, ph = 104;
+    const pw = 214, ph = 122;
     let px = gun.x + bodyW / 2 + 18;
     if (px + pw > W - 12) px = gun.x - bodyW / 2 - 18 - pw;
     const py = bodyTop - 10;
@@ -722,12 +824,15 @@ export function initSpray(canvas, opts = {}) {
     row(py + 60, 'CAMADA', `${mm} mm`, dim, bright);
     row(py + 78, 'RECUPERAÇÃO', `${pct}%`, dim, bright);
     ctx.fillStyle = 'rgba(255,255,255,0.1)';
-    ctx.fillRect(px + 14, py + 88, pw - 28, 2);
+    const gi = clamp(Math.floor(gun.x / COL), 0, cols - 1);
+    row(py + 96, 'SUBSTRATO', `${Math.round(25 + heat[gi] * 125)} °C`, dim, heat[gi] > 0.6 ? '#ffb070' : bright);
+    ctx.fillStyle = 'rgba(255,255,255,0.1)';
+    ctx.fillRect(px + 14, py + 106, pw - 28, 2);
     const bar = ctx.createLinearGradient(px + 14, 0, px + pw - 14, 0);
     bar.addColorStop(0, '#ffc46b');
     bar.addColorStop(1, '#ff5a14');
     ctx.fillStyle = bar;
-    ctx.fillRect(px + 14, py + 88, (pw - 28) * (pct / 100), 2);
+    ctx.fillRect(px + 14, py + 106, (pw - 28) * (pct / 100), 2);
 
     if (!pointerUsed) {
       ctx.textAlign = 'right';
@@ -749,6 +854,7 @@ export function initSpray(canvas, opts = {}) {
     drawRail();
     drawShaft();
     drawHeat();
+    drawSmoke();
     drawSprayFx();
     drawGun();
     drawHud();
