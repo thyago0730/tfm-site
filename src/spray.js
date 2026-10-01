@@ -259,6 +259,7 @@ export function initSpray(canvas, opts = {}) {
     phase = 'wear';
     phaseT = 0;
     progress = 0;
+    grindDone = false;
   }
 
   const grindStart = () => Math.max(mobile ? railA + 20 : shaftA + 10, railA + 20);
@@ -601,7 +602,7 @@ export function initSpray(canvas, opts = {}) {
 
     // trechos íntegros
     // fora da zona: superfície usada; depois da retífica, polida (cromo) por onde o rebolo passou
-    const pX = phase === 'done' || grindDone ? W + 40 : phase === 'grind' ? Math.max(x0, sweepX) : x0;
+    const pX = phase === 'done' || grindDone ? W + 40 : phase === 'grind' && phaseT > G_IN ? (sweepX <= grindStart() + 2 ? x0 : sweepX) : x0;
     const seg2 = (a, b) => { if (b <= a) return; const m = clamp(pX, a, b); ctx.drawImage(chrome, 0, 0, 1, 256, a, cy - r, m - a, r * 2); ctx.drawImage(used, 0, 0, 1, 256, m, cy - r, b - m, r * 2); };
     seg2(x0, zA);
     seg2(zB, W + 40);
