@@ -6,6 +6,7 @@ import Lenis from 'lenis';
 import { initSpray } from './spray.js';
 import { initJourney, initBeforeAfter } from './journey.js';
 import { initMatrix } from './matrix.js';
+import { initLaser } from './laser.js';
 import { initSimulator } from './simulator.js';
 import { initWizard } from './wizard.js';
 import { initConsent, logAnalytics } from './analytics.js';
@@ -717,6 +718,7 @@ function boot() {
     if (journey) initJourney(journey, { reduced });
     $$('[data-ba]').forEach((card) => initBeforeAfter(card, { reduced }));
     initMatrix($('#tecnologias'));
+    initLaser($('#laser'), { reduced });
     const wizard = initWizard($('[data-wizard]'), { reduced, whatsapp: WHATSAPP, email: EMAIL, track, toast });
     initSimulator($('[data-sim]'), {
       reduced,

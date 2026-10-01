@@ -8,7 +8,7 @@ export function initMatrix(root) {
   const desc = root.querySelector('[data-tech-desc]');
   const eyebrow = root.querySelector('.tech__eyebrow');
   const page = root.querySelector('[data-tech-page]');
-  const PAGES = { arc: 'arc-spray', pta: 'pta', hvof: 'hvof', plasma: 'plasma' };
+  const PAGES = { arc: 'arc-spray', pta: 'pta', hvof: 'hvof', plasma: 'plasma', laser: 'laser-cladding', saw: 'arco-submerso' };
   let locked = rows.find((r) => r.dataset.proc === 'hvof') || rows[0];
 
   const setCol = (col) => {
