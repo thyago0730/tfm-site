@@ -10,6 +10,7 @@ export function initLaser(root, { reduced } = {}) {
   // giro da peça: rasgo de chaveta girando na face do eixo
   const key = q('[data-lz-key]');
   const spinStep = (a) => {
+    if (!key) return;
     const sn = Math.sin(a);
     key.setAttribute('y', 352 - 20 * Math.cos(a));
     key.setAttribute('x', 313 + 2.5 * sn);
