@@ -1582,3 +1582,24 @@ input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px 
 @media (max-width: 900px) { .laser__grid { grid-template-columns: 1fr; } }
 .laser .section-title { font-size: clamp(2.4rem, 4.4vw, 4.4rem); }
 .laser .section-lead { margin-top: 20px; }
+.laser__fume { fill: rgba(200,196,190,.18); animation: lz-fume 1.6s ease-out forwards; transform-box: fill-box; transform-origin: center; }
+@keyframes lz-fume { to { transform: translate(-14px, -60px) scale(4); opacity: 0; } }
+
+/* simulador: passos, comparação e tamanhos */
+.sim__grid { align-items: stretch; }
+.sim__inputs { gap: 22px; align-content: start; }
+.sim-step { display: flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); padding-top: 6px; }
+.sim-step:not(:first-child) { border-top: 1px solid var(--line); padding-top: 22px; }
+.sim-step b { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--flame); color: #fff; font-size: 11px; letter-spacing: 0; }
+.sim-field > label:first-child small { display: block; margin-top: 2px; }
+.sim__total { font-size: clamp(2rem, 4.6vw, 3.6rem); }
+.sim-vs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 24px; }
+.sim-vs__card { border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; display: grid; gap: 4px; }
+.sim-vs__card p { font-size: 13px; color: var(--muted); }
+.sim-vs__card strong { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; }
+.sim-vs__card span { font-size: 13px; color: #c4c4ca; }
+.sim-vs__card--win { border-color: rgba(255, 90, 20, .5); background: rgba(255, 90, 20, .08); }
+.sim-vs__card--win strong { color: var(--flame); }
+.sim-chart { margin: 24px 0 20px; padding-top: 20px; }
+.sim__kpis dd { font-size: 1.15rem; }
+.sim__actions .btn { flex: 1 1 220px; justify-content: center; }

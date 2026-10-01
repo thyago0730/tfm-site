@@ -38,7 +38,6 @@ const TORCHES = {
 };
 const PROCESSES = [
   { name: 'HVOF · WC-Co', torch: 'hvof' },
-  { name: 'PLASMA · Cr₂O₃', torch: 'plasma' },
   { name: 'ARC SPRAY · INOX 420', torch: 'arc' },
   { name: 'HVOF · WC-CrC-Ni', torch: 'hvof' },
   { name: 'PTA · STELLITE 6', torch: 'pta' },

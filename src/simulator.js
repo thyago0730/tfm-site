@@ -121,12 +121,17 @@ export function initSimulator(root, { reduced, onSend, onWhatsApp }) {
 
     const dias = out('dias');
     dias.textContent = num.format(Math.abs(r.dias));
-    dias.parentElement.lastChild.textContent = r.dias >= 0 ? ' dias a menos de espera' : ' dias a mais de espera';
+    dias.parentElement.lastChild.textContent = r.dias >= 0 ? ' dias antes' : ' dias depois';
 
     out('aquisicao').textContent = compactBRL(r.aquisicao);
     out('parada').textContent = state.parado ? compactBRL(r.parada) : '—';
     out('aco').textContent = r.aco >= 1000 ? `${num1.format(r.aco / 1000)} t` : `${num.format(r.aco)} kg`;
     out('co2').textContent = r.co2 >= 1 ? `${num1.format(r.co2)} t` : `${num.format(r.co2 * 1000)} kg`;
+    out('vsNovo').textContent = compactBRL(r.custoNovo);
+    out('vsRec').textContent = compactBRL(r.custoRecTotal);
+    const parado = (d) => `${num.format(d)} dias${state.parado ? ' de máquina parada' : ' de prazo'}`;
+    out('vsNovoDias').textContent = parado(state.prazoNovo);
+    out('vsRecDias').textContent = parado(state.prazoRec);
     out('custoNovo').textContent = compactBRL(r.custoNovo);
     out('custoRec').textContent = compactBRL(r.custoRecTotal);
 

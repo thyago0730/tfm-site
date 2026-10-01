@@ -9,6 +9,7 @@
     "cleanUrls": false,
     "trailingSlash": false,
     "redirects": [
+      { "source": "/processos/plasma.html", "destination": "/processos/hvof.html", "type": 301 },
       {
         "regex": "^/(site/)?sobre-a-tfm-revestimentos/?$",
         "destination": "/#sobre",
