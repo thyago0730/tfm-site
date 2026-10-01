@@ -61,7 +61,7 @@ export function initSpray(canvas, opts = {}) {
   let cols = 0, wear, target, coat, heat, polish, over;
   let zoneA = 0, zoneB = 0, zoneI0 = 0, zoneI1 = 0, zoneMM = 0.8, proc = 0;
   let phase = 'wear', phaseT = 0, sweepX = 0, progress = 0, layerMM = 0;
-  let ptaLift = 0, pilot = 0, gunLiftPx = 0;
+  let ptaLift = 0, pilot = 0, gunLiftPx = 0, resumeChase = false;
   let time = 0, emit = 0, emitAcc = 0, wheelA = 0;
   // troca de ferramenta: recuo (0 = trabalhando, 1 = recuada) e posição no trilho
   const cutter = { x: -999, lift: 1 }; // ferramenta de usinagem (rebaixo)
@@ -334,15 +334,17 @@ export function initSpray(canvas, opts = {}) {
     let tx;
     if (steering) {
       pointerUsed = true;
+      resumeChase = true; // ao largar o controle, retoma de onde parou
       tx = clamp(pointerX, minG, maxG);
     } else if (phase === 'spray') {
       // passe único em espiral: avança em linha reta e deposita a camada completa por onde passa
       const speed = (mobile ? 42 : 60) * (PROCESSES[proc].torch === 'pta' ? 0.75 : 1);
       // retoma de onde parou: corre rápido até o primeiro trecho ainda sem camada
       let front = zoneB + 14;
-      for (let i = zoneI0; i <= zoneI1; i++) if (coat[i] < (wear[i] + over[i]) * 0.97 && wear[i] + over[i] > 0.02) { front = i * COL; break; }
+      for (let i = zoneI0; i <= zoneI1; i++) if (coat[i] < (wear[i] + over[i]) * 0.5 && wear[i] + over[i] > 0.02) { front = i * COL; break; }
       const gap = front - gun.x;
-      if (Math.abs(gap) > 10) tx = gun.x + Math.sign(gap) * Math.min(Math.abs(gap), speed * 7 * dt);
+      if (resumeChase && Math.abs(gap) < 12) resumeChase = false;
+      if (resumeChase && Math.abs(gap) > 10) tx = gun.x + Math.sign(gap) * Math.min(Math.abs(gap), speed * 7 * dt);
       else tx = Math.min(gun.x + speed * dt, zoneB + 14);
     } else {
       tx = phase === 'wear' ? zoneA : gun.x;
@@ -1507,8 +1509,11 @@ export function initSpray(canvas, opts = {}) {
   // mouse guia a pistola; no toque, arrastar na horizontal também guia (a rolagem vertical continua livre)
   const steer = (e) => {
     const rect = canvas.getBoundingClientRect();
-    if (e.pointerType !== 'mouse' && (e.clientY - rect.top > cy + r + 40)) return;
-    pointerX = e.clientX - rect.left;
+    const x = e.clientX - rect.left, y = e.clientY - rect.top;
+    // só guia quando o cursor está sobre a área da máquina (trilho até o eixo)
+    const inside = x > railA - 40 && x < railB + 40 && y > railY - 50 && y < cy + r + 50;
+    if (!inside) { if (pointerX !== null && e.pointerType === 'mouse') pointerT = Math.min(pointerT, time - 2.5); return; }
+    pointerX = x;
     pointerT = time;
   };
   hero.addEventListener('pointermove', steer);
