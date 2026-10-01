@@ -39,7 +39,6 @@ const TORCHES = {
 const PROCESSES = [
   { name: 'HVOF · WC-Co', torch: 'hvof' },
   { name: 'ARC SPRAY · INOX 420', torch: 'arc' },
-  { name: 'HVOF · WC-CrC-Ni', torch: 'hvof' },
   { name: 'PTA · STELLITE 6', torch: 'pta' },
 ];
 const OVER = 0.35; // sobremetal: a camada passa do diâmetro nominal para ser retificada
@@ -62,7 +61,7 @@ export function initSpray(canvas, opts = {}) {
   let cols = 0, wear, target, coat, heat, polish, over;
   let zoneA = 0, zoneB = 0, zoneI0 = 0, zoneI1 = 0, zoneMM = 0.8, proc = 0;
   let phase = 'wear', phaseT = 0, sweepX = 0, progress = 0, layerMM = 0;
-  let ptaLift = 0, pilot = 0;
+  let ptaLift = 0, pilot = 0, gunLiftPx = 0;
   let time = 0, emit = 0, emitAcc = 0, wheelA = 0;
   // troca de ferramenta: recuo (0 = trabalhando, 1 = recuada) e posição no trilho
   const cutter = { x: -999, lift: 1 }; // ferramenta de usinagem (rebaixo)
@@ -248,7 +247,7 @@ export function initSpray(canvas, opts = {}) {
       cracks.push({ pts, phi0: rand(0, Math.PI * 2), at: rand(0.4, 1.4), br: pts.length > 4 ? { from: 2 + Math.floor(rand(0, 2)), dx: rand(-1, 1) > 0 ? 1 : -1 } : null });
     }
     cutX = -1;
-    if (!locked) proc = (proc + 1) % PROCESSES.length;
+    proc = (proc + 1) % PROCESSES.length;
     opts.onProcess?.(PROCESSES[proc].torch);
     canvas.dataset.process = PROCESSES[proc].torch;
     phase = 'wear';
@@ -887,7 +886,7 @@ export function initSpray(canvas, opts = {}) {
   function drawElevators() {
     // a comporta só abre enquanto uma ferramenta está entrando/saindo por ela (além da ponta do trilho)
     const xs = [gun.x, tool.wx, phase === 'wear' ? cutter.x : -999];
-    const near = (hx) => Math.max(0, ...xs.map((x) => (hx < railA ? clamp((railA + 6 - x) / 16, 0, 1) : clamp((x - railB + 6) / 16, 0, 1)) * (x > -500 ? 1 : 0)));
+    const near = (hx) => Math.max(0, ...xs.map((x) => (hx < railA ? clamp((railA - 4 - x) / 12, 0, 1) : clamp((x - railB - 4) / 12, 0, 1)) * (x > -500 ? 1 : 0)));
     for (const hx of [hxA(), hxB()]) {
       const w = HW(), y = railY - 4, h = 8;
       const open = easeInOut(near(hx));
@@ -1182,6 +1181,7 @@ export function initSpray(canvas, opts = {}) {
 
     // haste (encolhe quando a tocha recua)
     const L = Math.max(0, bodyTop - railY - 14) * tool.gLift;
+    gunLiftPx = L;
     ctx.save();
     ctx.translate(0, -L);
     const rg = ctx.createLinearGradient(x - 3, 0, x + 3, 0);
@@ -1279,7 +1279,7 @@ export function initSpray(canvas, opts = {}) {
       // mangueira de água: sai do corpo e sobe junto da haste até o carro no trilho
       ctx.moveTo(x + bodyW / 2 - 2, bodyTop + 14);
       ctx.bezierCurveTo(x + bodyW / 2 + 12, bodyTop + 6, x + 10, bodyTop - 14, x + 6, bodyTop - 26);
-      ctx.lineTo(x + 6, railY + 9);
+      ctx.lineTo(x + 6, Math.min(bodyTop - 26, railY + 9 + gunLiftPx));
       ctx.stroke();
       ctx.fillStyle = '#3a3d42';
       ctx.fillRect(x + bodyW / 2 - 5, bodyTop + 10, 6, 8);
@@ -1514,8 +1514,8 @@ export function initSpray(canvas, opts = {}) {
   function setProcess(torch) {
     const idx = PROCESSES.findIndex((p) => p.torch === torch);
     if (idx < 0) return;
-    locked = true;
-    proc = idx;
+    // começa pelo processo escolhido e segue a sequência HVOF → Arc Spray → PTA
+    proc = (idx - 1 + PROCESSES.length) % PROCESSES.length;
     newZone();
     if (reduced) staticFrame();
   }
