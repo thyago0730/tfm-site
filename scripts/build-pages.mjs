@@ -1,6 +1,6 @@
 // Gera páginas estáticas por processo e por setor (SEO local) a partir de pages-data.mjs.
 // Uso: node scripts/build-pages.mjs  (rodado automaticamente antes do build)
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { readFileSync, mkdirSync, writeFileSync } from 'node:fs';
 import { processos, setores } from './pages-data.mjs';
 
 const SITE = 'https://tfmrevestimentos.com.br';
@@ -99,7 +99,8 @@ for (const p of processos) {
 
 for (const s of setores) {
   const path = `/setores/${s.slug}.html`;
-  const body = `
+  const extra = s.slug === 'eolica' ? readFileSync('scripts/partials/eolica-explode.html', 'utf8') : '';
+  const body = `${extra}
     <div class="lp-grid">
       <section><h2>Peças que recuperamos</h2><ul class="lp-list">${li(s.pecas)}</ul></section>
       <section><h2>Processos indicados</h2><div class="lp-links">${s.processos.map((k) => `<a href="/processos/${k}.html"><strong>${esc(byslug[k].nome)}</strong> — ${esc(byslug[k].resumo)}</a>`).join('')}</div></section>

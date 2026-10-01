@@ -1603,3 +1603,52 @@ input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px 
 .sim-chart { margin: 24px 0 20px; padding-top: 20px; }
 .sim__kpis dd { font-size: 1.15rem; }
 .sim__actions .btn { flex: 1 1 220px; justify-content: center; }
+
+/* ---------- Vista explodida (eólica) ---------- */
+.ex { margin: 0 0 clamp(48px, 7vw, 96px); }
+.ex__head { max-width: 760px; margin-bottom: 28px; }
+.ex__head h2 { font-size: clamp(1.8rem, 3.6vw, 2.8rem); line-height: 1.05; margin-top: 10px; }
+.ex__lead { color: var(--muted); margin-top: 14px; }
+.ex__grid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 16px; align-items: stretch; }
+.ex__stage { margin: 0; border: 1px solid var(--line); border-radius: 20px; background: radial-gradient(70% 60% at 45% 45%, rgba(255,90,20,.08), transparent 70%), #0e0e10; overflow: hidden; }
+.ex__svg { width: 100%; height: auto; display: block; }
+.ex-part { transition: transform 1.1s cubic-bezier(.7,0,.2,1), opacity .8s; transform-box: view-box; }
+.ex-tag { font: 500 11px "JetBrains Mono", ui-monospace, monospace; letter-spacing: .14em; fill: rgba(255,255,255,.55); opacity: 0; transition: opacity .6s; }
+.ex-tag--dark { fill: rgba(0,0,0,.45); opacity: 1; }
+.ex-gears, .ex-hot, .ex-call { opacity: 0; transition: opacity .7s .4s; }
+.ex-line { fill: none; stroke: rgba(255,255,255,.5); stroke-width: 1; stroke-dasharray: 3 4; }
+.ex-dot { fill: var(--flame); }
+.ex-label { font: 700 17px var(--font, system-ui); fill: #fff; }
+.ex-sub { font: 500 11px "JetBrains Mono", ui-monospace, monospace; fill: rgba(255,255,255,.6); letter-spacing: .06em; }
+.ex-planets { transform-box: fill-box; transform-origin: center; }
+/* etapa 1: carcaça sobe */
+.ex[data-step="1"] .ex-cover, .ex[data-step="2"] .ex-cover, .ex[data-step="3"] .ex-cover { transform: translateY(-150px); opacity: .18; }
+.ex:not([data-step="0"]) .ex-tag:not(.ex-tag--dark) { opacity: 1; }
+/* etapa 2: trem de força separado, multiplicadora em destaque */
+.ex[data-step="2"] .ex-hub, .ex[data-step="3"] .ex-hub { transform: translateX(-70px); opacity: .5; }
+.ex[data-step="2"] .ex-gen, .ex[data-step="3"] .ex-gen { transform: translateX(110px); opacity: .5; }
+.ex[data-step="2"] .ex-gearbox { transform: translate(40px, -40px); }
+.ex[data-step="2"] .ex-gears, .ex[data-step="2"] .ex-call--gear { opacity: 1; }
+.ex[data-step="2"] .ex-planets { animation: ex-spin 6s linear infinite; }
+@keyframes ex-spin { to { transform: rotate(360deg); } }
+/* etapa 3: eixo principal sobe e mostra os assentos */
+.ex[data-step="3"] .ex-gearbox { transform: translateX(80px); opacity: .45; }
+.ex[data-step="3"] .ex-shaft { transform: translateY(-30px); }
+.ex[data-step="3"] .ex-bearing { transform: translateY(60px); opacity: .25; transition: transform 1.1s cubic-bezier(.7,0,.2,1), opacity .8s; }
+.ex-bearing { transition: transform 1.1s cubic-bezier(.7,0,.2,1), opacity .8s; }
+.ex[data-step="3"] .ex-hot, .ex[data-step="3"] .ex-call--seat, .ex[data-step="3"] .ex-call--seat2 { opacity: 1; }
+.ex[data-step="3"] .ex-hot { animation: ex-pulse 1.6s ease-in-out infinite; }
+@keyframes ex-pulse { 50% { opacity: .45; } }
+.ex__panel { border: 1px solid var(--line); border-radius: 20px; background: var(--surface); padding: clamp(20px, 2.4vw, 32px); display: flex; flex-direction: column; gap: 20px; }
+.ex__steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.ex__steps button { width: 100%; text-align: left; display: flex; gap: 12px; align-items: center; padding: 12px 14px; border-radius: 12px; border: 1px solid transparent; background: none; color: var(--muted); font: inherit; cursor: pointer; transition: background .3s, color .3s, border-color .3s; }
+.ex__steps button span { font-family: var(--mono); font-size: 12px; color: var(--dim); }
+.ex__steps button[aria-selected="true"] { color: #fff; background: rgba(255,90,20,.1); border-color: rgba(255,90,20,.45); }
+.ex__steps button[aria-selected="true"] span { color: var(--flame); }
+.ex__copy h3 { font-size: 1.25rem; margin-bottom: 8px; }
+.ex__copy p { color: #c4c4ca; line-height: 1.6; }
+.ex__nav { margin-top: auto; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.ex__btn { width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line-strong, rgba(255,255,255,.2)); background: none; color: #fff; cursor: pointer; font-size: 18px; }
+.ex__btn:hover { border-color: var(--flame); color: var(--flame); }
+.ex__nav .link-arrow { margin-left: 8px; }
+@media (max-width: 900px) { .ex__grid { grid-template-columns: 1fr; } }
