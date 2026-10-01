@@ -630,7 +630,8 @@ export function initSpray(canvas, opts = {}) {
     ctx.clip(shaftPath);
     ctx.globalCompositeOperation = 'lighter';
     ctx.imageSmoothingEnabled = true;
-    ctx.drawImage(heatCv, 0, 0, cols, HEAT_ROWS, 0, cy - r, cols * COL, r * 2);
+    const om = Math.ceil(OVER * depth) + 2; // cobre o sobremetal acima do diâmetro
+    ctx.drawImage(heatCv, 0, 0, cols, HEAT_ROWS, 0, cy - r - om, cols * COL, r * 2 + om * 2);
     ctx.restore();
   }
 
