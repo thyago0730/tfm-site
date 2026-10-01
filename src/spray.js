@@ -863,8 +863,8 @@ export function initSpray(canvas, opts = {}) {
     } else if (phase === 'done') {
       tool.gLift = 1; tool.wLift = 0; tool.wx = sweepX; gun.x = tool.gx;
     } else if (phase === 'wear') {
-      tool.wLift = Math.max(tool.wLift, seg(0, 0.4));
-      tool.wx = tool.wx0 < railA - 100 ? -999 : exitX(tool.wx0, 0.4, 0.8);
+      tool.wLift = Math.max(tool.wLift, seg(0, 0.25));
+      tool.wx = tool.wx0 < railA - 100 ? -999 : exitX(tool.wx0, 0.25, 0.55);
       // ferramenta de usinagem: entra recuada, desce, rebaixa e sai pelo fim da régua
       if (phaseT < C_IN) { cutter.x = entryX(zoneA - 6, 1.9, 2.3); cutter.lift = 1 - seg(2.65, C_IN); }
       else if (phaseT < C_IN + C_DUR) { cutter.x = cutX; cutter.lift = 0; }
