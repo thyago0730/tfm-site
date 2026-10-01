@@ -9,7 +9,7 @@ export const waUrl = (message) => `https://wa.me/${WHATSAPP}?text=${encodeURICom
 export const UNITS = {
   aluminio: { name: 'Alumínio · SP', phone: '5511950427669', services: ['metalizacao', 'solda', 'usinagem'] },
   ostras: { name: 'Rio das Ostras · RJ', phone: '5521999265869', services: ['caldeiraria', 'metalizacao', 'solda', 'usinagem'] },
-  friburgo: { name: 'Nova Friburgo · RJ', phone: '5522981810145', services: ['cromo', 'usinagem'] },
+  friburgo: { name: 'TGC · Nova Friburgo · RJ', phone: '5522981810145', services: ['cromo', 'usinagem'] },
 };
 const SERVICES = [
   ['metalizacao', 'Metalização / aspersão térmica'],
