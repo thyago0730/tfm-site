@@ -1776,7 +1776,7 @@ input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px 
 .micro__btns { display: flex; flex-wrap: wrap; gap: 8px; }
 .micro__btns button { border: 1px solid var(--line-strong, rgba(255,255,255,.2)); background: none; color: var(--muted); border-radius: 99px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; transition: all .25s; }
 .micro__btns button:hover { color: #fff; }
-.micro__btns button[aria-pressed="true"] { background: var(--flame); border-color: var(--flame); color: #fff; }
+.micro__btns button[aria-pressed="true"] { background: #c2410c; border-color: #c2410c; color: #fff; }
 .micro__stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; margin: 18px 0 14px; }
 .micro__stats div { background: var(--bg); padding: 12px 14px; }
 .micro__stats dt { font-size: 12px; color: var(--muted); }

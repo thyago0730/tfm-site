@@ -6,8 +6,6 @@ import Lenis from 'lenis';
 import { initSpray } from './spray.js';
 import { initJourney, initBeforeAfter } from './journey.js';
 import { initMatrix } from './matrix.js';
-import { initLaser } from './laser.js';
-import { initMicro } from './micro.js';
 import { initSimulator } from './simulator.js';
 import { initWizard } from './wizard.js';
 import { initConsent, logAnalytics } from './analytics.js';
@@ -719,8 +717,14 @@ function boot() {
     if (journey) initJourney(journey, { reduced });
     $$('[data-ba]').forEach((card) => initBeforeAfter(card, { reduced }));
     initMatrix($('#tecnologias'));
-    initLaser($('#laser'), { reduced });
-    initMicro($('[data-micro-root]'), { reduced });
+    // módulos de animação carregados só quando a seção se aproxima da tela
+    const lazy = (el, load) => {
+      if (!el) return;
+      const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { io.disconnect(); load(); } }, { rootMargin: '600px' });
+      io.observe(el);
+    };
+    lazy($('#laser'), () => import('./laser.js').then(({ initLaser }) => initLaser($('#laser'), { reduced })));
+    lazy($('[data-micro-root]'), () => import('./micro.js').then(({ initMicro }) => initMicro($('[data-micro-root]'), { reduced })));
     const wizard = initWizard($('[data-wizard]'), { reduced, whatsapp: WHATSAPP, email: EMAIL, track, toast });
     initSimulator($('[data-sim]'), {
       reduced,
