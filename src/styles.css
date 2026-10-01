@@ -1800,3 +1800,8 @@ input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px 
 .unit__wa { display: inline-flex; align-items: center; gap: 8px; margin-top: 14px; font-size: 14px; font-weight: 600; color: #25d366; }
 .unit__wa .wa-ico { width: 16px; height: 16px; }
 .wa-panel__body { max-height: min(56vh, 460px); overflow-y: auto; overscroll-behavior: contain; }
+.footer__social { gap: 10px; }
+.footer__social a { position: relative; width: 44px; height: 44px; border: 1px solid var(--line-strong, rgba(255,255,255,.2)); border-radius: 50%; padding: 0; display: grid; place-items: center; transition: border-color .3s, color .3s, background .3s; }
+.footer__social a:hover { border-color: var(--flame); color: var(--flame); background: rgba(255,90,20,.08); }
+.footer__social svg { width: 18px; height: 18px; fill: currentColor; }
+.footer__social-tag { position: absolute; bottom: -7px; left: 50%; transform: translateX(-50%); font: 600 8px var(--mono); letter-spacing: .06em; text-transform: uppercase; background: #070708; color: var(--muted); padding: 0 4px; white-space: nowrap; }
