@@ -558,7 +558,7 @@ export function initSpray(canvas, opts = {}) {
       const cx0 = jx - cw;
       // cabeçote (corpo da máquina) atrás da placa
       {
-        const gapW = r * 0.7; // eixo-árvore exposto entre o cabeçote e a placa
+        const gapW = r * 0.32; // eixo-árvore exposto entre o cabeçote e a placa
         const hR = cx0 - r * 0.5 - gapW, hL = Math.max(-20, hR - r * 2.5), hT = cy - r * 1.45, hB = cy + r * 1.35;
         const hg = ctx.createLinearGradient(0, hT, 0, hB);
         hg.addColorStop(0, '#2c2f33'); hg.addColorStop(0.12, '#3d4146'); hg.addColorStop(0.55, '#1f2124'); hg.addColorStop(1, '#141517');
