@@ -567,13 +567,6 @@ export function initSpray(canvas, opts = {}) {
         // aresta de luz no topo e faixa da marca
         ctx.fillStyle = 'rgba(255,255,255,0.12)'; ctx.fillRect(hL + 6, hT + 2, hR - hL - 8, 1.5);
         ctx.fillStyle = '#ff5a14'; ctx.fillRect(hL + 10, hB - 16, (hR - hL) * 0.45, 3);
-        // painel de comando com visor
-        const pW = Math.min(r * 1.3, (hR - hL) * 0.5), pX = hR - pW - 10, pY = hT + 12;
-        ctx.fillStyle = '#0e0f11'; roundRect(pX, pY, pW, r * 0.75, 4); ctx.fill();
-        ctx.fillStyle = 'rgba(125,220,154,0.75)'; ctx.font = `500 ${Math.max(7, r * 0.16)}px "JetBrains Mono", monospace`;
-        ctx.textBaseline = 'top'; ctx.fillText(`${Math.round(800 + Math.sin(time) * 6)} RPM`, pX + 5, pY + 5); ctx.textBaseline = 'alphabetic';
-        ctx.fillStyle = '#2c6b45'; ctx.beginPath(); ctx.arc(pX + 7, pY + r * 0.75 + 9, 2.5, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = '#7a1d10'; ctx.beginPath(); ctx.arc(pX + 17, pY + r * 0.75 + 9, 2.5, 0, Math.PI * 2); ctx.fill();
         // grelha de ventilação do motor
         ctx.fillStyle = 'rgba(0,0,0,0.45)';
         for (let k = 0; k < 6; k++) ctx.fillRect(hL + 12, cy - r * 0.6 + k * r * 0.22, (hR - hL) * 0.38, 2);
