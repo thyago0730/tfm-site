@@ -495,18 +495,32 @@ export function initSpray(canvas, opts = {}) {
       ctx.beginPath();
       ctx.moveTo(cx0 + cw * 0.2, cy - chh / 2 + 4); ctx.lineTo(cx0 + cw * 0.2, cy + chh / 2 - 4);
       ctx.stroke();
-      // castanhas superior e inferior prendendo o colo
-      const jawW = cw * 0.75, jawH = r * 0.34;
-      [-1, 1].forEach((d) => {
-        const y0 = d < 0 ? cy - jr - jawH : cy + jr;
-        const jg = ctx.createLinearGradient(0, y0, 0, y0 + jawH);
-        jg.addColorStop(0, d < 0 ? '#80858c' : '#3a3d42');
-        jg.addColorStop(1, d < 0 ? '#3a3d42' : '#1c1d20');
+      // 3 castanhas girando com o eixo (120° entre si): as de trás passam por trás do colo
+      const jawW = cw * 0.75, jawH = r * 0.34, jawT = r * 0.42, jx0 = cx0 + cw * 0.7;
+      const spin = time * 2.4;
+      const jaws = [0, 1, 2].map((i) => spin + (i * Math.PI * 2) / 3);
+      const drawJaw = (a) => {
+        const c = Math.cos(a), sn = Math.sin(a);
+        const yi = cy - jr * c, yo = cy - (jr + jawH) * c;
+        const half = (jawT / 2) * Math.abs(sn);
+        const y0 = Math.min(yi, yo) - half, y1 = Math.max(yi, yo) + half;
+        const lit = 0.35 + 0.65 * Math.max(0, sn) * (0.6 + 0.4 * Math.max(0, c));
+        const jg = ctx.createLinearGradient(0, y0, 0, y1);
+        const v = (k) => Math.round(28 + 120 * lit * k);
+        jg.addColorStop(0, `rgb(${v(1)},${v(1.02)},${v(1.06)})`);
+        jg.addColorStop(1, `rgb(${v(0.45)},${v(0.46)},${v(0.5)})`);
         ctx.fillStyle = jg;
-        ctx.fillRect(cx0 + cw * 0.7, y0, jawW, jawH);
-        ctx.fillStyle = 'rgba(0,0,0,0.35)';
-        for (let k = 1; k < 4; k++) ctx.fillRect(cx0 + cw * 0.7 + (jawW / 4) * k, y0 + 2, 1, jawH - 4);
-      });
+        ctx.fillRect(jx0, y0, jawW, Math.max(1, y1 - y0));
+        // serrilhado da castanha
+        ctx.fillStyle = `rgba(0,0,0,${0.25 + 0.2 * lit})`;
+        for (let k = 1; k < 4; k++) ctx.fillRect(jx0 + (jawW / 4) * k, y0 + 1, 1, Math.max(0, y1 - y0 - 2));
+        ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+        ctx.strokeRect(jx0 + 0.5, y0 + 0.5, jawW - 1, Math.max(0, y1 - y0 - 1));
+      };
+      jaws.filter((a) => Math.sin(a) < 0).forEach(drawJaw);
+      // o colo cobre as castanhas que estão atrás
+      ctx.drawImage(chrome, 0, 0, 1, 256, jx0, cy - jr, jawW, jr * 2);
+      jaws.filter((a) => Math.sin(a) >= 0).forEach(drawJaw);
       // reflexo que percorre a placa, sugerindo rotação
       const sweep = (Math.sin(time * 2.4) * 0.5 + 0.5) * chh;
       const sg2 = ctx.createLinearGradient(0, cy - chh / 2 + sweep - 30, 0, cy - chh / 2 + sweep + 30);

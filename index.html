@@ -628,7 +628,7 @@
           </div>
         </div>
         <figure class="laser__stage" data-reveal>
-          <svg class="laser__svg" viewBox="0 55 600 405" role="img" aria-label="Robô industrial em plataforma móvel aplicando revestimento a laser sobre um eixo">
+          <svg class="laser__svg" viewBox="0 0 600 460" role="img" aria-label="Robô industrial em plataforma móvel aplicando revestimento a laser sobre um eixo apoiado em mancal">
             <defs>
               <linearGradient id="lz-shaft" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a2c30"/><stop offset=".22" stop-color="#e4e7eb"/><stop offset=".4" stop-color="#9aa0a7"/><stop offset=".7" stop-color="#3a3d42"/><stop offset="1" stop-color="#141517"/></linearGradient>
               <linearGradient id="lz-bead-g" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3b332c"/><stop offset=".45" stop-color="#b8aa98"/><stop offset="1" stop-color="#4a4037"/></linearGradient>
@@ -643,18 +643,19 @@
             </defs>
             <line x1="0" y1="431" x2="600" y2="431" class="laser__floor"/>
             <ellipse cx="145" cy="432" rx="120" ry="6" fill="rgba(0,0,0,.6)"/>
-            <ellipse cx="440" cy="432" rx="170" ry="6" fill="rgba(0,0,0,.5)"/>
-            <!-- torno: placa, eixo, contraponta -->
-            <rect x="262" y="392" width="340" height="38" rx="3" fill="url(#lz-dark)" stroke="rgba(255,255,255,.06)"/>
-            <rect x="266" y="316" width="42" height="76" rx="4" fill="url(#lz-dark)" stroke="rgba(255,255,255,.08)"/>
-            <rect x="306" y="324" width="12" height="62" rx="2" fill="url(#lz-metal)"/>
-            <g data-lz-jaws><rect x="316" y="326" width="12" height="8" fill="#2a2c30"/><rect x="316" y="351" width="12" height="8" fill="#3a3d42"/><rect x="316" y="376" width="12" height="8" fill="#2a2c30"/></g>
-            <rect x="544" y="349" width="16" height="12" fill="url(#lz-metal)"/>
-            <path d="M546 348 L534 355 L546 362 Z" fill="url(#lz-metal)"/>
-            <rect x="320" y="331" width="226" height="48" fill="url(#lz-shaft)"/>
-            <clipPath id="lz-shaft-clip"><rect x="320" y="327" width="236" height="56"/></clipPath>
-            <g data-lz-bead-wrap><rect x="334" y="327" width="0" height="56" rx="3" fill="url(#lz-bead)" data-lz-bead/><rect x="334" y="327" width="0" height="56" rx="3" fill="url(#lz-bead-shade)" data-lz-bead2/></g>
-            <rect x="558" y="316" width="40" height="76" rx="4" fill="url(#lz-dark)" stroke="rgba(255,255,255,.08)"/>
+            <ellipse cx="358" cy="432" rx="40" ry="5" fill="rgba(0,0,0,.5)"/>
+            <!-- peça entrando pela direita, apoiada em um mancal -->
+            <rect x="316" y="331" width="300" height="48" fill="url(#lz-shaft)"/>
+            <g data-lz-bead-wrap><rect x="566" y="327" width="0" height="56" rx="3" fill="url(#lz-bead)" data-lz-bead/><rect x="566" y="327" width="0" height="56" rx="3" fill="url(#lz-bead-shade)" data-lz-bead2/></g>
+            <ellipse cx="316" cy="355" rx="7" ry="24" fill="url(#lz-metal)" stroke="rgba(255,255,255,.18)"/>
+            <ellipse cx="315" cy="355" rx="3" ry="7" fill="#141517"/>
+            <rect data-lz-key x="313" y="333" width="4" height="6" fill="#0f1012"/>
+            <!-- mancal (lado do robô) -->
+            <rect x="330" y="420" width="56" height="10" rx="2" fill="url(#lz-dark)"/>
+            <path d="M338 420 L338 372 Q338 316 358 316 Q378 316 378 372 L378 420 Z" fill="url(#lz-dark)" stroke="rgba(255,255,255,.1)"/>
+            <rect x="332" y="353" width="52" height="4" fill="rgba(0,0,0,.45)"/>
+            <circle cx="342" cy="426" r="2.5" fill="#6d7279"/><circle cx="374" cy="426" r="2.5" fill="#6d7279"/>
+            <circle cx="358" cy="322" r="3" fill="#ff5a14"/>
             <!-- plataforma móvel -->
             <g class="laser__agv">
               <path d="M34 382 Q34 372 44 372 L246 372 Q256 372 256 382 L256 412 Q256 420 248 420 L42 420 Q34 420 34 412 Z" fill="url(#lz-dark)" stroke="rgba(255,255,255,.12)"/>

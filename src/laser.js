@@ -7,17 +7,16 @@ export function initLaser(root, { reduced } = {}) {
   const beam = q('[data-lz-beam]'), cone = q('[data-lz-cone]'), glow = q('[data-lz-glow]');
   const bead = q('[data-lz-bead]'), bead2 = q('[data-lz-bead2]'), sparks = q('[data-lz-sparks]'), fume = q('[data-lz-fume]');
   const NS = 'http://www.w3.org/2000/svg';
-  // giro da peça: castanhas da placa girando
-  const jaws = [...svg.querySelectorAll('[data-lz-jaws] rect')];
+  // giro da peça: rasgo de chaveta girando na face do eixo
+  const key = q('[data-lz-key]');
   const spinStep = (a) => {
-    jaws.forEach((j, i) => {
-      const phi = a + (i / jaws.length) * Math.PI * 2;
-      j.setAttribute('y', 351 - 26 * Math.cos(phi));
-      j.style.opacity = Math.sin(phi) > 0 ? 1 : 0.35;
-    });
+    const sn = Math.sin(a);
+    key.setAttribute('y', 352 - 20 * Math.cos(a));
+    key.setAttribute('x', 313 + 2.5 * sn);
+    key.style.opacity = sn > -0.2 ? 1 : 0.15;
   };
   const base = { x: 150, y: 302 }, L1 = 230, L2 = 200;
-  const X0 = 336, X1 = 536, TOP = 331, HEAD = 44, GAP = 12;
+  const X0 = 566, X1 = 400, TOP = 331, HEAD = 44, GAP = 12;
   const deg = (r) => (r * 180) / Math.PI;
   let t = 0, last = 0, raf = 0, visible = false;
 
@@ -48,8 +47,8 @@ export function initLaser(root, { reduced } = {}) {
     const on = u < 0.82;
     spinStep(t * 3.2);
     const p = pose(tx, on ? Math.sin(t * 9) * 0.6 : 0);
-    const w = Math.max(0, tx - X0);
-    bead.setAttribute('width', w); bead2.setAttribute('width', w);
+    const w = Math.max(0, X0 - tx); // soldando para dentro do quadro
+    [bead, bead2].forEach((r) => { r.setAttribute('x', tx); r.setAttribute('width', w); });
     beam.setAttribute('x1', p.x); beam.setAttribute('y1', p.tip);
     beam.setAttribute('x2', p.x); beam.setAttribute('y2', TOP);
     cone.setAttribute('d', `M${p.x - 3} ${p.tip} L${p.x + 3} ${p.tip} L${p.x + 1} ${TOP} L${p.x - 1} ${TOP} Z`);
