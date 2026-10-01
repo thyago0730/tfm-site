@@ -273,7 +273,7 @@ export function initSpray(canvas, opts = {}) {
         const c = cracks[0];
         if (c) {
           const x0 = c.pts[0][0];
-          for (let i = Math.max(zoneI0, Math.floor((x0 - 14) / COL)); i <= Math.min(zoneI1, Math.ceil((x0 + 14) / COL)); i++) wear[i] = Math.max(wear[i], target[i] * 0.45);
+          // a trinca não remove material: só solta faíscas e poeira
           for (let k = 0; k < 10; k++) spawnSpark(x0 + rand(-8, 8), cy - r + 2, false);
           for (let k = 0; k < 5; k++) smoke.push({ x: x0, y: cy - r, vx: rand(-20, 20), vy: rand(-40, -15), life: 0, max: rand(0.8, 1.4), size: rand(6, 12) });
         }
@@ -284,7 +284,7 @@ export function initSpray(canvas, opts = {}) {
         cutX = zoneA - 6 + (zoneB - zoneA + 12) * k;
         for (let i = zoneI0; i <= zoneI1; i++) if (i * COL < cutX) wear[i] = Math.max(wear[i], target[i]);
         const ci = clamp(Math.floor(cutX / COL), 0, cols - 1);
-        if (chips.length < 40 && Math.random() < 0.3) chips.push({ x: cutX + 4, y: cy - r + target[ci] * depth, vx: rand(-60, 40), vy: rand(-260, -140), a: rand(0, 6.28), va: rand(-14, 14), r: rand(6, 12), turns: rand(1.6, 3), life: 0, max: rand(0.9, 1.5), hue: Math.random() });
+        if (chips.length < 22 && Math.random() < 0.16) chips.push({ x: cutX + 4, y: cy - r + target[ci] * depth, vx: rand(-60, 40), vy: rand(-260, -140), a: rand(0, 6.28), va: rand(-6, 6), r: rand(8, 13), turns: rand(3, 5), life: 0, max: rand(0.9, 1.5), hue: Math.random() });
       } else if (phaseT >= C_IN + C_DUR) {
         for (let i = zoneI0; i <= zoneI1; i++) wear[i] = target[i];
         cutX = zoneB + 20;
@@ -897,24 +897,35 @@ export function initSpray(canvas, opts = {}) {
     ctx.restore();
   }
 
+  // cavaco helicoidal visto de lado: uma mola de fita metálica que se desenrola
   function drawChips() {
     if (!chips.length) return;
     ctx.save();
-    ctx.lineCap = 'round';
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     for (const c of chips) {
       const fade = 1 - clamp((c.life - c.max * 0.7) / (c.max * 0.3), 0, 1);
-      // cor de revenido: palha → azulado
-      ctx.strokeStyle = c.hue < 0.5 ? `rgba(214,178,110,${fade})` : `rgba(120,150,200,${fade})`;
-      ctx.lineWidth = 2.2;
-      ctx.beginPath();
-      const n = 28;
-      for (let k = 0; k <= n; k++) {
-        const t = (k / n) * c.turns * Math.PI * 2;
-        const rr = c.r * (0.35 + 0.65 * (k / n));
-        const px = c.x + Math.cos(t + c.a) * rr, py = c.y + Math.sin(t + c.a) * rr * 0.55;
-        if (k) ctx.lineTo(px, py); else ctx.moveTo(px, py);
-      }
-      ctx.stroke();
+      const L = c.r * 2.4, amp = c.r * 0.55, n = 36;
+      ctx.save();
+      ctx.translate(c.x, c.y); ctx.rotate(c.a);
+      const path = (front) => {
+        ctx.beginPath();
+        let started = false;
+        for (let k = 0; k <= n; k++) {
+          const t = k / n, ph = t * c.turns * Math.PI * 2;
+          const isFront = Math.cos(ph) > 0;
+          const px = (t - 0.5) * L, py = Math.sin(ph) * amp * (0.6 + 0.4 * t);
+          if (isFront === front) { if (started) ctx.lineTo(px, py); else { ctx.moveTo(px, py); started = true; } }
+          else started = false;
+        }
+      };
+      const warm = c.hue < 0.5;
+      // parte de trás da espira (mais escura) e da frente (com brilho)
+      ctx.globalAlpha = fade * 0.8;
+      ctx.strokeStyle = warm ? '#6e5626' : '#3c4c6e'; ctx.lineWidth = 2.6; path(false); ctx.stroke();
+      ctx.globalAlpha = fade;
+      ctx.strokeStyle = warm ? '#d8b56a' : '#8fa6d4'; ctx.lineWidth = 2.6; path(true); ctx.stroke();
+      ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.lineWidth = 0.8; path(true); ctx.stroke();
+      ctx.restore();
     }
     ctx.restore();
   }
