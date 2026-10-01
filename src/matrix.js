@@ -8,7 +8,7 @@ export function initMatrix(root) {
   const desc = root.querySelector('[data-tech-desc]');
   const eyebrow = root.querySelector('.tech__eyebrow');
   const page = root.querySelector('[data-tech-page]');
-  const PAGES = { arc: 'arc-spray', pta: 'pta', hvof: 'hvof' };
+  const PAGES = { arc: 'arc-spray', pta: 'pta', hvof: 'hvof', plasma: 'plasma' };
   let locked = rows.find((r) => r.dataset.proc === 'hvof') || rows[0];
 
   const setCol = (col) => {
@@ -37,11 +37,13 @@ export function initMatrix(root) {
       r.classList.remove('is-hl');
       r.classList.toggle('is-dim', !using.includes(r));
     });
-    eyebrow.textContent = 'Material';
+    eyebrow.textContent = 'Liga';
     name.textContent = material;
-    desc.textContent = using.length
+    page.hidden = true;
+    const info = heads[col].dataset.info ? `${heads[col].dataset.info} ` : '';
+    desc.textContent = info + (using.length
       ? `Aplicado por ${using.map((r) => `${r.dataset.name} (${r.dataset.mode})`).join(', ')}.`
-      : 'Consulte a engenharia para este material.';
+      : 'Consulte a engenharia para esta liga.');
   };
 
   table.addEventListener('pointerover', (e) => {
