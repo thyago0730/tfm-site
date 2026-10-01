@@ -1765,3 +1765,22 @@ input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px 
 .lp-laser { padding: 40px 0 clamp(40px, 6vw, 72px); background: none; max-width: 900px; }
 .lp-nav .btn--sm { flex: none; min-width: max-content; }
 .nav a.btn { padding: 0 20px; font-size: 12.5px; color: #fff; }
+
+/* ---------- Corte da camada (simulação metalográfica) ---------- */
+.micro { margin-top: clamp(40px, 6vw, 72px); border: 1px solid var(--line); border-radius: 22px; background: var(--surface); padding: clamp(20px, 3vw, 36px); }
+.micro__head h3 { font-size: clamp(1.4rem, 2.4vw, 1.9rem); display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
+.micro__head h3 small { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--flame); }
+.micro__head p { color: var(--muted); margin-top: 6px; }
+.micro__grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 24px; margin-top: 22px; align-items: start; }
+.micro__cv { width: 100%; aspect-ratio: 16 / 9; border-radius: 14px; border: 1px solid var(--line); display: block; background: #0d0d0f; }
+.micro__btns { display: flex; flex-wrap: wrap; gap: 8px; }
+.micro__btns button { border: 1px solid var(--line-strong, rgba(255,255,255,.2)); background: none; color: var(--muted); border-radius: 99px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; transition: all .25s; }
+.micro__btns button:hover { color: #fff; }
+.micro__btns button[aria-pressed="true"] { background: var(--flame); border-color: var(--flame); color: #fff; }
+.micro__stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; margin: 18px 0 14px; }
+.micro__stats div { background: var(--bg); padding: 12px 14px; }
+.micro__stats dt { font-size: 12px; color: var(--muted); }
+.micro__stats dd { margin: 2px 0 0; font-weight: 700; font-size: 1.05rem; }
+.micro__note { color: #c4c4ca; line-height: 1.55; }
+.micro__foot { color: var(--dim); font-size: 12.5px; margin-top: 10px; }
+@media (max-width: 900px) { .micro__grid { grid-template-columns: 1fr; } }

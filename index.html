@@ -600,6 +600,29 @@
           </aside>
         </div>
 
+
+        <div class="micro" data-micro-root data-fade>
+          <div class="micro__head">
+            <h3>Corte da camada <small>simulação metalográfica</small></h3>
+            <p>Escolha o processo e veja como a camada se forma e como fica por dentro.</p>
+          </div>
+          <div class="micro__grid">
+            <canvas class="micro__cv" aria-label="Simulação do corte metalográfico da camada" role="img"></canvas>
+            <div class="micro__side">
+              <div class="micro__btns">
+                <button type="button" data-micro="hvof" aria-pressed="true">HVOF</button>
+                <button type="button" data-micro="arc">Arc Spray</button>
+                <button type="button" data-micro="flame">Flame Spray</button>
+                <button type="button" data-micro="laser">Laser Cladding</button>
+                <button type="button" data-micro="pta">PTA</button>
+                <button type="button" data-micro="saw">Arco Submerso</button>
+              </div>
+              <dl class="micro__stats" data-micro-stats></dl>
+              <p class="micro__note" data-micro-note></p>
+              <p class="micro__foot">Valores típicos de referência; a especificação final depende da liga e da aplicação.</p>
+            </div>
+          </div>
+        </div>
         <div class="tech__materials" data-fade>
           <h3>Materiais que aplicamos</h3>
           <ul class="chips chips--lg">
