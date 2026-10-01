@@ -927,7 +927,7 @@ address { font-style: normal; }
 }
 
 /* ---------- tecnologias (matriz) ---------- */
-.tech { padding-block: 0 var(--section); }
+.tech { padding-block: 0 clamp(32px, 4vw, 56px); }
 .tech__grid { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 16px; align-items: stretch; }
 .matrix-wrap { border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg-2); overflow-x: auto; padding: 8px 8px 12px; }
 .matrix { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 760px; }
@@ -1559,7 +1559,7 @@ input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px 
 .tech__page { align-self: flex-start; }
 
 /* ---------- Laser cladding (vitrine) ---------- */
-.laser { padding: clamp(96px, 12vw, 160px) 0; position: relative; overflow: hidden; background: radial-gradient(60% 50% at 75% 55%, rgba(255, 90, 20, .12), transparent 70%); }
+.laser { padding: 16px 0 clamp(96px, 12vw, 160px); position: relative; overflow: hidden; background: radial-gradient(60% 50% at 75% 55%, rgba(255, 90, 20, .12), transparent 70%); }
 .laser__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: clamp(32px, 5vw, 80px); align-items: center; }
 .laser .section-title em { font-style: normal; color: var(--flame); }
 .laser__specs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; margin: 36px 0; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.08); border-radius: 14px; overflow: hidden; }
@@ -1580,3 +1580,5 @@ input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px 
 .laser__cap .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--flame); box-shadow: 0 0 10px var(--flame); }
 .badge-new { display: inline-block; font: 600 .6rem "JetBrains Mono", ui-monospace, monospace; font-style: normal; letter-spacing: .1em; text-transform: uppercase; color: #fff; background: var(--flame); border-radius: 99px; padding: 2px 7px; vertical-align: middle; margin-left: 4px; }
 @media (max-width: 900px) { .laser__grid { grid-template-columns: 1fr; } }
+.laser .section-title { font-size: clamp(2.4rem, 4.4vw, 4.4rem); }
+.laser .section-lead { margin-top: 20px; }
