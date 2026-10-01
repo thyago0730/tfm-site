@@ -61,7 +61,7 @@ export function initSpray(canvas, opts = {}) {
   let cols = 0, wear, target, coat, heat, polish, over;
   let zoneA = 0, zoneB = 0, zoneI0 = 0, zoneI1 = 0, zoneMM = 0.8, proc = 0;
   let phase = 'wear', phaseT = 0, sweepX = 0, progress = 0, layerMM = 0;
-  let ptaLift = 0, pilot = 0, gunLiftPx = 0, resumeChase = false;
+  let grindDone = false, ptaLift = 0, pilot = 0, gunLiftPx = 0, resumeChase = false;
   let time = 0, emit = 0, emitAcc = 0, wheelA = 0;
   // troca de ferramenta: recuo (0 = trabalhando, 1 = recuada) e posição no trilho
   const cutter = { x: -999, lift: 1 }; // ferramenta de usinagem (rebaixo)
@@ -237,8 +237,9 @@ export function initSpray(canvas, opts = {}) {
     for (let i = 0; i < cols; i++) { wear[i] = 0; target[i] = 0; coat[i] = 0; polish[i] = 0; over[i] = 0; }
     for (let i = zoneI0; i <= zoneI1; i++) {
       const u = (i - zoneI0) / Math.max(1, zoneI1 - zoneI0);
-      const edge = Math.min(1, Math.sin(Math.PI * u) * 1.6);
-      target[i] = Math.pow(Math.max(0, edge), 0.7) * rand(0.9, 1);
+      // rebaixo usinado: fundo plano e uniforme com chanfro nas bordas
+      const e = Math.min(u, 1 - u) * (zoneI1 - zoneI0) * COL;
+      target[i] = clamp(e / 8, 0, 1) * 0.9;
       over[i] = OVER * Math.pow(Math.sin(Math.PI * u), 0.35);
     }
     zoneMM = Math.round(rand(0.5, 1.2) * 100) / 100;
@@ -309,15 +310,16 @@ export function initSpray(canvas, opts = {}) {
       progress = sw ? sc / sw : 1;
       if (progress > 0.985) {
         for (let i = zoneI0; i <= zoneI1; i++) coat[i] = wear[i] + over[i];
-        progress = 1; phase = 'grind'; phaseT = 0; sweepX = grindStart();
+        progress = 1; phase = 'grind'; phaseT = 0; sweepX = grindStart(); grindDone = false;
       }
     } else if (phase === 'grind') {
       // a pistola sai de cena e o rebolo desce antes de varrer a zona
       // retífica do eixo inteiro: do início do eixo até a ponta do trilho
       const gS = grindStart(), gE = railB - 10;
-      const k = easeInOut(clamp((phaseT - G_IN) / G_DUR, 0, 1));
+      // avanço constante (como a mesa de uma retífica), sem saltos
+      const k = clamp((phaseT - G_IN) / G_DUR, 0, 1);
       sweepX = gS + (gE - gS) * k;
-      if (k >= 1) sweepX = W + 40;
+      grindDone = k >= 1;
       if (phaseT > G_IN) {
         for (let i = zoneI0; i <= zoneI1; i++) {
           if (i * COL < sweepX) { polish[i] = Math.min(1, polish[i] + dt * 5); coat[i] = wear[i]; }
@@ -599,7 +601,7 @@ export function initSpray(canvas, opts = {}) {
 
     // trechos íntegros
     // fora da zona: superfície usada; depois da retífica, polida (cromo) por onde o rebolo passou
-    const pX = phase === 'grind' || phase === 'done' ? Math.max(x0, sweepX) : x0;
+    const pX = phase === 'done' || grindDone ? W + 40 : phase === 'grind' ? Math.max(x0, sweepX) : x0;
     const seg2 = (a, b) => { if (b <= a) return; const m = clamp(pX, a, b); ctx.drawImage(chrome, 0, 0, 1, 256, a, cy - r, m - a, r * 2); ctx.drawImage(used, 0, 0, 1, 256, m, cy - r, b - m, r * 2); };
     seg2(x0, zA);
     seg2(zB, W + 40);
