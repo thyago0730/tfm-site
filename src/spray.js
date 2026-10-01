@@ -60,7 +60,8 @@ export function initSpray(canvas, opts = {}) {
   let cols = 0, wear, target, coat, heat, polish;
   let zoneA = 0, zoneB = 0, zoneI0 = 0, zoneI1 = 0, zoneMM = 0.8, proc = 0;
   let phase = 'wear', phaseT = 0, sweepX = 0, progress = 0, layerMM = 0;
-  let time = 0, emit = 0, emitAcc = 0;
+  let time = 0, emit = 0, emitAcc = 0, swap = 0, wheelA = 0;
+  const grit = Array.from({ length: 70 }, () => [Math.random() * Math.PI * 2, Math.random(), Math.random()]);
   let pointerX = null, pointerT = -99, pointerUsed = reduced;
   const gun = { x: 0, vx: 0, dir: 1 };
   const parts = [];
@@ -260,16 +261,23 @@ export function initSpray(canvas, opts = {}) {
         progress = 1; phase = 'grind'; phaseT = 0; sweepX = zoneA - 10;
       }
     } else if (phase === 'grind') {
-      const k = easeInOut(clamp(phaseT / 1.6, 0, 1));
+      // a pistola sai de cena e o rebolo desce antes de varrer a zona
+      const k = easeInOut(clamp((phaseT - 0.6) / 1.8, 0, 1));
       sweepX = zoneA - 10 + (zoneB - zoneA + 20) * k;
-      for (let i = zoneI0; i <= zoneI1; i++) {
-        if (i * COL < sweepX) polish[i] = Math.min(1, polish[i] + dt * 5);
+      if (phaseT > 0.6) {
+        for (let i = zoneI0; i <= zoneI1; i++) {
+          if (i * COL < sweepX) polish[i] = Math.min(1, polish[i] + dt * 5);
+        }
+        if (Math.random() < 0.9) spawnSpark(sweepX, cy - r + rand(0, 6), true);
       }
-      if (Math.random() < 0.9) spawnSpark(sweepX, cy - r + rand(0, 6), true);
-      if (phaseT > 1.7) { phase = 'done'; phaseT = 0; }
+      if (phaseT > 2.5) { phase = 'done'; phaseT = 0; }
     } else if (phase === 'done' && phaseT > 1.8) {
       newZone();
     }
+
+    const wantSwap = phase === 'grind' || phase === 'done' ? 1 : 0;
+    swap += (wantSwap - swap) * (1 - Math.exp(-6 * dt));
+    wheelA += dt * 28;
 
     // pistola
     const minG = railA + bodyW * 0.7, maxG = railB - bodyW * 0.7;
@@ -750,7 +758,7 @@ export function initSpray(canvas, opts = {}) {
       g.addColorStop(1, 'rgba(255,255,255,0.55)');
       ctx.fillStyle = g;
       ctx.fillRect(sweepX - 30, cy - r, 36, r * 2);
-      const s = 90;
+      const s = 90 * clamp((phaseT - 0.6) * 3, 0, 1);
       ctx.globalAlpha = 0.6;
       ctx.drawImage(glow, sweepX - s / 2, cy - r - s / 2, s, s);
       ctx.globalAlpha = 1;
@@ -758,7 +766,68 @@ export function initSpray(canvas, opts = {}) {
     ctx.globalCompositeOperation = 'source-over';
   }
 
+  function drawWheel() {
+    if (swap < 0.01) return;
+    const wr = r * (mobile ? 0.95 : 1.05);
+    const x = sweepX;
+    const e = easeInOut(swap);
+    const y = cy - r - wr - (1 - e) * (cy + wr * 2);
+    // braço até o carro no trilho
+    ctx.fillStyle = '#26282c';
+    roundRect(x - 26, railY - 7, 52, 14, 3);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.14)';
+    ctx.stroke();
+    const top = Math.min(railY + 7, y);
+    const ag = ctx.createLinearGradient(x - 5, 0, x + 5, 0);
+    ag.addColorStop(0, '#1c1d20'); ag.addColorStop(0.5, '#70757c'); ag.addColorStop(1, '#1c1d20');
+    ctx.fillStyle = ag;
+    ctx.fillRect(x - 5, top, 10, Math.max(0, y - top));
+    // pedra abrasiva
+    const g = ctx.createRadialGradient(x - wr * 0.3, y - wr * 0.3, wr * 0.1, x, y, wr);
+    g.addColorStop(0, '#b9b4aa'); g.addColorStop(0.7, '#8a857c'); g.addColorStop(1, '#5c5852');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(x, y, wr, 0, Math.PI * 2); ctx.fill();
+    ctx.save();
+    ctx.beginPath(); ctx.arc(x, y, wr, 0, Math.PI * 2); ctx.clip();
+    for (const [a, d, t] of grit) {
+      const ang = a + wheelA, rr = wr * (0.25 + d * 0.72);
+      ctx.fillStyle = t > 0.5 ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.35)';
+      ctx.fillRect(x + Math.cos(ang) * rr, y + Math.sin(ang) * rr, 1.6, 1.6);
+    }
+    // borrão de rotação
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.lineWidth = 2;
+    for (let k = 0; k < 3; k++) {
+      ctx.beginPath(); ctx.arc(x, y, wr * (0.5 + k * 0.17), wheelA + k, wheelA + k + 1.2); ctx.stroke();
+    }
+    ctx.restore();
+    ctx.strokeStyle = 'rgba(0,0,0,0.5)'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(x, y, wr, 0, Math.PI * 2); ctx.stroke();
+    // flange e cubo
+    ctx.fillStyle = '#3a3d42';
+    ctx.beginPath(); ctx.arc(x, y, wr * 0.28, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#16171a';
+    ctx.beginPath(); ctx.arc(x, y, wr * 0.09, 0, Math.PI * 2); ctx.fill();
+    // proteção (capa) na metade de cima
+    ctx.fillStyle = '#2a2c30';
+    ctx.beginPath();
+    ctx.arc(x, y, wr + 5, Math.PI * 0.95, Math.PI * 2.05);
+    ctx.arc(x, y, wr + 1, Math.PI * 2.05, Math.PI * 0.95, true);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#ff5a14';
+    ctx.fillRect(x - wr * 0.5, y - wr - 6, wr, 2);
+  }
+
   function drawGun() {
+    if (swap > 0.99) return;
+    ctx.save();
+    ctx.translate(0, -easeInOut(swap) * (tipY + 40));
+    drawGunBody();
+    ctx.restore();
+  }
+
+  function drawGunBody() {
     const x = gun.x;
     // carro no trilho
     ctx.fillStyle = '#26282c';
@@ -991,6 +1060,7 @@ export function initSpray(canvas, opts = {}) {
     drawSmoke();
     drawSprayFx();
     drawGun();
+    drawWheel();
     drawHud();
   }
 
