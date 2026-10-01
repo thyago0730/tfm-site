@@ -629,6 +629,8 @@ export function initSpray(canvas, opts = {}) {
 
   function drawSmoke() {
     if (!smoke.length) return;
+    // fumaça clara: 'screen' nunca escurece o que está atrás (sem mancha preta)
+    ctx.globalCompositeOperation = 'screen';
     for (const m of smoke) {
       const u = m.life / m.max;
       const sz = m.size * (1 + u * 2.2);
@@ -636,6 +638,7 @@ export function initSpray(canvas, opts = {}) {
       ctx.drawImage(smokeSprite, m.x - sz / 2, m.y - sz / 2, sz, sz);
     }
     ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = 'source-over';
   }
 
   function drawSprayFx() {
@@ -774,7 +777,7 @@ export function initSpray(canvas, opts = {}) {
   // sequência real: recua, corre para fora do trilho; a outra entra recuada e avança
   function toolChange() {
     const seg = (a, b) => easeInOut(clamp((phaseT - a) / (b - a), 0, 1));
-    const offR = W + 120, offL = -120, wStart = zoneA - 10;
+    const offR = railB + 40, offL = railA - 40, wStart = zoneA - 10;
     if (phase === 'grind') {
       tool.gLift = seg(0, 0.45);
       gun.x = tool.gx = tool.gx0 + (offR - tool.gx0) * seg(0.45, 1.05);
@@ -784,7 +787,7 @@ export function initSpray(canvas, opts = {}) {
       tool.gLift = 1; tool.wLift = 0; tool.wx = sweepX; gun.x = tool.gx;
     } else if (phase === 'wear') {
       tool.wLift = Math.max(tool.wLift, seg(0, 0.4));
-      tool.wx = tool.wx0 < -100 ? -999 : tool.wx0 + (offR - tool.wx0) * seg(0.4, 1.0);
+      tool.wx = tool.wx0 < railA - 100 ? -999 : tool.wx0 + (offR - tool.wx0) * seg(0.4, 1.0);
       gun.x = tool.gx = offL + (zoneA - offL) * seg(0.7, 1.35);
       tool.gLift = 1 - seg(1.35, 1.85);
     } else {
@@ -795,8 +798,14 @@ export function initSpray(canvas, opts = {}) {
     if (phase !== 'grind') tool.gx0 = tool.gx;
   }
 
+  // a ferramenta aparece/some nas pontas da régua
+  const railFade = (x) => clamp(Math.min(x - (railA - 40), railB + 40 - x) / 40, 0, 1);
+
   function drawWheel() {
-    if (tool.wx < -100 || tool.wx > W + 100) return;
+    const fa = railFade(tool.wx);
+    if (fa <= 0) return;
+    ctx.save();
+    ctx.globalAlpha = fa;
     const wr = r * (mobile ? 0.95 : 1.05);
     const x = tool.wx;
     const work = cy - r - wr, park = railY + 26 + wr;
@@ -846,11 +855,16 @@ export function initSpray(canvas, opts = {}) {
     ctx.closePath(); ctx.fill();
     ctx.fillStyle = '#ff5a14';
     ctx.fillRect(x - wr * 0.5, y - wr - 6, wr, 2);
+    ctx.restore();
   }
 
   function drawGun() {
-    if (gun.x < -100 || gun.x > W + 100) return;
+    const fa = railFade(gun.x);
+    if (fa <= 0) return;
+    ctx.save();
+    ctx.globalAlpha = fa;
     drawGunBody();
+    ctx.restore();
   }
 
   function drawGunBody() {
