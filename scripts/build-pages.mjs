@@ -1,7 +1,7 @@
 // Gera páginas estáticas por processo e por setor (SEO local) a partir de pages-data.mjs.
 // Uso: node scripts/build-pages.mjs  (rodado automaticamente antes do build)
 import { readFileSync, mkdirSync, writeFileSync } from 'node:fs';
-import { processos, setores } from './pages-data.mjs';
+import { processos, setores, glossario } from './pages-data.mjs';
 
 const SITE = 'https://tfmrevestimentos.com.br';
 const WA = (m) => `https://wa.me/5511950427669?text=${encodeURIComponent(m)}`;
@@ -117,6 +117,22 @@ for (const s of setores) {
     desc: `${s.texto} HVOF, laser cladding, PTA, cromo duro e usinagem de precisão.`,
     crumbs: [['Início', '/'], ['Setores', '/#setores'], [s.nome, path]],
     schema: { '@context': 'https://schema.org', '@type': 'Service', name: `Revestimentos industriais para ${s.nome}`, audience: { '@type': 'BusinessAudience', name: s.nome }, areaServed: 'BR', provider: { '@type': 'Organization', name: 'Grupo TFM Revestimentos', url: SITE } },
+  }));
+  urls.push(path);
+}
+
+// glossário técnico
+{
+  const path = '/glossario.html';
+  const slug = (t) => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const body = `
+    <nav class="gl-index" aria-label="Termos">${glossario.map(([t]) => `<a href="#${slug(t)}">${esc(t)}</a>`).join('')}</nav>
+    <dl class="gl-list">${glossario.map(([t, d]) => `<div id="${slug(t)}"><dt>${esc(t)}</dt><dd>${esc(d)}</dd></div>`).join('')}</dl>`;
+  writeFileSync(`.${path}`, layout({
+    path, kicker: 'Conhecimento', h1: 'Glossário de revestimentos e recuperação de peças', lead: 'Os principais termos de aspersão térmica, soldagem de revestimento e engenharia de superfícies, explicados de forma direta.', body,
+    title: 'Glossário técnico de revestimentos | TFM Revestimentos', desc: 'Glossário de aspersão térmica, HVOF, laser cladding, PTA, cromo duro, diluição, porosidade e outros termos de engenharia de superfícies.',
+    crumbs: [['Início', '/'], ['Glossário', path]],
+    schema: { '@context': 'https://schema.org', '@type': 'DefinedTermSet', name: 'Glossário TFM', hasDefinedTerm: glossario.map(([t, d]) => ({ '@type': 'DefinedTerm', name: t, description: d })) },
   }));
   urls.push(path);
 }

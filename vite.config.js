@@ -21,6 +21,7 @@ export default defineConfig({
         main: resolve(root, 'index.html'),
         privacidade: resolve(root, 'privacidade.html'),
         notFound: resolve(root, '404.html'),
+        glossario: resolve(root, 'glossario.html'),
         ...generated,
       },
     },

@@ -50,3 +50,26 @@ export const setores = [
   { slug: 'eolica', nome: 'Energia Eólica', texto: 'Recuperação de componentes de aerogeradores sem esperar meses por peças importadas: eixos, mancais e sedes recuperados com laser cladding, HVOF e usinagem de precisão, reduzindo o tempo de turbina parada.', pecas: ['Eixos principais e eixos de baixa rotação', 'Assentos de rolamento e mancais', 'Eixos e engrenagens de multiplicadoras', 'Pistões e hastes do sistema de pitch', 'Componentes do sistema de yaw'], processos: ['laser-cladding', 'hvof', 'arc-spray'] },
   { slug: 'textil', nome: 'Têxtil', texto: 'Cromo duro, oxi-cerâmicos e carbetos contra corrosão e desgaste abrasivo na produção de fios sintéticos.', pecas: ['Placas e buchas de aquecimento', 'Rolos defletores', 'Rotoconers', 'Rolos guia de bobinadeiras'], processos: ['cromo-duro', 'hvof'] },
 ];
+
+export const glossario = [
+  ['Aspersão térmica', 'Família de processos em que um material é fundido e projetado sobre a peça, formando uma camada aderida mecanicamente. Inclui HVOF, Arc Spray e Flame Spray.'],
+  ['HVOF', 'High Velocity Oxy-Fuel: combustão de alta pressão acelera o pó a velocidades supersônicas, gerando camadas muito densas. Referência para carbonetos.'],
+  ['Arc Spray', 'Dois arames fundidos por arco elétrico e atomizados por ar comprimido. Alta taxa de deposição para recuperação dimensional.'],
+  ['Flame Spray', 'Pó ou arame fundido por chama oxiacetilênica. Versátil e econômico; com ligas autofluxantes pode ser refundido.'],
+  ['Laser cladding', 'Soldagem de revestimento em que um feixe laser funde o pó sobre a peça, com diluição mínima e pouca entrada de calor.'],
+  ['PTA', 'Plasma de arco transferido: soldagem de revestimento com pó metálico, camadas espessas e baixa diluição.'],
+  ['Arco submerso', 'Soldagem com arame contínuo sob camada de fluxo, de altíssima deposição, usada para reconstruir grandes volumes.'],
+  ['Cromo duro', 'Revestimento eletrolítico de cromo, de baixo atrito e alta dureza. Em muitas aplicações vem sendo substituído por HVOF.'],
+  ['Diluição', 'Quanto do metal base se mistura à liga depositada na soldagem. Quanto menor, mais a camada mantém suas propriedades.'],
+  ['ZTA', 'Zona termicamente afetada: região do metal base que teve a estrutura alterada pelo calor da soldagem.'],
+  ['Sobremetal', 'Espessura depositada acima da cota final, removida depois na retífica ou usinagem para atingir a medida exata.'],
+  ['Porosidade', 'Fração de vazios dentro de uma camada aspergida. Camadas HVOF ficam abaixo de 1%.'],
+  ['Aderência', 'Resistência de ligação entre camada e metal base, medida em MPa em ensaio de tração.'],
+  ['Dureza HRC / HV', 'Escalas de dureza Rockwell C e Vickers. Carbonetos de tungstênio passam de 1.100 HV.'],
+  ['WC-Co', 'Carboneto de tungstênio com cobalto, liga de altíssima resistência à abrasão e erosão.'],
+  ['Stellite', 'Família de ligas de cobalto-cromo-tungstênio resistentes a desgaste metal-metal, cavitação e calor.'],
+  ['NiCrBSi (Colmonoy)', 'Liga autofluxante de níquel, refundida sobre a peça para formar uma camada densa contra desgaste e corrosão.'],
+  ['Inconel 625', 'Superliga de níquel-cromo-molibdênio para corrosão severa e altas temperaturas.'],
+  ['Jateamento abrasivo', 'Preparação da superfície que limpa e cria a rugosidade de ancoragem necessária para a aspersão.'],
+  ['Metrologia dimensional', 'Medição precisa das cotas da peça antes e depois da recuperação, registrada em laudo.'],
+];
