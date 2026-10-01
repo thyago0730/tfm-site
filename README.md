@@ -133,3 +133,7 @@ Recomendado: no Google Cloud Console, restrinja a chave de API do Firebase aos d
 4. **Números de impacto** dos cases (vida útil antes/depois, economia em R$), com autorização dos clientes.
 5. Google Business Profile para as três unidades e CNPJ na política de privacidade.
 6. Confirmar se há certificação ISO 9001 (aparece na apresentação institucional) para destacá-la no site.
+
+## Páginas de processo e setor (SEO)
+
+Geradas por `scripts/build-pages.mjs` a partir de `scripts/pages-data.mjs` (roda no `npm run build`). Para criar uma nova página, adicione um item em `pages-data.mjs`.
