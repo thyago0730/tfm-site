@@ -844,7 +844,7 @@ export function initSpray(canvas, opts = {}) {
   // sequência real: recua, corre para fora do trilho; a outra entra recuada e avança
   function toolChange() {
     const seg = (a, b) => easeInOut(clamp((phaseT - a) / (b - a), 0, 1));
-    const offR = railB + 40, offL = railA - 40, wStart = zoneA - 10;
+    const offR = railB + 30, offL = railA - 30, wStart = zoneA - 10;
     if (phase === 'grind') {
       tool.gLift = seg(0, 0.45);
       gun.x = tool.gx = tool.gx0 + (offR - tool.gx0) * seg(0.45, 1.05);
@@ -872,7 +872,43 @@ export function initSpray(canvas, opts = {}) {
   }
 
   // a ferramenta aparece/some nas pontas da régua
-  const railFade = (x) => clamp(Math.min(x - (railA - 40), railB + 40 - x) / 40, 0, 1);
+  const railFade = (x) => (x > railA - 70 && x < railB + 70 ? 1 : 0);
+  // elevadores nas pontas do trilho: a ferramenta sobe/desce pela comporta
+  const HW = () => (mobile ? 26 : 34); // meia largura da casa do elevador
+  const hxA = () => railA - 30, hxB = () => railB + 30;
+  const endUp = (x) => clamp(Math.max(railA - 4 - x, x - railB - 4) / 26, 0, 1) * (cy - railY + r + 60);
+  function drawElevators() {
+    const near = (hx) => Math.max(0, ...[gun.x, tool.wx, phase === 'wear' ? cutter.x : -999].map((x) => 1 - clamp((Math.abs(x - hx) - 34) / 70, 0, 1)));
+    for (const hx of [hxA(), hxB()]) {
+      const w = HW(), bot = railY + 20;
+      const open = easeInOut(near(hx));
+      ctx.save();
+      // casa do elevador
+      const g = ctx.createLinearGradient(hx - w, 0, hx + w, 0);
+      g.addColorStop(0, '#0e0f11'); g.addColorStop(0.5, '#1f2124'); g.addColorStop(1, '#0c0d0f');
+      ctx.fillStyle = g;
+      ctx.fillRect(hx - w, -10, w * 2, bot + 10);
+      ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 1;
+      ctx.strokeRect(hx - w + 0.5, -10, w * 2 - 1, bot + 10);
+      ctx.fillStyle = 'rgba(255,255,255,0.05)';
+      for (let y = 12; y < bot - 14; y += 14) ctx.fillRect(hx - w + 6, y, w * 2 - 12, 1);
+      // luz de status
+      ctx.fillStyle = open > 0.05 ? '#ff8a1f' : '#2c6b45';
+      ctx.beginPath(); ctx.arc(hx, bot - 22, 2.5, 0, Math.PI * 2); ctx.fill();
+      // comporta bipartida: as folhas deslizam para os lados
+      ctx.beginPath(); ctx.rect(hx - w, bot - 10, w * 2, 12); ctx.clip();
+      const leaf = w * (1 - open);
+      for (const side of [-1, 1]) {
+        const x0 = side < 0 ? hx - w : hx + w - leaf;
+        ctx.fillStyle = '#2b2d31'; ctx.fillRect(x0, bot - 10, leaf, 12);
+        ctx.save(); ctx.beginPath(); ctx.rect(x0, bot - 10, leaf, 12); ctx.clip();
+        ctx.fillStyle = '#e0a400';
+        for (let k = -2; k < 12; k++) { const sx = x0 + k * 10 + (side < 0 ? 0 : 5); ctx.beginPath(); ctx.moveTo(sx, bot + 2); ctx.lineTo(sx + 5, bot + 2); ctx.lineTo(sx + 11, bot - 10); ctx.lineTo(sx + 6, bot - 10); ctx.closePath(); ctx.fill(); }
+        ctx.restore();
+      }
+      ctx.restore();
+    }
+  }
 
   function drawCracks() {
     if (phase !== 'wear' || !cracks.length) return;
@@ -958,6 +994,7 @@ export function initSpray(canvas, opts = {}) {
     const park = railY + 16 + (34 + 9 + 46) * S0;
     const tip = work - (work - park) * easeInOut(cutter.lift);
     ctx.save(); ctx.globalAlpha = fa;
+    ctx.translate(0, -endUp(x));
     // carro e coluna
     ctx.fillStyle = '#26282c'; roundRect(x - 26, railY - 7, 52, 14, 3); ctx.fill();
     ctx.strokeStyle = 'rgba(255,255,255,0.14)'; ctx.stroke();
@@ -1012,11 +1049,52 @@ export function initSpray(canvas, opts = {}) {
     ctx.restore();
   }
 
+  // bolha "Interativo": aparece ao lado da tocha no início do revestimento, até o visitante guiar
+  function drawBubble() {
+    if (phase !== 'spray' || pointerUsed) return;
+    const a = clamp(phaseT / 0.4, 0, 1) * (1 - clamp((phaseT - 5.5) / 0.5, 0, 1));
+    if (a <= 0) return;
+    const bob = Math.sin(time * 3) * 2;
+    const txt = mobile ? 'arraste para guiar' : 'mova o cursor para guiar a tocha';
+    ctx.save();
+    ctx.globalAlpha = a;
+    ctx.font = '600 12px "Archivo Variable", system-ui, sans-serif';
+    const tw = ctx.measureText(txt).width;
+    ctx.font = '600 9px "JetBrains Mono", ui-monospace, monospace';
+    const bw = ctx.measureText('INTERATIVO').width + 14;
+    const w = bw + tw + 30, h = 34;
+    // abaixo do painel, à direita do jato; se não couber, vai para a esquerda
+    const y = (mobile ? tipY + 26 : bodyTop + 150) + bob;
+    let x = gun.x + 22, left = false;
+    if (x + w > W - 10) { x = gun.x - 22 - w; left = true; }
+    x = clamp(x, 10, W - 10 - w);
+    // corpo e rabicho
+    ctx.fillStyle = 'rgba(18,18,20,.92)';
+    ctx.strokeStyle = 'rgba(255,90,20,.55)';
+    ctx.lineWidth = 1;
+    roundRect(x, y, w, h, h / 2); ctx.fill(); ctx.stroke();
+    ctx.beginPath();
+    if (left) { ctx.moveTo(x + w - 2, y + h / 2 - 6); ctx.lineTo(x + w + 9, y + h / 2); ctx.lineTo(x + w - 2, y + h / 2 + 6); }
+    else { ctx.moveTo(x + 2, y + h / 2 - 6); ctx.lineTo(x - 9, y + h / 2); ctx.lineTo(x + 2, y + h / 2 + 6); }
+    ctx.closePath(); ctx.fill();
+    // selo
+    ctx.fillStyle = '#c2410c';
+    roundRect(x + 8, y + 8, bw, h - 16, 9); ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('INTERATIVO', x + 15, y + h / 2 + 0.5);
+    ctx.font = '600 12px "Archivo Variable", system-ui, sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,.92)';
+    ctx.fillText(txt, x + bw + 18, y + h / 2 + 0.5);
+    ctx.restore();
+  }
+
   function drawWheel() {
     const fa = railFade(tool.wx);
     if (fa <= 0) return;
     ctx.save();
     ctx.globalAlpha = fa;
+    ctx.translate(0, -endUp(tool.wx));
     const wr = r * (mobile ? 0.95 : 1.05);
     const x = tool.wx;
     const work = cy - r - wr, park = railY + 26 + wr;
@@ -1074,6 +1152,7 @@ export function initSpray(canvas, opts = {}) {
     if (fa <= 0) return;
     ctx.save();
     ctx.globalAlpha = fa;
+    ctx.translate(0, -endUp(gun.x));
     drawGunBody();
     ctx.restore();
   }
@@ -1298,11 +1377,6 @@ export function initSpray(canvas, opts = {}) {
     ctx.fillStyle = bar;
     ctx.fillRect(px + 14, py + 106, (pw - 28) * (pct / 100), 2);
 
-    if (!pointerUsed) {
-      ctx.textAlign = 'right';
-      ctx.fillStyle = 'rgba(255,255,255,0.4)';
-      ctx.fillText('↔ mova o cursor para guiar', px + pw, py + ph + 18);
-    }
     ctx.restore();
   }
 
@@ -1325,7 +1399,9 @@ export function initSpray(canvas, opts = {}) {
     drawCutter();
     drawChips();
     drawWheel();
+    drawElevators();
     drawHud();
+    drawBubble();
   }
 
   // ---------- loop ----------
