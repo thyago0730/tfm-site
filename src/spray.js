@@ -881,7 +881,8 @@ export function initSpray(canvas, opts = {}) {
   // elevadores nas pontas do trilho: a ferramenta sobe/desce pela comporta
   const HW = () => (mobile ? 26 : 34); // meia largura da casa do elevador
   const hxA = () => railA - 30, hxB = () => railB + 30;
-  const endUp = (x) => clamp(Math.max(railA - 4 - x, x - railB - 4) / 26, 0, 1) * (cy - railY + r + 60);
+  // a ferramenta só desce depois que a comporta já abriu (folga de ~10 px de trilho)
+  const endUp = (x) => clamp(Math.max(railA - 4 - x, x - railB - 4) / 14, 0, 1) * (cy - railY + r + 60);
   // comporta nas pontas do trilho: duas folhas que se abrem para a ferramenta subir ou descer
   const hatchHold = [0, 0], hatchVal = [0, 0];
   let hatchT = 0;
