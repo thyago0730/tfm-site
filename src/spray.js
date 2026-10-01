@@ -861,10 +861,14 @@ export function initSpray(canvas, opts = {}) {
       tool.wx = phaseT < G_IN ? entryX(wStart, 0.9, 1.2) : sweepX;
       tool.wLift = 1 - seg(1.6, G_IN);
     } else if (phase === 'done') {
-      tool.gLift = 1; tool.wLift = 0; tool.wx = sweepX; gun.x = tool.gx;
+      // retífica concluída: o rebolo recua e sai pela comporta
+      if (tool.wd0 == null) tool.wd0 = tool.wx;
+      tool.gLift = 1; gun.x = tool.gx;
+      tool.wLift = seg(0.15, 0.4); tool.wx = exitX(tool.wd0, 0.4, 0.7);
     } else if (phase === 'wear') {
-      tool.wLift = Math.max(tool.wLift, seg(0, 0.25));
-      tool.wx = tool.wx0 < railA - 100 ? -999 : exitX(tool.wx0, 0.25, 0.55);
+      tool.wd0 = null;
+      tool.wLift = 1;
+      tool.wx = tool.wx0 < railA - 100 ? -999 : tool.wx0 >= railB + 29 ? offR : exitX(tool.wx0, 0.25, 0.55);
       // ferramenta de usinagem: entra recuada, desce, rebaixa e sai pelo fim da régua
       if (phaseT < C_IN) { cutter.x = entryX(zoneA - 6, 1.9, 2.3); cutter.lift = 1 - seg(2.65, C_IN); }
       else if (phaseT < C_IN + C_DUR) { cutter.x = cutX; cutter.lift = 0; }
