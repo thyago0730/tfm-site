@@ -43,7 +43,7 @@ const PROCESSES = [
 ];
 const OVER = 0.35; // sobremetal: a camada passa do diâmetro nominal para ser retificada
 const C_IN = 3.0, C_DUR = 2.2, W_END = C_IN + C_DUR + 1.9; // trinca → rebaixo → entra a tocha
-const G_IN = 1.9; // tempo da troca pistola → rebolo antes de retificar
+const G_IN = 1.9, G_DUR = 3.2; // tempo da troca pistola → rebolo antes de retificar
 const LABELS = { wear: 'DIAGNÓSTICO', spray: 'ASPERSÃO', grind: 'RETÍFICA', done: 'RECUPERADO ✓' };
 
 const rand = (a, b) => a + Math.random() * (b - a);
@@ -73,7 +73,7 @@ export function initSpray(canvas, opts = {}) {
   const gun = { x: 0, vx: 0, dir: 1 };
   const parts = [];
   const sparks = [];
-  let chrome, worn, coating, bead, glow, smokeSprite;
+  let used, chrome, worn, coating, bead, glow, smokeSprite;
   // camadas fora da tela para desenhar a zona e o calor de forma contínua
   const mk = () => { const c = document.createElement('canvas'); return [c, c.getContext('2d')]; };
   const [zoneCv, zoneCtx] = mk();
@@ -96,12 +96,11 @@ export function initSpray(canvas, opts = {}) {
     stops.forEach(([o, col]) => lg.addColorStop(o, col));
     g.fillStyle = lg;
     g.fillRect(0, 0, 128, 256);
-    if (scratches) {
-      g.globalAlpha = 0.25;
-      for (let i = 0; i < 60; i++) {
-        g.fillStyle = Math.random() > 0.5 ? '#000' : '#8a7a6a';
-        g.fillRect(0, Math.random() * 256, 128, rand(0.5, 1.5));
-      }
+    if (scratches === 'lathe') {
+      for (let y = 0; y < 256; y += 2) { g.fillStyle = `rgba(${y % 4 ? '0,0,0' : '255,255,255'},.07)`; g.fillRect(0, y, 128, 1); }
+    } else if (scratches === 'used') {
+      g.globalAlpha = 0.18;
+      for (let i = 0; i < 26; i++) { g.fillStyle = Math.random() > 0.5 ? '#000' : '#fff'; g.fillRect(0, Math.random() * 256, 128, rand(0.4, 1)); }
       g.globalAlpha = 1;
     }
     if (noise) {
@@ -121,10 +120,16 @@ export function initSpray(canvas, opts = {}) {
       [0, '#16171a'], [0.07, '#4a4f56'], [0.19, '#f4f6f8'], [0.27, '#c9ced4'],
       [0.45, '#6f747b'], [0.6, '#2c2f33'], [0.78, '#8c9299'], [0.9, '#3b3e43'], [1, '#101113'],
     ], 0);
+    // rebaixo usinado: aço brilhante com marcas finas de torneamento
     worn = strip([
-      [0, '#110e0c'], [0.1, '#3b322b'], [0.22, '#7a6a5b'], [0.32, '#5e5146'],
-      [0.5, '#3a3029'], [0.7, '#2a231e'], [0.84, '#4d4137'], [1, '#0c0a09'],
-    ], 38, true);
+      [0, '#1a1c1f'], [0.08, '#5d636b'], [0.2, '#ffffff'], [0.3, '#dfe3e8'],
+      [0.46, '#8e949b'], [0.62, '#3a3d42'], [0.8, '#a3a9b0'], [0.92, '#4a4e54'], [1, '#141517'],
+    ], 10, 'lathe');
+    // superfície externa com marcas de uso leves
+    used = strip([
+      [0, '#16171a'], [0.07, '#454a50'], [0.19, '#d9dde2'], [0.27, '#b5bac0'],
+      [0.45, '#686d74'], [0.6, '#2c2f33'], [0.78, '#80868d'], [0.9, '#383b40'], [1, '#101113'],
+    ], 14, 'used');
     coating = strip([
       [0, '#141312'], [0.08, '#4d4a46'], [0.2, '#aca79f'], [0.3, '#c2bdb5'],
       [0.5, '#7c7770'], [0.68, '#44413d'], [0.84, '#6b665f'], [1, '#121110'],
@@ -255,6 +260,7 @@ export function initSpray(canvas, opts = {}) {
     progress = 0;
   }
 
+  const grindStart = () => Math.max(mobile ? railA + 20 : shaftA + 10, railA + 20);
   const ptaGap = () => (mobile ? 10 : 14);
   const tipFor = (type) => (type === 'pta' ? cy - r - ptaGap() : tipY);
   const radiusAt = (i) => (i >= 0 && i < cols ? r - (wear[i] - coat[i]) * depth : r);
@@ -303,19 +309,22 @@ export function initSpray(canvas, opts = {}) {
       progress = sw ? sc / sw : 1;
       if (progress > 0.985) {
         for (let i = zoneI0; i <= zoneI1; i++) coat[i] = wear[i] + over[i];
-        progress = 1; phase = 'grind'; phaseT = 0; sweepX = zoneA - 10;
+        progress = 1; phase = 'grind'; phaseT = 0; sweepX = grindStart();
       }
     } else if (phase === 'grind') {
       // a pistola sai de cena e o rebolo desce antes de varrer a zona
-      const k = easeInOut(clamp((phaseT - G_IN) / 1.8, 0, 1));
-      sweepX = zoneA - 10 + (zoneB - zoneA + 20) * k;
+      // retífica do eixo inteiro: do início do eixo até a ponta do trilho
+      const gS = grindStart(), gE = railB - 10;
+      const k = easeInOut(clamp((phaseT - G_IN) / G_DUR, 0, 1));
+      sweepX = gS + (gE - gS) * k;
+      if (k >= 1) sweepX = W + 40;
       if (phaseT > G_IN) {
         for (let i = zoneI0; i <= zoneI1; i++) {
           if (i * COL < sweepX) { polish[i] = Math.min(1, polish[i] + dt * 5); coat[i] = wear[i]; }
         }
         if (Math.random() < 0.9) spawnSpark(sweepX, cy - r + rand(0, 6), true);
       }
-      if (phaseT > G_IN + 1.9) { phase = 'done'; phaseT = 0; }
+      if (phaseT > G_IN + G_DUR + 0.1) { phase = 'done'; phaseT = 0; }
     } else if (phase === 'done' && phaseT > 1.8) {
       newZone();
     }
@@ -589,8 +598,11 @@ export function initSpray(canvas, opts = {}) {
     }
 
     // trechos íntegros
-    ctx.drawImage(chrome, 0, 0, 1, 256, x0, cy - r, Math.max(0, zA - x0), r * 2);
-    ctx.drawImage(chrome, 0, 0, 1, 256, zB, cy - r, W - zB + 40, r * 2);
+    // fora da zona: superfície usada; depois da retífica, polida (cromo) por onde o rebolo passou
+    const pX = phase === 'grind' || phase === 'done' ? Math.max(x0, sweepX) : x0;
+    const seg2 = (a, b) => { if (b <= a) return; const m = clamp(pX, a, b); ctx.drawImage(chrome, 0, 0, 1, 256, a, cy - r, m - a, r * 2); ctx.drawImage(used, 0, 0, 1, 256, m, cy - r, b - m, r * 2); };
+    seg2(x0, zA);
+    seg2(zB, W + 40);
 
     // contorno real do eixo (o diâmetro muda na zona desgastada)
     shaftPath = new Path2D();
@@ -631,9 +643,13 @@ export function initSpray(canvas, opts = {}) {
       zoneCtx.drawImage(layerCv, 0, 0);
     };
     zoneCtx.clearRect(0, 0, zw, zh);
-    zoneCtx.drawImage(chrome, 0, 0, 1, 256, 0, om, zw, zh - om * 2);
+    zoneCtx.drawImage(used, 0, 0, 1, 256, 0, om, zw, zh - om * 2);
     layer(worn, (i) => Math.min(1, wear[i] * 6) * (1 - polish[i]));
     layer(PROCESSES[proc].torch === 'pta' ? bead : coating, (i) => (wear[i] > 0.01 ? Math.min(1, coat[i] / wear[i]) : coat[i] > 0.01 ? 1 : 0) * (1 - polish[i]), true);
+    // retificado: volta ao cromo polido
+    zoneCtx.save(); zoneCtx.globalAlpha = 1;
+    { const n2 = zoneI1 - zoneI0 + 1; for (let k = 0; k < n2; k++) strip.data[k * 4 + 3] = clamp(polish[zoneI0 + k], 0, 1) * 255; stripCtx.putImageData(strip, 0, 0); layerCtx.globalCompositeOperation = 'source-over'; layerCtx.clearRect(0, 0, zw, zh); layerCtx.drawImage(chrome, 0, 0, 1, 256, 0, om, zw, zh - om * 2); layerCtx.globalCompositeOperation = 'destination-in'; layerCtx.drawImage(stripCv, 0, 0, n2, 1, 0, 0, zw, zh); zoneCtx.drawImage(layerCv, 0, 0); }
+    zoneCtx.restore();
     ctx.save();
     ctx.clip(shaftPath);
     ctx.drawImage(zoneCv, zA, cy - r - om);
@@ -856,7 +872,7 @@ export function initSpray(canvas, opts = {}) {
   // sequência real: recua, corre para fora do trilho; a outra entra recuada e avança
   function toolChange() {
     const seg = (a, b) => easeInOut(clamp((phaseT - a) / (b - a), 0, 1));
-    const offR = railB + 30, offL = railA - 30, wStart = zoneA - 10;
+    const offR = railB + 30, offL = railA - 30, wStart = grindStart();
     // saída: vai até a ponta do trilho, espera a comporta abrir e só então sobe
     const DW = 0.35;
     const exitX = (x0, t0, t1) => phaseT < t1 + DW ? x0 + (railB - 6 - x0) * seg(t0, t1) : (railB - 6) + (offR - railB + 6) * seg(t1 + DW, t1 + DW + 0.35);
@@ -869,9 +885,9 @@ export function initSpray(canvas, opts = {}) {
       tool.wLift = 1 - seg(1.6, G_IN);
     } else if (phase === 'done') {
       // retífica concluída: o rebolo recua e sai pela comporta
-      if (tool.wd0 == null) tool.wd0 = tool.wx;
+      if (tool.wd0 == null) tool.wd0 = Math.min(tool.wx, railB - 10);
       tool.gLift = 1; gun.x = tool.gx;
-      tool.wLift = seg(0.15, 0.4); tool.wx = exitX(tool.wd0, 0.4, 0.7);
+      tool.wLift = seg(0.15, 0.4); tool.wx = exitX(tool.wd0, 0.4, 0.55);
     } else if (phase === 'wear') {
       tool.wd0 = null;
       tool.wLift = 1;
