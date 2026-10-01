@@ -883,13 +883,19 @@ export function initSpray(canvas, opts = {}) {
   const hxA = () => railA - 30, hxB = () => railB + 30;
   const endUp = (x) => clamp(Math.max(railA - 4 - x, x - railB - 4) / 26, 0, 1) * (cy - railY + r + 60);
   // comporta nas pontas do trilho: duas folhas que se abrem para a ferramenta subir ou descer
+  const hatchHold = [0, 0], hatchVal = [0, 0];
+  let hatchT = 0;
   function drawElevators() {
     // a comporta só abre enquanto uma ferramenta está entrando/saindo por ela (além da ponta do trilho)
     const xs = [gun.x, tool.wx, phase === 'wear' ? cutter.x : -999];
     const near = (hx) => Math.max(0, ...xs.map((x) => (hx < railA ? clamp((railA - 4 - x) / 14, 0, 1) * clamp((x - (railA - 30) - 0.5) / 3, 0, 1) : clamp((x - railB - 4) / 14, 0, 1) * clamp((railB + 30 - x - 0.5) / 3, 0, 1)) * (x > -500 ? 1 : 0)));
     for (const hx of [hxA(), hxB()]) {
       const w = HW(), y = railY - 4, h = 8;
-      const open = easeInOut(near(hx));
+      // mantém a comporta aberta 0,7 s a mais depois da passagem
+      const side = hx < railA ? 0 : 1, need = near(hx);
+      if (need > 0.02) hatchHold[side] = 0.7; else hatchHold[side] = Math.max(0, hatchHold[side] - (time - hatchT));
+      hatchVal[side] = need > 0.02 ? Math.max(need, hatchVal[side]) : hatchHold[side] > 0 ? hatchVal[side] : Math.max(0, hatchVal[side] - (time - hatchT) * 3);
+      const open = easeInOut(hatchVal[side]);
       ctx.save();
       // vão escuro
       ctx.fillStyle = '#050506';
@@ -913,6 +919,7 @@ export function initSpray(canvas, opts = {}) {
       ctx.beginPath(); ctx.arc(hx + w + 10, y + h / 2, 2.2, 0, Math.PI * 2); ctx.fill();
       ctx.restore();
     }
+    hatchT = time;
   }
 
 
