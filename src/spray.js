@@ -850,23 +850,28 @@ export function initSpray(canvas, opts = {}) {
   function toolChange() {
     const seg = (a, b) => easeInOut(clamp((phaseT - a) / (b - a), 0, 1));
     const offR = railB + 30, offL = railA - 30, wStart = zoneA - 10;
+    // saída: vai até a ponta do trilho, espera a comporta abrir e só então sobe
+    const DW = 0.35;
+    const exitX = (x0, t0, t1) => phaseT < t1 + DW ? x0 + (railB - 6 - x0) * seg(t0, t1) : (railB - 6) + (offR - railB + 6) * seg(t1 + DW, t1 + DW + 0.35);
+    // entrada: sinaliza a comporta, espera abrir e só então desce e avança
+    const entryX = (x1, t0, t1) => phaseT < t0 + DW ? offL + seg(t0, t0 + 0.05) : (offL + 1) + (x1 - offL - 1) * seg(t0 + DW, t1 + DW);
     if (phase === 'grind') {
       tool.gLift = seg(0, 0.45);
-      gun.x = tool.gx = tool.gx0 + (offR - tool.gx0) * seg(0.45, 1.05);
-      tool.wx = phaseT < G_IN ? offL + (wStart - offL) * seg(0.75, 1.4) : sweepX;
-      tool.wLift = 1 - seg(1.4, G_IN);
+      gun.x = tool.gx = exitX(tool.gx0, 0.45, 0.8);
+      tool.wx = phaseT < G_IN ? entryX(wStart, 0.9, 1.2) : sweepX;
+      tool.wLift = 1 - seg(1.6, G_IN);
     } else if (phase === 'done') {
       tool.gLift = 1; tool.wLift = 0; tool.wx = sweepX; gun.x = tool.gx;
     } else if (phase === 'wear') {
       tool.wLift = Math.max(tool.wLift, seg(0, 0.4));
-      tool.wx = tool.wx0 < railA - 100 ? -999 : tool.wx0 + (offR - tool.wx0) * seg(0.4, 1.0);
+      tool.wx = tool.wx0 < railA - 100 ? -999 : exitX(tool.wx0, 0.4, 0.8);
       // ferramenta de usinagem: entra recuada, desce, rebaixa e sai pelo fim da régua
-      if (phaseT < C_IN) { cutter.x = offL + (zoneA - 6 - offL) * seg(2.0, 2.6); cutter.lift = 1 - seg(2.6, C_IN); }
+      if (phaseT < C_IN) { cutter.x = entryX(zoneA - 6, 1.9, 2.3); cutter.lift = 1 - seg(2.65, C_IN); }
       else if (phaseT < C_IN + C_DUR) { cutter.x = cutX; cutter.lift = 0; }
-      else { cutter.lift = seg(C_IN + C_DUR, C_IN + C_DUR + 0.35); cutter.x = (zoneB + 6) + (offR - zoneB - 6) * seg(C_IN + C_DUR + 0.35, C_IN + C_DUR + 0.95); }
+      else { cutter.lift = seg(C_IN + C_DUR, C_IN + C_DUR + 0.35); cutter.x = exitX(zoneB + 6, C_IN + C_DUR + 0.35, C_IN + C_DUR + 0.55); }
       const g0 = C_IN + C_DUR + 0.7;
-      gun.x = tool.gx = offL + (zoneA - offL) * seg(g0, g0 + 0.6);
-      tool.gLift = 1 - seg(g0 + 0.6, g0 + 1.1);
+      gun.x = tool.gx = entryX(zoneA, g0, g0 + 0.5);
+      tool.gLift = 1 - seg(g0 + 0.85, g0 + 1.2);
     } else {
       cutter.x = -999;
       tool.gx0 = tool.gx = gun.x; tool.gLift = ptaLift * 0.22;
@@ -889,13 +894,14 @@ export function initSpray(canvas, opts = {}) {
   function drawElevators() {
     // a comporta só abre enquanto uma ferramenta está entrando/saindo por ela (além da ponta do trilho)
     const xs = [gun.x, tool.wx, phase === 'wear' ? cutter.x : -999];
-    const near = (hx) => Math.max(0, ...xs.map((x) => (hx < railA ? clamp((railA - 4 - x) / 14, 0, 1) * clamp((x - (railA - 30) - 0.5) / 3, 0, 1) : clamp((x - railB - 4) / 14, 0, 1) * clamp((railB + 30 - x - 0.5) / 3, 0, 1)) * (x > -500 ? 1 : 0)));
+    const near = (hx) => Math.max(0, ...xs.map((x) => (hx < railA ? clamp((railA - 4 - x) / 14, 0, 1) * clamp((x - (railA - 30) - 0.5) / 3, 0, 1) : clamp((x - railB + 8) / 4, 0, 1) * clamp((railB + 30 - x - 0.5) / 3, 0, 1)) * (x > -500 ? 1 : 0)));
     for (const hx of [hxA(), hxB()]) {
       const w = HW(), y = railY - 4, h = 8;
       // mantém a comporta aberta 0,7 s a mais depois da passagem
       const side = hx < railA ? 0 : 1, need = near(hx);
       if (need > 0.02) hatchHold[side] = 0.7; else hatchHold[side] = Math.max(0, hatchHold[side] - (time - hatchT));
-      hatchVal[side] = need > 0.02 ? Math.max(need, hatchVal[side]) : hatchHold[side] > 0 ? hatchVal[side] : Math.max(0, hatchVal[side] - (time - hatchT) * 3);
+      const want = need > 0.02 || hatchHold[side] > 0 ? 1 : 0, rate = (time - hatchT) * 4; // abre/fecha em ~0,25 s
+      hatchVal[side] = want ? Math.min(1, hatchVal[side] + rate) : Math.max(0, hatchVal[side] - rate);
       const open = easeInOut(hatchVal[side]);
       ctx.save();
       // vão escuro
