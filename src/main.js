@@ -9,7 +9,6 @@ import { initMatrix } from './matrix.js';
 import { initSimulator } from './simulator.js';
 import { initWizard } from './wizard.js';
 import { initConsent, logAnalytics } from './analytics.js';
-import { initWhatsApp, injectContextual, waUrl, WHATSAPP } from './whatsapp.js';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
@@ -18,6 +17,7 @@ const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const finePointer = matchMedia('(hover: hover) and (pointer: fine)').matches;
+const WHATSAPP = '5511950427669';
 const EMAIL = 'contato@tfmrevestimentos.com.br';
 
 root.classList.add('is-ready');
@@ -607,14 +607,10 @@ function initTracking() {
     if (!el) return;
     const section = el.closest('section, header, footer')?.id || el.closest('footer, header')?.tagName.toLowerCase() || 'pagina';
     const href = el.getAttribute('href') || '';
-    if (el.matches('[data-wa-toggle]')) return; // abrir o widget não é um clique de WhatsApp
-    if (href.includes('wa.me')) {
-      track('whatsapp_click', { origem: el.dataset.waOrigin || el.dataset.track || section });
-      return;
-    }
     let label = el.dataset.track;
     if (!label) {
-      if (href.startsWith('tel:')) label = 'telefone';
+      if (href.includes('wa.me')) label = 'whatsapp';
+      else if (href.startsWith('tel:')) label = 'telefone';
       else if (href.startsWith('mailto:')) label = 'email';
       else if (href === '#contato') label = 'cta_orcamento';
       else if (href.endsWith('.pdf')) label = 'download_pdf';
@@ -700,13 +696,11 @@ function boot() {
   initMarquees();
   initPointerFx();
   initTracking();
-  initWhatsApp({ track, reduced, ScrollTrigger });
   initConsent();
   initProgress();
 
   // seções abaixo da dobra: inicializadas quando o navegador fica ocioso
   idle(() => {
-    injectContextual();
     initServices();
     initSelector();
     initPanels();
@@ -724,11 +718,6 @@ function boot() {
         wizard.attachSimulation(sim);
         track('simulacao_enviada', { economia: Math.round(sim.total) });
         scrollToTarget('#contato');
-      },
-      onWhatsApp: (sim) => {
-        window.open(waUrl(`Olá, TFM! Fiz uma simulação no site e gostaria de avaliar a recuperação de uma peça.\n\n${sim.text}`), '_blank', 'noopener');
-        track('whatsapp_click', { origem: 'simulador' });
-        track('simulacao_enviada', { economia: Math.round(sim.total), canal: 'whatsapp' });
       },
     });
   });

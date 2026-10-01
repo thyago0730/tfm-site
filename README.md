@@ -36,9 +36,6 @@ O site antigo vendia uma lista de serviços. O novo vende **resultado**: a TFM c
 | Simulador "recuperar × substituir": economia, dias de parada, aço e CO₂ evitados | Simulador (`src/simulator.js`) |
 | Orçamento em 4 etapas, com resumo e simulação anexada, enviado por WhatsApp ou e-mail | Orçamento (`src/wizard.js`) |
 | Link do guia de soluções para o case relacionado, cópia de contatos, barra de leitura | Global |
-| Widget de WhatsApp com atalhos (foto da peça, emergência, orçamento, serviço de campo) e convite após engajamento | Global (`src/whatsapp.js`) |
-| Botões de WhatsApp com mensagem pronta em cada serviço, setor, case, desgaste, jornada, simulador e FAQ | Seções |
-| Barra fixa no mobile (WhatsApp + Orçamento) | Mobile |
 | Cursor customizado, botões magnéticos, marquee reativo à velocidade, grão de filme | Global |
 
 Acessibilidade: HTML semântico, navegação por teclado, `prefers-reduced-motion` (desliga animações
@@ -52,7 +49,7 @@ Qualidade medida (Lighthouse, build de produção):
 
 | | Performance | Acessibilidade | Boas práticas | SEO |
 |---|---|---|---|---|
-| Mobile | 93 | 100 | 100 | 100 |
+| Mobile | 95 | 100 | 100 | 100 |
 | Desktop | 100 | 100 | 100 | 100 |
 
 Auditoria axe-core (WCAG 2.1 AA + boas práticas): sem violações em todas as páginas.
@@ -104,22 +101,19 @@ para o Google Tag Manager):
 
 | Evento | Quando |
 |---|---|
-| `whatsapp_click` | qualquer clique que abre o WhatsApp, com `origem` (hero, cabecalho, servico, setor, case, guia, jornada, processo, simulador, faq, contato, widget_foto, widget_emergencia, widget_orcamento, widget_campo, widget_texto) |
-| `whatsapp_widget_aberto` | abertura do widget de WhatsApp |
-| `cta_click` | clique em telefone, e-mail, PDFs e botões de orçamento (`cta`, `secao`) |
+| `cta_click` | clique em WhatsApp, telefone, e-mail, PDFs e botões de orçamento (`cta`, `secao`) |
 | `simulacao_enviada` | simulação levada para o orçamento (`economia`) |
 | `orcamento_etapa` | avanço no orçamento em etapas (`etapa`) |
 | `orcamento_enviado` + `generate_lead` | envio do orçamento (`canal`: whatsapp ou email) |
 
-Marque `generate_lead` e `whatsapp_click` como **eventos-chave** no GA4 e crie um relatório por `origem`
-para descobrir quais seções mais geram conversas no WhatsApp.
+Marque `generate_lead` como **evento-chave** no GA4 para acompanhar conversões.
 Recomendado: no Google Cloud Console, restrinja a chave de API do Firebase aos domínios do site.
 
 ## Editando conteúdo
 
 - Textos, serviços, setores, cases e unidades: `index.html`.
 - Cores, fontes e espaçamentos: variáveis no topo de `src/styles.css`.
-- Número de WhatsApp e atalhos do widget: topo de `src/whatsapp.js`. E-mail do formulário: topo de `src/main.js`.
+- Número de WhatsApp e e-mail do formulário: constantes no topo de `src/main.js`.
 - Premissas do simulador (valores iniciais e fator de CO₂): topo de `src/simulator.js`.
 - Configuração do Firebase: `src/analytics.js`.
 - Imagens: `public/img/`. Para converter novas fotos para WebP, use `scripts/optimize-images.mjs`.

@@ -154,37 +154,12 @@ export function initWizard(form, { reduced, whatsapp, email, track, toast }) {
     return lines.filter(Boolean).map((l) => (l === SEP ? '' : l)).join('\n');
   }
 
-  // confirmação após o envio, com link de reserva caso o WhatsApp não abra
-  const done = document.createElement('div');
-  done.className = 'wz-done';
-  done.hidden = true;
-  done.setAttribute('role', 'status');
-  done.innerHTML = `
-    <span class="wz-done__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
-    <div>
-      <strong>Sua mensagem está pronta no WhatsApp.</strong>
-      <p>Toque em enviar na conversa e, se puder, mande fotos da peça: isso acelera o diagnóstico.</p>
-      <p><a data-wz-reopen href="https://wa.me/${whatsapp}" target="_blank" rel="noopener">O WhatsApp não abriu? Clique aqui</a> · <button type="button" data-wz-restart>Fazer outro pedido</button></p>
-    </div>`;
-  form.append(done);
-  done.querySelector('[data-wz-restart]').addEventListener('click', () => {
-    done.hidden = true;
-    form.classList.remove('is-done');
-    form.reset();
-    form.querySelectorAll('.is-invalid').forEach((el) => el.classList.remove('is-invalid'));
-    show(0);
-  });
-
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     if (!validate(index)) return;
-    const url = `https://wa.me/${whatsapp}?text=${encodeURIComponent(message())}`;
-    window.open(url, '_blank', 'noopener');
-    done.querySelector('[data-wz-reopen]').href = url;
-    done.hidden = false;
-    form.classList.add('is-done');
-    setError('');
-    if (!reduced) gsap.fromTo(done, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' });
+    window.open(`https://wa.me/${whatsapp}?text=${encodeURIComponent(message())}`, '_blank', 'noopener');
+    status.className = 'form__status is-ok';
+    status.textContent = 'Abrimos o WhatsApp com a sua mensagem pronta. É só enviar!';
     track?.('orcamento_enviado', { canal: 'whatsapp' });
   });
 
