@@ -29,6 +29,9 @@ const TORCHES = {
   plasma: { spread: 0.17, speed: [850, 1250], rate: 0.9, width: [1, 1.3], spark: 0.035,
     colors: ['rgba(240,244,255,0.95)', 'rgba(200,210,255,0.85)', 'rgba(255,236,220,0.75)'],
     jet: [[220, 225, 255, 0.7], [150, 120, 255, 0.28], [255, 120, 200, 0.06]], glow: 0.7 },
+  pta: { spread: 0.05, speed: [180, 260], rate: 0.45, width: [1.4, 1.8], spark: 0.06, heatMul: 2.4, hot: true,
+    colors: ['rgba(255,252,240,0.95)', 'rgba(255,220,150,0.9)', 'rgba(255,170,80,0.85)'],
+    jet: [[210, 230, 255, 0], [0, 0, 0, 0], [0, 0, 0, 0]], glow: 1.6 },
   arc: { spread: 0.27, speed: [620, 980], rate: 0.6, width: [2, 2.6], spark: 0.22,
     colors: ['rgba(255,250,235,0.95)', 'rgba(255,170,70,0.9)', 'rgba(230,90,30,0.85)'],
     jet: [[200, 225, 255, 0.35], [255, 160, 80, 0.1], [255, 90, 20, 0.03]], glow: 0.8 },
@@ -38,6 +41,7 @@ const PROCESSES = [
   { name: 'PLASMA · Cr₂O₃', torch: 'plasma' },
   { name: 'ARC SPRAY · INOX 420', torch: 'arc' },
   { name: 'HVOF · WC-CrC-Ni', torch: 'hvof' },
+  { name: 'PTA · STELLITE 6', torch: 'pta' },
 ];
 const LABELS = { wear: 'DIAGNÓSTICO', spray: 'ASPERSÃO', grind: 'RETÍFICA', done: 'RECUPERADO ✓' };
 
@@ -61,7 +65,7 @@ export function initSpray(canvas, opts = {}) {
   const gun = { x: 0, vx: 0, dir: 1 };
   const parts = [];
   const sparks = [];
-  let chrome, worn, coating, glow, smokeSprite;
+  let chrome, worn, coating, bead, glow, smokeSprite;
   // camadas fora da tela para desenhar a zona e o calor de forma contínua
   const mk = () => { const c = document.createElement('canvas'); return [c, c.getContext('2d')]; };
   const [zoneCv, zoneCtx] = mk();
@@ -116,6 +120,27 @@ export function initSpray(canvas, opts = {}) {
       [0, '#141312'], [0.08, '#4d4a46'], [0.2, '#aca79f'], [0.3, '#c2bdb5'],
       [0.5, '#7c7770'], [0.68, '#44413d'], [0.84, '#6b665f'], [1, '#121110'],
     ], 30);
+    // cordão soldado: ondulações em arco típicas do PTA
+    bead = document.createElement('canvas');
+    bead.width = 512; bead.height = 256;
+    const bg2 = bead.getContext('2d');
+    const bgr = bg2.createLinearGradient(0, 0, 0, 256);
+    [[0, '#141312'], [0.1, '#55504a'], [0.22, '#c9c2b6'], [0.32, '#a59e93'], [0.5, '#6b655d'], [0.7, '#3d3935'], [0.86, '#5f5a53'], [1, '#121110']].forEach(([o, c]) => bgr.addColorStop(o, c));
+    bg2.fillStyle = bgr;
+    bg2.fillRect(0, 0, 512, 256);
+    bg2.lineWidth = 1.4;
+    for (let x = -20; x < 540; x += 7) {
+      bg2.strokeStyle = 'rgba(255,255,255,0.10)';
+      bg2.beginPath();
+      bg2.moveTo(x, 0);
+      bg2.quadraticCurveTo(x + 10, 128, x, 256);
+      bg2.stroke();
+      bg2.strokeStyle = 'rgba(0,0,0,0.22)';
+      bg2.beginPath();
+      bg2.moveTo(x + 2, 0);
+      bg2.quadraticCurveTo(x + 12, 128, x + 2, 256);
+      bg2.stroke();
+    }
     smokeSprite = document.createElement('canvas');
     smokeSprite.width = smokeSprite.height = 64;
     const sgc = smokeSprite.getContext('2d');
@@ -208,6 +233,8 @@ export function initSpray(canvas, opts = {}) {
     progress = 0;
   }
 
+  const ptaGap = () => (mobile ? 10 : 14);
+  const tipFor = (type) => (type === 'pta' ? cy - r - ptaGap() : tipY);
   const radiusAt = (i) => (i >= 0 && i < cols ? r - (wear[i] - coat[i]) * depth : r);
   const onShaft = (x) => x >= (mobile ? -40 : shaftA) && x <= W + 40;
 
@@ -249,7 +276,7 @@ export function initSpray(canvas, opts = {}) {
       pointerUsed = true;
       tx = clamp(pointerX, minG, maxG);
     } else if (phase === 'spray') {
-      const speed = mobile ? 120 : 170;
+      const speed = (mobile ? 120 : 170) * (PROCESSES[proc].torch === 'pta' ? 0.55 : 1);
       tx = gun.x + gun.dir * speed * dt;
       if (tx > zoneB + 12) gun.dir = -1;
       if (tx < zoneA - 12) gun.dir = 1;
@@ -273,7 +300,8 @@ export function initSpray(canvas, opts = {}) {
       const a = rand(-spread, spread) * (Math.random() < 0.8 ? 0.6 : 1);
       const sp = rand(T.speed[0], T.speed[1]) * (sprayLen / 200 + 0.4);
       const ox = T === TORCHES.arc ? rand(-3, 3) : rand(-1.5, 1.5);
-      parts.push({ x: gun.x + ox, y: tipY + 2, vx: Math.sin(a) * sp + gun.vx * 0.25, vy: Math.cos(a) * sp, y0: tipY });
+      const ty = tipFor(PROCESSES[proc].torch);
+      parts.push({ x: gun.x + ox, y: ty + 2, vx: Math.sin(a) * sp + gun.vx * 0.25, vy: Math.cos(a) * sp, y0: ty });
     }
 
     // partículas
@@ -349,7 +377,7 @@ export function initSpray(canvas, opts = {}) {
     const n = (HEAT_K.length - 1) / 2;
     for (let d = -n; d <= n; d++) {
       const j = i + d;
-      if (j >= 0 && j < cols) heat[j] = Math.min(1, heat[j] + 0.012 * HEAT_K[d + n]);
+      if (j >= 0 && j < cols) heat[j] = Math.min(1, heat[j] + 0.012 * (TORCHES[PROCESSES[proc].torch].heatMul || 1) * HEAT_K[d + n]);
     }
     if (Math.random() < TORCHES[PROCESSES[proc].torch].spark) spawnSpark(p.x, p.y, false);
     if (Math.random() < 0.025 && smoke.length < 60) {
@@ -414,12 +442,64 @@ export function initSpray(canvas, opts = {}) {
     ctx.fillRect(-30, -30, 60, 60);
     ctx.restore();
 
-    // ponta (colo) à esquerda no desktop
+    // vista lateral realista: placa do torno segurando o colo, com escalonamento chanfrado
     if (!mobile) {
       const jr = r * 0.62;
-      ctx.drawImage(chrome, 0, 0, 1, 256, x0 - journal, cy - jr, journal + 2, jr * 2);
-      endCap(x0 - journal, jr);
-      endCap(x0, r, true);
+      const jx = x0 - journal;
+      const ch = r * 0.12; // chanfro
+      // colo (diâmetro menor)
+      ctx.drawImage(chrome, 0, 0, 1, 256, jx, cy - jr, journal + 1, jr * 2);
+      // ressalto chanfrado entre colo e corpo
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(x0 - ch, cy - jr);
+      ctx.lineTo(x0, cy - r);
+      ctx.lineTo(x0, cy + r);
+      ctx.lineTo(x0 - ch, cy + jr);
+      ctx.closePath();
+      ctx.clip();
+      ctx.drawImage(chrome, 0, 0, 1, 256, x0 - ch, cy - r, ch + 1, r * 2);
+      ctx.fillStyle = 'rgba(0,0,0,0.28)';
+      ctx.fillRect(x0 - ch, cy - r, ch, r * 2);
+      ctx.restore();
+      ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(x0, cy - r); ctx.lineTo(x0, cy + r);
+      ctx.stroke();
+      // placa do torno (3 castanhas) — as castanhas giram com o eixo
+      const cw = r * 0.9, chh = r * 2.3;
+      const cx0 = jx - cw;
+      const pg = ctx.createLinearGradient(0, cy - chh / 2, 0, cy + chh / 2);
+      pg.addColorStop(0, '#1a1b1e'); pg.addColorStop(0.25, '#4a4e55'); pg.addColorStop(0.5, '#2a2c30'); pg.addColorStop(0.8, '#3b3e44'); pg.addColorStop(1, '#141517');
+      ctx.fillStyle = pg;
+      roundRect(cx0 - r * 0.5, cy - chh / 2, cw * 0.7 + r * 0.5, chh, 6);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+      ctx.stroke();
+      ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+      ctx.beginPath();
+      ctx.moveTo(cx0 + cw * 0.2, cy - chh / 2 + 4); ctx.lineTo(cx0 + cw * 0.2, cy + chh / 2 - 4);
+      ctx.stroke();
+      // castanhas superior e inferior prendendo o colo
+      const jawW = cw * 0.75, jawH = r * 0.34;
+      [-1, 1].forEach((d) => {
+        const y0 = d < 0 ? cy - jr - jawH : cy + jr;
+        const jg = ctx.createLinearGradient(0, y0, 0, y0 + jawH);
+        jg.addColorStop(0, d < 0 ? '#80858c' : '#3a3d42');
+        jg.addColorStop(1, d < 0 ? '#3a3d42' : '#1c1d20');
+        ctx.fillStyle = jg;
+        ctx.fillRect(cx0 + cw * 0.7, y0, jawW, jawH);
+        ctx.fillStyle = 'rgba(0,0,0,0.35)';
+        for (let k = 1; k < 4; k++) ctx.fillRect(cx0 + cw * 0.7 + (jawW / 4) * k, y0 + 2, 1, jawH - 4);
+      });
+      // reflexo que percorre a placa, sugerindo rotação
+      const sweep = (Math.sin(time * 2.4) * 0.5 + 0.5) * chh;
+      const sg2 = ctx.createLinearGradient(0, cy - chh / 2 + sweep - 30, 0, cy - chh / 2 + sweep + 30);
+      sg2.addColorStop(0, 'rgba(255,255,255,0)'); sg2.addColorStop(0.5, 'rgba(255,255,255,0.08)'); sg2.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = sg2;
+      ctx.fillRect(cx0 - r * 0.5, cy - chh / 2, cw * 0.7 + r * 0.5, chh);
+      ctx.globalAlpha = 1;
     }
 
     // trechos íntegros
@@ -460,7 +540,7 @@ export function initSpray(canvas, opts = {}) {
     zoneCtx.clearRect(0, 0, zw, zh);
     zoneCtx.drawImage(chrome, 0, 0, 1, 256, 0, 0, zw, zh);
     layer(worn, (i) => Math.min(1, wear[i] * 6) * (1 - polish[i]));
-    layer(coating, (i) => (wear[i] > 0.01 ? coat[i] / wear[i] : 0) * (1 - polish[i]));
+    layer(PROCESSES[proc].torch === 'pta' ? bead : coating, (i) => (wear[i] > 0.01 ? coat[i] / wear[i] : 0) * (1 - polish[i]));
     ctx.save();
     ctx.clip(shaftPath);
     ctx.drawImage(zoneCv, zA, cy - r);
@@ -562,7 +642,32 @@ export function initSpray(canvas, opts = {}) {
       ctx.lineTo(gun.x - half, surf);
       ctx.closePath();
       ctx.fill();
-      if (type === 'hvof') {
+      if (type === 'pta') {
+        // arco transferido: coluna de plasma da tocha até a peça + poça de fusão
+        const top = tipFor('pta');
+        const surfY = cy - r;
+        const w = 4 + Math.random() * 1.5;
+        const ag = ctx.createLinearGradient(0, top, 0, surfY);
+        ag.addColorStop(0, `rgba(255,255,255,${0.95 * emit})`);
+        ag.addColorStop(0.5, `rgba(190,215,255,${0.85 * emit})`);
+        ag.addColorStop(1, `rgba(255,240,210,${0.95 * emit})`);
+        ctx.fillStyle = ag;
+        ctx.beginPath();
+        ctx.moveTo(gun.x - 2, top);
+        ctx.lineTo(gun.x + 2, top);
+        ctx.lineTo(gun.x + w, surfY);
+        ctx.lineTo(gun.x - w, surfY);
+        ctx.closePath();
+        ctx.fill();
+        const pool = (mobile ? 50 : 80) * (0.92 + Math.random() * 0.12);
+        ctx.globalAlpha = emit;
+        ctx.drawImage(glow, gun.x - pool / 2, surfY - pool / 2, pool, pool);
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = `rgba(255,250,235,${0.9 * emit})`;
+        ctx.beginPath();
+        ctx.ellipse(gun.x, surfY + 1, 7, 2.2, 0, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (type === 'hvof') {
         // diamantes de choque supersônicos
         for (let k = 0; k < 5; k++) {
           const y = tipY + 8 + k * 10;
@@ -695,7 +800,7 @@ export function initSpray(canvas, opts = {}) {
 
     drawNozzle(x, PROCESSES[proc].torch);
 
-    if (emit > 0.02) {
+    if (emit > 0.02 && PROCESSES[proc].torch !== 'pta') {
       ctx.globalCompositeOperation = 'lighter';
       const s = 56 * (0.85 + Math.random() * 0.2);
       ctx.globalAlpha = emit;
@@ -716,7 +821,34 @@ export function initSpray(canvas, opts = {}) {
   function drawNozzle(x, type) {
     const top = bodyTop + bodyH;
     const L = tipY - top;
-    if (type === 'hvof') {
+    if (type === 'pta') {
+      // tocha de PTA: corpo refrigerado, alimentação de pó e bocal cerâmico junto à peça
+      const end = tipFor('pta');
+      ctx.fillStyle = metal(x - 7, x + 7);
+      ctx.fillRect(x - 6, top, 12, Math.max(0, end - top - 12));
+      ctx.fillStyle = 'rgba(0,0,0,0.4)';
+      for (let k = 0; k < 4; k++) ctx.fillRect(x - 6, top + 6 + k * 6, 12, 1.5);
+      ctx.fillStyle = metal(x - 10, x + 10, '#6b3a1c', '#e8a06a');
+      ctx.beginPath();
+      ctx.moveTo(x - 9, end - 12);
+      ctx.lineTo(x + 9, end - 12);
+      ctx.lineTo(x + 5, end);
+      ctx.lineTo(x - 5, end);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = '#c9c4bb';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(x - bodyW / 2 - 4, bodyTop + 20);
+      ctx.quadraticCurveTo(x - 20, end - 30, x - 7, end - 10);
+      ctx.stroke();
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = '#2f6fd6';
+      ctx.beginPath();
+      ctx.moveTo(x + bodyW / 2, bodyTop + 14);
+      ctx.quadraticCurveTo(x + bodyW / 2 + 16, bodyTop - 10, x + bodyW / 2 + 4, bodyTop - 30);
+      ctx.stroke();
+    } else if (type === 'hvof') {
       // cano longo de combustão com anéis de refrigeração
       ctx.fillStyle = metal(x - 7, x + 7);
       ctx.fillRect(x - 6, top, 12, L * 0.35);
@@ -781,7 +913,7 @@ export function initSpray(canvas, opts = {}) {
   }
 
   function drawHud() {
-    const label = LABELS[phase];
+    const label = phase === 'spray' && PROCESSES[proc].torch === 'pta' ? 'DEPOSIÇÃO PTA' : LABELS[phase];
     const pct = Math.round((phase === 'wear' ? 0 : progress) * 100);
     const mm = layerMM.toFixed(2).replace('.', ',');
     ctx.save();
@@ -825,7 +957,7 @@ export function initSpray(canvas, opts = {}) {
     row(py + 78, 'RECUPERAÇÃO', `${pct}%`, dim, bright);
     ctx.fillStyle = 'rgba(255,255,255,0.1)';
     const gi = clamp(Math.floor(gun.x / COL), 0, cols - 1);
-    row(py + 96, 'SUBSTRATO', `${Math.round(25 + heat[gi] * 125)} °C`, dim, heat[gi] > 0.6 ? '#ffb070' : bright);
+    row(py + 96, 'SUBSTRATO', `${Math.round(25 + heat[gi] * (TORCHES[PROCESSES[proc].torch].hot ? 420 : 125))} °C`, dim, heat[gi] > 0.6 ? '#ffb070' : bright);
     ctx.fillStyle = 'rgba(255,255,255,0.1)';
     ctx.fillRect(px + 14, py + 106, pw - 28, 2);
     const bar = ctx.createLinearGradient(px + 14, 0, px + pw - 14, 0);
