@@ -12,8 +12,8 @@ export const UNITS = {
   friburgo: { name: 'TGC · Nova Friburgo · RJ', phone: '5522981810145', services: ['cromo', 'usinagem'] },
 };
 const SERVICES = [
-  ['metalizacao', 'Metalização / aspersão térmica'],
-  ['solda', 'Soldas especiais (laser, PTA, arco submerso)'],
+  ['metalizacao', 'Metalização'],
+  ['solda', 'Soldas especiais'],
   ['cromo', 'Cromo duro'],
   ['usinagem', 'Usinagem'],
   ['caldeiraria', 'Caldeiraria'],
