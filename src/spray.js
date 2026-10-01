@@ -5,9 +5,25 @@
 
 const COL = 3; // largura de cada coluna do eixo (px)
 const KERNEL = [0.15, 0.45, 0.8, 1, 0.8, 0.45, 0.15];
-const PROCESSES = ['HVOF · WC-Co', 'PLASMA · Cr₂O₃', 'ARC SPRAY · INOX 420', 'HVOF · WC-CrC-Ni'];
+// cada processo tem tocha, jato e partículas próprios
+const TORCHES = {
+  hvof: { spread: 0.12, speed: [1150, 1650], rate: 1, width: [1.1, 1.5], spark: 0.1,
+    colors: ['rgba(255,246,220,0.95)', 'rgba(255,196,100,0.85)', 'rgba(255,118,36,0.8)'],
+    jet: [[255, 236, 190, 0.55], [255, 150, 60, 0.2], [255, 90, 20, 0.05]], glow: 1 },
+  plasma: { spread: 0.17, speed: [850, 1250], rate: 0.9, width: [1, 1.3], spark: 0.035,
+    colors: ['rgba(240,244,255,0.95)', 'rgba(200,210,255,0.85)', 'rgba(255,236,220,0.75)'],
+    jet: [[220, 225, 255, 0.7], [150, 120, 255, 0.28], [255, 120, 200, 0.06]], glow: 0.7 },
+  arc: { spread: 0.27, speed: [620, 980], rate: 0.6, width: [2, 2.6], spark: 0.22,
+    colors: ['rgba(255,250,235,0.95)', 'rgba(255,170,70,0.9)', 'rgba(230,90,30,0.85)'],
+    jet: [[200, 225, 255, 0.35], [255, 160, 80, 0.1], [255, 90, 20, 0.03]], glow: 0.8 },
+};
+const PROCESSES = [
+  { name: 'HVOF · WC-Co', torch: 'hvof' },
+  { name: 'PLASMA · Cr₂O₃', torch: 'plasma' },
+  { name: 'ARC SPRAY · INOX 420', torch: 'arc' },
+  { name: 'HVOF · WC-CrC-Ni', torch: 'hvof' },
+];
 const LABELS = { wear: 'DIAGNÓSTICO', spray: 'ASPERSÃO', grind: 'RETÍFICA', done: 'RECUPERADO ✓' };
-const PART_COLORS = ['rgba(255,246,220,0.95)', 'rgba(255,196,100,0.85)', 'rgba(255,118,36,0.8)'];
 
 const rand = (a, b) => a + Math.random() * (b - a);
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -154,6 +170,7 @@ export function initSpray(canvas, opts = {}) {
     }
     zoneMM = Math.round(rand(0.5, 1.2) * 100) / 100;
     proc = (proc + 1) % PROCESSES.length;
+    canvas.dataset.process = PROCESSES[proc].torch;
     phase = 'wear';
     phaseT = 0;
     progress = 0;
@@ -215,14 +232,16 @@ export function initSpray(canvas, opts = {}) {
     // emissão
     const wantEmit = phase === 'spray' ? 1 : 0;
     emit += (wantEmit - emit) * (1 - Math.exp(-10 * dt));
-    const rate = (mobile ? 380 : 720) * emit * quality;
+    const T = TORCHES[PROCESSES[proc].torch];
+    const rate = (mobile ? 380 : 720) * emit * quality * T.rate;
     emitAcc += rate * dt;
-    const spread = 0.15;
+    const spread = T.spread;
     while (emitAcc >= 1) {
       emitAcc -= 1;
       const a = rand(-spread, spread) * (Math.random() < 0.8 ? 0.6 : 1);
-      const sp = rand(900, 1400) * (sprayLen / 200 + 0.4);
-      parts.push({ x: gun.x + rand(-1.5, 1.5), y: tipY + 2, vx: Math.sin(a) * sp + gun.vx * 0.25, vy: Math.cos(a) * sp, y0: tipY });
+      const sp = rand(T.speed[0], T.speed[1]) * (sprayLen / 200 + 0.4);
+      const ox = T === TORCHES.arc ? rand(-3, 3) : rand(-1.5, 1.5);
+      parts.push({ x: gun.x + ox, y: tipY + 2, vx: Math.sin(a) * sp + gun.vx * 0.25, vy: Math.cos(a) * sp, y0: tipY });
     }
 
     // partículas
@@ -280,7 +299,7 @@ export function initSpray(canvas, opts = {}) {
       }
       heat[j] = Math.min(1, heat[j] + 0.03 * w);
     }
-    if (Math.random() < 0.1) spawnSpark(p.x, p.y, false);
+    if (Math.random() < TORCHES[PROCESSES[proc].torch].spark) spawnSpark(p.x, p.y, false);
   }
 
   function spawnSpark(x, y, grind) {
@@ -429,13 +448,13 @@ export function initSpray(canvas, opts = {}) {
     ctx.globalCompositeOperation = 'lighter';
     const surf = cy - r;
 
+    const T = TORCHES[PROCESSES[proc].torch];
+    const type = PROCESSES[proc].torch;
     if (emit > 0.02) {
       // jato
-      const half = Math.tan(0.15) * sprayLen * 0.7;
+      const half = Math.tan(T.spread) * sprayLen * 0.7;
       const g = ctx.createLinearGradient(0, tipY, 0, surf);
-      g.addColorStop(0, `rgba(255,236,190,${0.5 * emit})`);
-      g.addColorStop(0.35, `rgba(255,150,60,${0.2 * emit})`);
-      g.addColorStop(1, `rgba(255,90,20,${0.05 * emit})`);
+      T.jet.forEach(([cr, cg, cb, ca], i) => g.addColorStop([0, 0.35, 1][i], `rgba(${cr},${cg},${cb},${ca * emit})`));
       ctx.fillStyle = g;
       ctx.beginPath();
       ctx.moveTo(gun.x - 3, tipY);
@@ -444,18 +463,45 @@ export function initSpray(canvas, opts = {}) {
       ctx.lineTo(gun.x - half, surf);
       ctx.closePath();
       ctx.fill();
-      // diamantes de choque (HVOF)
-      for (let k = 0; k < 4; k++) {
-        const y = tipY + 9 + k * 11;
-        if (y > surf) break;
-        ctx.fillStyle = `rgba(255,240,210,${(0.55 - k * 0.12) * emit})`;
+      if (type === 'hvof') {
+        // diamantes de choque supersônicos
+        for (let k = 0; k < 5; k++) {
+          const y = tipY + 8 + k * 10;
+          if (y > surf) break;
+          ctx.fillStyle = `rgba(255,240,210,${(0.6 - k * 0.11) * emit})`;
+          ctx.beginPath();
+          ctx.ellipse(gun.x, y, 2.4 - k * 0.2, 4.4, 0, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      } else if (type === 'plasma') {
+        // núcleo de plasma: coluna violeta tremulante
+        const len = Math.min(sprayLen * 0.45, 70) * (0.9 + Math.random() * 0.15);
+        const pg = ctx.createLinearGradient(0, tipY, 0, tipY + len);
+        pg.addColorStop(0, `rgba(255,255,255,${0.95 * emit})`);
+        pg.addColorStop(0.3, `rgba(170,150,255,${0.7 * emit})`);
+        pg.addColorStop(1, 'rgba(120,80,255,0)');
+        ctx.fillStyle = pg;
         ctx.beginPath();
-        ctx.ellipse(gun.x, y, 2.4, 4.2, 0, 0, Math.PI * 2);
+        ctx.ellipse(gun.x, tipY + len / 2, 5 + Math.random(), len / 2, 0, 0, Math.PI * 2);
         ctx.fill();
+      } else {
+        // arco elétrico entre os dois arames
+        ctx.strokeStyle = `rgba(200,225,255,${0.9 * emit})`;
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.moveTo(gun.x - 4, tipY + 1);
+        for (let k = 1; k <= 4; k++) ctx.lineTo(gun.x - 4 + k * 2, tipY + 1 + rand(-2.5, 2.5));
+        ctx.stroke();
+        if (Math.random() < 0.5) {
+          const s2 = 30 + Math.random() * 30;
+          ctx.globalAlpha = 0.6 * emit;
+          ctx.drawImage(glow, gun.x - s2 / 2, tipY - s2 / 2 + 2, s2, s2);
+          ctx.globalAlpha = 1;
+        }
       }
       // brilho no impacto
       const s = (mobile ? 110 : 170) * (0.9 + Math.sin(time * 40) * 0.05);
-      ctx.globalAlpha = 0.85 * emit;
+      ctx.globalAlpha = 0.85 * emit * T.glow;
       ctx.drawImage(glow, gun.x - s / 2, surf - s / 2, s, s);
       ctx.globalAlpha = 1;
     }
@@ -472,8 +518,8 @@ export function initSpray(canvas, opts = {}) {
         ctx.moveTo(p.x - p.vx * k, p.y - p.vy * k);
         ctx.lineTo(p.x, p.y);
       }
-      ctx.strokeStyle = PART_COLORS[b];
-      ctx.lineWidth = b === 0 ? 1.1 : 1.5;
+      ctx.strokeStyle = T.colors[b];
+      ctx.lineWidth = b === 0 ? T.width[0] : T.width[1];
       ctx.stroke();
     }
 
@@ -545,19 +591,7 @@ export function initSpray(canvas, opts = {}) {
     ctx.fillStyle = '#ff5a14';
     ctx.fillRect(x - bodyW * 0.32, bodyTop + bodyH - 9, bodyW * 0.64, 4);
 
-    // bico
-    const ng = ctx.createLinearGradient(x - 9, 0, x + 9, 0);
-    ng.addColorStop(0, '#1a1b1e');
-    ng.addColorStop(0.45, '#8b9097');
-    ng.addColorStop(1, '#1a1b1e');
-    ctx.fillStyle = ng;
-    ctx.beginPath();
-    ctx.moveTo(x - 9, bodyTop + bodyH);
-    ctx.lineTo(x + 9, bodyTop + bodyH);
-    ctx.lineTo(x + 4.5, tipY);
-    ctx.lineTo(x - 4.5, tipY);
-    ctx.closePath();
-    ctx.fill();
+    drawNozzle(x, PROCESSES[proc].torch);
 
     if (emit > 0.02) {
       ctx.globalCompositeOperation = 'lighter';
@@ -566,6 +600,81 @@ export function initSpray(canvas, opts = {}) {
       ctx.drawImage(glow, x - s / 2, tipY - s / 2 + 4, s, s);
       ctx.globalAlpha = 1;
       ctx.globalCompositeOperation = 'source-over';
+    }
+  }
+
+  function metal(x0, x1, dark = '#17181b', light = '#8b9097') {
+    const g = ctx.createLinearGradient(x0, 0, x1, 0);
+    g.addColorStop(0, dark);
+    g.addColorStop(0.45, light);
+    g.addColorStop(1, dark);
+    return g;
+  }
+
+  function drawNozzle(x, type) {
+    const top = bodyTop + bodyH;
+    const L = tipY - top;
+    if (type === 'hvof') {
+      // cano longo de combustão com anéis de refrigeração
+      ctx.fillStyle = metal(x - 7, x + 7);
+      ctx.fillRect(x - 6, top, 12, L * 0.35);
+      ctx.beginPath();
+      ctx.moveTo(x - 6, top + L * 0.35);
+      ctx.lineTo(x + 6, top + L * 0.35);
+      ctx.lineTo(x + 3.5, tipY);
+      ctx.lineTo(x - 3.5, tipY);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = 'rgba(0,0,0,0.45)';
+      for (let k = 0; k < 3; k++) ctx.fillRect(x - 6, top + 3 + k * 4, 12, 1.5);
+      ctx.fillStyle = '#ff5a14';
+      ctx.fillRect(x - 6, top + L * 0.35 - 2, 12, 2);
+    } else if (type === 'plasma') {
+      // mangueiras de água, anodo de cobre e injetor de pó
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = '#2f6fd6';
+      ctx.beginPath();
+      ctx.moveTo(x - bodyW / 2, bodyTop + 14);
+      ctx.quadraticCurveTo(x - bodyW / 2 - 18, bodyTop - 10, x - bodyW / 2 - 6, bodyTop - 30);
+      ctx.stroke();
+      ctx.strokeStyle = '#c8402a';
+      ctx.beginPath();
+      ctx.moveTo(x + bodyW / 2, bodyTop + 14);
+      ctx.quadraticCurveTo(x + bodyW / 2 + 18, bodyTop - 10, x + bodyW / 2 + 6, bodyTop - 30);
+      ctx.stroke();
+      ctx.fillStyle = metal(x - 9, x + 9, '#5a3018', '#e0915a');
+      ctx.beginPath();
+      ctx.moveTo(x - 9, top);
+      ctx.lineTo(x + 9, top);
+      ctx.lineTo(x + 6, tipY);
+      ctx.lineTo(x - 6, tipY);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = metal(x + 8, x + 14);
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(x + 16, top + 2);
+      ctx.lineTo(x + 6, tipY + 2);
+      ctx.stroke();
+    } else {
+      // dois arames de cobre convergindo no bico de ar
+      ctx.fillStyle = metal(x - 10, x + 10);
+      ctx.fillRect(x - 10, top, 20, L * 0.4);
+      ctx.lineWidth = 2;
+      [-1, 1].forEach((d) => {
+        const wx = x + d * (bodyW / 2 + 7);
+        // alimentador lateral
+        ctx.fillStyle = metal(wx - 5, wx + 5);
+        roundRect(wx - 5, bodyTop + 10, 10, 18, 3);
+        ctx.fill();
+        ctx.strokeStyle = '#d98a45';
+        ctx.beginPath();
+        ctx.moveTo(wx, bodyTop + 28);
+        ctx.quadraticCurveTo(wx, top + L * 0.3, x + d * 4, tipY + 1);
+        ctx.stroke();
+      });
+      ctx.fillStyle = metal(x - 6, x + 6);
+      ctx.fillRect(x - 5, top + L * 0.4, 10, 3);
     }
   }
 
@@ -609,7 +718,7 @@ export function initSpray(canvas, opts = {}) {
     ctx.fill();
     ctx.textAlign = 'left';
     ctx.fillText(label, px + 26, py + 22);
-    row(py + 42, 'PROCESSO', PROCESSES[proc], dim, bright);
+    row(py + 42, 'PROCESSO', PROCESSES[proc].name, dim, bright);
     row(py + 60, 'CAMADA', `${mm} mm`, dim, bright);
     row(py + 78, 'RECUPERAÇÃO', `${pct}%`, dim, bright);
     ctx.fillStyle = 'rgba(255,255,255,0.1)';

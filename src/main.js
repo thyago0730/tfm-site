@@ -9,7 +9,7 @@ import { initMatrix } from './matrix.js';
 import { initSimulator } from './simulator.js';
 import { initWizard } from './wizard.js';
 import { initConsent, logAnalytics } from './analytics.js';
-import { initWhatsApp, injectContextual, waUrl, WHATSAPP } from './whatsapp.js';
+import { initWhatsApp, waUrl, WHATSAPP } from './whatsapp.js';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
@@ -706,7 +706,6 @@ function boot() {
 
   // seções abaixo da dobra: inicializadas quando o navegador fica ocioso
   idle(() => {
-    injectContextual();
     initServices();
     initSelector();
     initPanels();

@@ -12,54 +12,6 @@ const QUICK = [
   { key: 'campo', label: 'Serviço de campo na minha planta', msg: 'Olá, TFM! Preciso de um serviço de campo na minha planta.' },
 ];
 
-// Link com mensagem e origem para medição. Usado em botões gerados dinamicamente.
-function waLink(text, message, origin, className = 'wa-inline') {
-  const a = document.createElement('a');
-  a.className = className;
-  a.href = waUrl(message);
-  a.target = '_blank';
-  a.rel = 'noopener';
-  a.dataset.waOrigin = origin;
-  a.innerHTML = `${WA_ICON}<span>${text}</span>`;
-  return a;
-}
-
-// Botões contextuais nas seções de conteúdo
-export function injectContextual() {
-  document.querySelectorAll('.svc__item').forEach((item) => {
-    const name = item.querySelector('.svc__name').textContent.trim();
-    const p = item.querySelector('.svc__body > p');
-    // o acordeão anima um único filho: texto e link ficam no mesmo contêiner
-    const inner = document.createElement('div');
-    inner.className = 'svc__inner';
-    p.before(inner);
-    inner.append(p, waLink(`Falar sobre ${name.split(' / ')[0]} no WhatsApp`, `Olá, TFM! Tenho interesse em ${name}. Podemos conversar?`, 'servico'));
-  });
-
-  document.querySelectorAll('.panel').forEach((panel) => {
-    const setor = panel.querySelector('.panel__title').textContent.trim();
-    panel.querySelector('.panel__inner').append(
-      waLink(`Falar com um especialista em ${setor}`, `Olá, TFM! Atuo no setor de ${setor} e gostaria de falar com um especialista.`, 'setor')
-    );
-  });
-
-  document.querySelectorAll('.case:not(.case--more)').forEach((card) => {
-    const title = card.querySelector('h3').textContent.trim();
-    card.querySelector('.case__body').append(
-      waLink('Quero uma solução como esta', `Olá, TFM! Vi o case "${title}" no site e tenho uma necessidade parecida.`, 'case', 'wa-inline wa-inline--case')
-    );
-  });
-
-  document.querySelectorAll('.sel__panel').forEach((panel) => {
-    const problema = panel.querySelector('.sel__intro h3').textContent.trim();
-    const link = waLink(`Tenho um problema de ${problema.toLowerCase()}`, `Olá, TFM! Tenho um problema de ${problema.toLowerCase()} em uma peça e gostaria de uma avaliação.`, 'guia', 'wa-inline wa-inline--pill');
-    const caseLink = panel.querySelector('.sel__case');
-    const row = document.createElement('div');
-    row.className = 'sel__actions';
-    caseLink.replaceWith(row);
-    row.append(link, caseLink);
-  });
-}
 
 // Links estáticos marcados com data-wa="mensagem"
 function wireStatic() {
