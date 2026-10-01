@@ -575,8 +575,14 @@ export function initSpray(canvas, opts = {}) {
         const fg = ctx.createLinearGradient(0, cy - r * 0.42, 0, cy + r * 0.42);
         fg.addColorStop(0, '#2a2c30'); fg.addColorStop(0.3, '#c9ced4'); fg.addColorStop(0.6, '#6f747b'); fg.addColorStop(1, '#16171a');
         ctx.fillStyle = fg; ctx.fillRect(hR - 2, cy - r * 0.42, gapW + 4, r * 0.84);
-        // anel de fixação junto à placa
-        ctx.fillStyle = '#3a3d42'; ctx.fillRect(hR + gapW - 8, cy - r * 0.62, 8, r * 1.24);
+        // nariz do eixo-árvore no cabeçote e flange de acoplamento na traseira da placa
+        const ng = ctx.createLinearGradient(0, cy - r * 0.7, 0, cy + r * 0.7);
+        ng.addColorStop(0, '#2a2c30'); ng.addColorStop(0.3, '#8b9097'); ng.addColorStop(1, '#141517');
+        ctx.fillStyle = ng;
+        ctx.fillRect(hR, cy - r * 0.62, 7, r * 1.24);
+        ctx.fillRect(hR + gapW - 4, cy - r * 0.7, 8, r * 1.4);
+        ctx.fillStyle = '#16171a';
+        for (const yy of [-0.45, 0.45]) { ctx.beginPath(); ctx.arc(hR + gapW, cy + r * yy, 1.6, 0, Math.PI * 2); ctx.fill(); }
       }
       const pg = ctx.createLinearGradient(0, cy - chh / 2, 0, cy + chh / 2);
       pg.addColorStop(0, '#1a1b1e'); pg.addColorStop(0.25, '#4a4e55'); pg.addColorStop(0.5, '#2a2c30'); pg.addColorStop(0.8, '#3b3e44'); pg.addColorStop(1, '#141517');
