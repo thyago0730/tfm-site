@@ -1846,3 +1846,4 @@ input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px 
 .hero__toast-x { background: none; border: 0; color: var(--muted); font-size: 18px; line-height: 1; cursor: pointer; padding: 4px 6px; }
 .hero__toast-x:hover { color: #fff; }
 @media (max-width: 900px) { .hero__toast { left: 16px; right: 16px; bottom: auto; top: calc(var(--header-h) + 290px); padding: 8px 8px 8px 12px; } .hero__toast-txt small { display: none; } }
+.laser__led { filter: drop-shadow(0 0 2px currentColor); } .laser__led--b { animation-delay: .7s; }
