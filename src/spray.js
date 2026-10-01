@@ -936,40 +936,54 @@ export function initSpray(canvas, opts = {}) {
     const x = cutter.x;
     const ci = clamp(Math.floor(x / COL), 0, cols - 1);
     const work = cy - r + (target[ci] || 0) * depth; // ponta no fundo do rebaixo
-    const park = railY + 60;
+    const S0 = mobile ? 0.9 : 1.15;
+    const park = railY + 16 + (34 + 9 + 46) * S0;
     const tip = work - (work - park) * easeInOut(cutter.lift);
     ctx.save(); ctx.globalAlpha = fa;
     // carro e coluna
     ctx.fillStyle = '#26282c'; roundRect(x - 26, railY - 7, 52, 14, 3); ctx.fill();
     ctx.strokeStyle = 'rgba(255,255,255,0.14)'; ctx.stroke();
-    const S = mobile ? 1.2 : 1.7; // escala do conjunto porta-ferramenta
+    // cabeçote de fresamento: motor do spindle, porca de fixação e fresa de topo helicoidal girando
+    const S = mobile ? 0.9 : 1.15;
+    const fl = 34 * S, fw = 22 * S;            // comprimento e diâmetro da fresa
+    const nutH = 9 * S, headH = 46 * S, headW = 52 * S;
+    const headTop = tip - fl - nutH - headH;
     const hg = ctx.createLinearGradient(x - 5, 0, x + 5, 0);
     hg.addColorStop(0, '#1c1d20'); hg.addColorStop(0.5, '#70757c'); hg.addColorStop(1, '#1c1d20');
-    const holdTop = tip - 64 * S;
-    ctx.fillStyle = hg; ctx.fillRect(x - 5, railY + 7, 10, Math.max(0, holdTop - railY - 7));
-    ctx.save(); ctx.translate(x, tip); ctx.scale(S, S); ctx.translate(-x, -tip);
-    const hT = tip - 64;
-    // torre porta-ferramenta
-    const tg = ctx.createLinearGradient(x - 20, 0, x + 20, 0);
-    tg.addColorStop(0, '#141517'); tg.addColorStop(0.35, '#5d626a'); tg.addColorStop(0.6, '#2b2d31'); tg.addColorStop(1, '#0f1012');
-    ctx.fillStyle = tg; roundRect(x - 20, hT, 40, 26, 4); ctx.fill();
+    ctx.fillStyle = hg; ctx.fillRect(x - 5, railY + 7, 10, Math.max(0, headTop - railY - 7));
+    // motor do spindle
+    const mg = ctx.createLinearGradient(x - headW / 2, 0, x + headW / 2, 0);
+    mg.addColorStop(0, '#141517'); mg.addColorStop(0.3, '#5d626a'); mg.addColorStop(0.55, '#2b2d31'); mg.addColorStop(1, '#0f1012');
+    ctx.fillStyle = mg; roundRect(x - headW / 2, headTop, headW, headH, 6); ctx.fill();
     ctx.strokeStyle = 'rgba(255,255,255,0.12)'; ctx.stroke();
-    ctx.fillStyle = '#16171a';
-    ctx.beginPath(); ctx.arc(x - 9, hT + 13, 3, 0, Math.PI * 2); ctx.arc(x + 9, hT + 13, 3, 0, Math.PI * 2); ctx.fill();
-    // haste do suporte (inclinada, como um suporte de torneamento)
-    const sg = ctx.createLinearGradient(x - 8, 0, x + 8, 0);
-    sg.addColorStop(0, '#2a2c30'); sg.addColorStop(0.5, '#8b9097'); sg.addColorStop(1, '#2a2c30');
-    ctx.fillStyle = sg;
-    ctx.beginPath(); ctx.moveTo(x - 8, hT + 26); ctx.lineTo(x + 8, hT + 26); ctx.lineTo(x + 8, tip - 14); ctx.lineTo(x + 2, tip - 6); ctx.lineTo(x - 8, tip - 10); ctx.closePath(); ctx.fill();
-    ctx.fillStyle = '#ff5a14'; ctx.fillRect(x - 8, hT + 34, 16, 2.5);
-    // pastilha rômbica de metal duro com grampo
-    ctx.save(); ctx.translate(x + 1, tip - 5); ctx.rotate(-0.35);
-    const ig = ctx.createLinearGradient(-7, -7, 7, 7);
-    ig.addColorStop(0, '#e6c45a'); ig.addColorStop(1, '#8a6a18');
-    ctx.fillStyle = ig;
-    ctx.beginPath(); ctx.moveTo(0, 6); ctx.lineTo(7, -1); ctx.lineTo(0, -8); ctx.lineTo(-7, -1); ctx.closePath(); ctx.fill();
-    ctx.fillStyle = '#16171a'; ctx.beginPath(); ctx.arc(0, -1, 1.8, 0, Math.PI * 2); ctx.fill();
-    ctx.restore();
+    ctx.fillStyle = 'rgba(0,0,0,0.4)';
+    for (let k = 0; k < 4; k++) ctx.fillRect(x - headW / 2 + 5, headTop + 7 + k * 6 * S, headW - 10, 2);
+    ctx.fillStyle = '#ff5a14'; ctx.fillRect(x - headW * 0.32, headTop + headH - 9 * S, headW * 0.64, 3);
+    // cone e porca da pinça
+    const ng = ctx.createLinearGradient(x - 12 * S, 0, x + 12 * S, 0);
+    ng.addColorStop(0, '#3a3d42'); ng.addColorStop(0.45, '#c9ced4'); ng.addColorStop(1, '#2a2c30');
+    ctx.fillStyle = ng;
+    ctx.beginPath(); ctx.moveTo(x - 13 * S, headTop + headH); ctx.lineTo(x + 13 * S, headTop + headH); ctx.lineTo(x + 9 * S, headTop + headH + nutH); ctx.lineTo(x - 9 * S, headTop + headH + nutH); ctx.closePath(); ctx.fill();
+    // fresa de topo: corpo com canais helicoidais em movimento
+    const fy = headTop + headH + nutH;
+    const cg = ctx.createLinearGradient(x - fw / 2, 0, x + fw / 2, 0);
+    cg.addColorStop(0, '#4a4e54'); cg.addColorStop(0.4, '#e4e7eb'); cg.addColorStop(0.7, '#8b9097'); cg.addColorStop(1, '#2a2c30');
+    ctx.fillStyle = cg;
+    ctx.beginPath(); ctx.moveTo(x - fw / 2, fy); ctx.lineTo(x + fw / 2, fy); ctx.lineTo(x + fw / 2, tip - 2); ctx.lineTo(x + fw / 2 - 2, tip); ctx.lineTo(x - fw / 2 + 2, tip); ctx.lineTo(x - fw / 2, tip - 2); ctx.closePath(); ctx.fill();
+    ctx.save();
+    ctx.beginPath(); ctx.rect(x - fw / 2, fy + fl * 0.25, fw, fl * 0.75); ctx.clip();
+    const spin = cutter.lift < 0.5 ? time * 26 : time * 4;
+    const pitch = 9 * S;
+    ctx.strokeStyle = 'rgba(20,22,26,.75)'; ctx.lineWidth = 2.2 * S;
+    for (let k = -2; k < fl / pitch + 2; k++) {
+      const yy = fy + k * pitch + ((spin * pitch) / (Math.PI * 2)) % pitch;
+      ctx.beginPath(); ctx.moveTo(x - fw / 2, yy + pitch * 0.6); ctx.lineTo(x + fw / 2, yy); ctx.stroke();
+    }
+    ctx.strokeStyle = 'rgba(255,255,255,.35)'; ctx.lineWidth = 0.8;
+    for (let k = -2; k < fl / pitch + 2; k++) {
+      const yy = fy + k * pitch + ((spin * pitch) / (Math.PI * 2)) % pitch + 2.2 * S;
+      ctx.beginPath(); ctx.moveTo(x - fw / 2, yy + pitch * 0.6); ctx.lineTo(x + fw / 2, yy); ctx.stroke();
+    }
     ctx.restore();
     // brilho de corte quando trabalhando
     if (cutter.lift < 0.05) {
