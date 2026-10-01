@@ -885,7 +885,9 @@ export function initSpray(canvas, opts = {}) {
   const endUp = (x) => clamp(Math.max(railA - 4 - x, x - railB - 4) / 26, 0, 1) * (cy - railY + r + 60);
   // comporta nas pontas do trilho: duas folhas que se abrem para a ferramenta subir ou descer
   function drawElevators() {
-    const near = (hx) => Math.max(0, ...[gun.x, tool.wx, phase === 'wear' ? cutter.x : -999].map((x) => 1 - clamp((Math.abs(x - hx) - 30) / 70, 0, 1)));
+    // a comporta só abre enquanto uma ferramenta está entrando/saindo por ela (além da ponta do trilho)
+    const xs = [gun.x, tool.wx, phase === 'wear' ? cutter.x : -999];
+    const near = (hx) => Math.max(0, ...xs.map((x) => (hx < railA ? clamp((railA + 6 - x) / 16, 0, 1) : clamp((x - railB + 6) / 16, 0, 1)) * (x > -500 ? 1 : 0)));
     for (const hx of [hxA(), hxB()]) {
       const w = HW(), y = railY - 4, h = 8;
       const open = easeInOut(near(hx));
